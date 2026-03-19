@@ -6,9 +6,9 @@ import HeroFloatingCard from './HeroFloatingCard';
 
 const Hero = () => {
   return (
-    <div className="relative h-screen w-full">
+    <div className="relative min-h-screen w-full">
       <div className="mx-auto pt-25 lg:pt-30 border-white h-full flex flex-col lg:flex-row w-full max-w-(--breakpoint-2xl) justify-between px-6 md:px-12">
-        <div className="flex-1 flex flex-col items-center lg:items-start w-full lg:w-[50%] gap-6 md:gap-14">
+        <div className="flex-1 flex flex-col items-center lg:items-start w-full lg:w-[50%] gap-6 md:gap-10 xl:gap-12 2xl:gap-16">
           <div className="text-xs border-2 rounded-2xl px-4 py-2 backdrop-blur-2xl flex items-center gap-2 w-fit">
             <p className="h-2 w-2 shrink-0 bg-green-400 rounded-full animate-pulse"></p>{' '}
             v2.0 Live: Advanced Anti-Cheat
@@ -66,13 +66,23 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="absolute bg-black/20 top-0 right-0 opacity-50 -z-5 h-full w-full ">
+      <div className="absolute bg-black/20 top-0 right-0 opacity-15 -z-5 h-full w-full rotate-180">
         <Image
-          src={'/images/green_variant.webp'}
+          src={'/svg/bbblurry.svg'}
           className="pointer-events-none h-full w-full object-cover select-none"
           alt=""
           fill
         />
+       <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(to_top,transparent_0%,transparent_45%,rgba(10,10,15,0.35)_70%,rgba(10,10,15,0.75)_88%,#0a0a0f_100%)]" />
+      </div>
+        <div className="absolute bg-black/20 top-0 right-0 lg:opacity-2 opacity-7 -z-5 h-full w-full rotate-180">
+        <Image
+          src={'/svg/wwwhirl.svg'}
+          className="pointer-events-none h-full w-full object-cover select-none"
+          alt=""
+          fill
+        />
+       <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(to_top,transparent_0%,transparent_45%,rgba(10,10,15,0.35)_70%,rgba(10,10,15,0.75)_88%,#0a0a0f_100%)]" />
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={poppins.variable}>
+      <body className={`${poppins.variable} custom-scrollbar overflow-x-hidden`}>
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>
