@@ -12,7 +12,7 @@ const logos = [
 
 const TrustedBy = () => {
   return (
-    <section className="w-full py-8 md:py-16">
+    <section className="w-full py-8 md:py-24">
       <div className="mx-auto max-w-(--breakpoint-2xl) px-6 md:px-12 text-center">
         {/* Heading */}
         <p className="text-2xl md:text-5xl font-semibold text-muted-foreground mb-8">

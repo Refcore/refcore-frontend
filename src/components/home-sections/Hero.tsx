@@ -11,7 +11,7 @@ const Hero = () => {
         <div className="flex-1 flex flex-col items-center lg:items-start w-full lg:w-[50%] gap-6 md:gap-10 xl:gap-12 2xl:gap-16">
           <div className="text-xs border-2 rounded-2xl px-4 py-2 backdrop-blur-2xl flex items-center gap-2 w-fit">
             <p className="h-2 w-2 shrink-0 bg-green-400 rounded-full animate-pulse"></p>{' '}
-            v2.0 Live: Advanced Anti-Cheat
+            v1.0 Live
           </div>
           <h1 className="font-bold text-center lg:text-left leading-[1.1] tracking-tight text-6xl lg:text-7xl">
             Run Viral <br />
@@ -61,7 +61,7 @@ const Hero = () => {
             </p>
           </div>
         </div>
-        <div className="flex-1 hidden lg:flex lg:w-[50%] items-center justify-end">
+        <div className="flex-1 flex lg:w-[50%] items-center justify-center translate-y-12 lg:translate-y-0 lg:justify-end">
           <HeroFloatingCard />
         </div>
       </div>

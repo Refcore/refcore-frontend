@@ -1,5 +1,9 @@
 import BuilFor from '@/components/home-sections/BuilFor';
+import Compete from '@/components/home-sections/Compete';
+import Conclusion from '@/components/home-sections/Conclusion';
+import Footer from '@/components/home-sections/Footer';
 import Hero from '@/components/home-sections/Hero';
+import Pricing from '@/components/home-sections/Pricing';
 import Steps from '@/components/home-sections/Steps';
 import TrustedBy from '@/components/home-sections/TrustedBy';
 import Navbar from '@/components/shared/Navbar';
@@ -10,7 +14,7 @@ export default function Home() {
     <main className="overflow-x-hidden">
       <Navbar />
       <Hero />
-      <div className="absolute bg-black/20 top-screen opacity-70 -right-10 -z-5 h-full w-full">
+      <div className="absolute bg-black/20 top-screen opacity-40 -z-5 h-full w-full">
         <Image
           src={'/svg/bbburst.svg'}
           className="pointer-events-none h-full w-full object-cover select-none"
@@ -22,6 +26,10 @@ export default function Home() {
       <TrustedBy />
       <Steps />
       <BuilFor />
+      <Compete />
+      <Pricing />
+      <Conclusion />
+      <Footer />
     </main>
   );
 }
