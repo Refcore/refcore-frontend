@@ -1,22 +1,23 @@
 'use client';
 
+import Image from "next/image";
+
 const users = [
-  { name: 'Sarah_J', score: 1240, rank: 1, progress: 100 },
-  { name: 'Mike_W', score: 985, rank: 2, progress: 85 },
-  { name: 'Cindy_R', score: 842, rank: 3, progress: 70 },
+  { name: 'Sarah_J', score: 1240, rank: 1, progress: 100, src: '/images/userfemale.webp' },
+  { name: 'Mike_W', score: 985, rank: 2, progress: 85, src: '/images/usermale.webp'  },
+  { name: 'Cindy_R', score: 842, rank: 3, progress: 70, src: '/images/userfemale2.webp'  },
 ];
 
 export default function HeroFloatingCard() {
   return (
-    <div className="relative animate-float">
-      <div className="w-full md:min-w-lg max-w-lg glass rounded-2xl p-6 border border-white/10 neon-purple">
-        
+    <div className="relative animate-float w-full md:w-fit">
+      <div className="w-full md:min-w-lg md:max-w-lg glass rounded-2xl p-6 border border-white/10 neon-purple">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h3 className="font-bold text-lg">Live Leaderboard</h3>
+            <h3 className="font-bold md:text-lg">Live Leaderboard</h3>
             <p className="text-xs text-[#00ff9d] flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-[#00ff9d] animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-[#00ff9d] animate-pulse text-xs md:text-base" />
               Live Updates
             </p>
           </div>
@@ -48,7 +49,17 @@ export default function HeroFloatingCard() {
               </div>
 
               {/* Avatar */}
-              <div className="w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center text-lg font-bold" >{'UZ'}</div>
+              <div className="w-10 h-10 rounded-full bg-gray-500 flex overflow-hidden items-center justify-center md:text-lg font-bold">
+                {' '}
+                <Image
+                  alt="user"
+                  sizes={'400'}
+                  height={200}
+                  width={200}
+                  src={user.src}
+                  className="h-auto w-auto"
+                />
+              </div>
 
               {/* Name + progress */}
               <div className="flex-1">
@@ -63,7 +74,7 @@ export default function HeroFloatingCard() {
 
               {/* Score */}
               <div className="text-right">
-                <div className="font-bold text-lg">{user.score}</div>
+                <div className="font-bold md:text-lg">{user.score}</div>
                 <div className="text-[10px] text-muted-foreground">Refs</div>
               </div>
             </div>

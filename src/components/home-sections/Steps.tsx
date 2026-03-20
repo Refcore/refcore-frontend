@@ -4,7 +4,7 @@ import StepsCard from './StepsCard';
 
 const Steps = () => {
   return (
-    <div className="flex relative flex-col items-center gap-10 mx-auto w-full max-w-(--breakpoint-2xl) py-8 md:py-16 px-6 md:px-12">
+    <div className="flex relative flex-col items-center gap-10 mx-auto w-full max-w-(--breakpoint-2xl) py-20 md:py-24 px-6 md:px-12">
       <h3 className="text-4xl md:text-6xl font-bold text-center">
         Three Steps to <br className="block md:hidden" />
         <span className="text-gradient-primary">Viral Growth</span>
