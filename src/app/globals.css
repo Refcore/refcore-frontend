@@ -236,6 +236,37 @@
       rgba(10, 10, 15, 0) 100%
     );
   }
+
+  .leaderboard-stat-card {
+    background: rgba(21, 21, 27, 0.2);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .top-three-card {
+    background: rgba(28, 28, 38, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  }
+
+  .top-three-card-gold {
+    box-shadow: 0 0 30px rgba(250, 204, 21, 0.35),
+      inset 0 0 20px rgba(250, 204, 21, 0.08);
+    border: 2px solid rgba(250, 204, 21, 0.45);
+  }
+
+  .top-three-card-silver {
+    box-shadow: 0 0 22px rgba(192, 192, 192, 0.22),
+      inset 0 0 14px rgba(192, 192, 192, 0.08);
+    border: 2px solid rgba(192, 192, 192, 0.35);
+  }
+
+  .top-three-card-bronze {
+    box-shadow: 0 0 22px rgba(205, 127, 50, 0.22),
+      inset 0 0 14px rgba(205, 127, 50, 0.08);
+    border: 2px solid rgba(205, 127, 50, 0.35);
+  }
 }
 
 @keyframes float {

@@ -9,8 +9,7 @@ import { homelinks } from '@/consts/homelinks';
 import { AUTH_ROUTES, PUBLIC_ROUTES } from '@/routes';
 import { cn } from '@/lib/utils';
 
-const Navbar = () => {
-
+const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -41,42 +40,42 @@ const Navbar = () => {
       <nav
         className={cn(
           'fixed top-0 z-50 w-full bg-transparent transition-all',
-          scrolled && 'bg-background/80 backdrop-blur-md'
+          scrolled && 'bg-background/80 backdrop-blur-md',
         )}
       >
         <div className="mx-auto flex h-20 w-full max-w-(--breakpoint-2xl) items-center justify-between px-6 md:px-12">
-          
           {/* Logo */}
           <CompanyLogo />
 
-          {/* Desktop Links */}
-          <ul className="hidden md:flex items-center gap-8">
-            {homelinks.map((item) => {
-              if (item.link) {
+          {!disablenav && (
+            <ul className="hidden md:flex items-center gap-8">
+              {homelinks.map((item) => {
+                if (item.link) {
+                  return (
+                    <li key={item.text}>
+                      <Link
+                        href={PUBLIC_ROUTES.LEADERBOARD}
+                        className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
+                      >
+                        {item.text}
+                      </Link>
+                    </li>
+                  );
+                }
+
                 return (
                   <li key={item.text}>
-                    <Link
-                      href={PUBLIC_ROUTES.LEADERBOARD}
+                    <a
+                      href={`#${item.value}`}
                       className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
                     >
                       {item.text}
-                    </Link>
+                    </a>
                   </li>
                 );
-              }
-
-              return (
-                <li key={item.text}>
-                  <a
-                    href={`#${item.value}`}
-                    className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
-                  >
-                    {item.text}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
+              })}
+            </ul>
+          )}
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
@@ -109,14 +108,14 @@ const Navbar = () => {
       <div
         className={cn(
           'fixed inset-0 z-50 md:hidden',
-          mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'
+          mobileOpen ? 'pointer-events-auto' : 'pointer-events-none',
         )}
       >
         {/* Overlay */}
         <div
           className={cn(
             'absolute inset-0 bg-black/60 transition-opacity',
-            mobileOpen ? 'opacity-100' : 'opacity-0'
+            mobileOpen ? 'opacity-100' : 'opacity-0',
           )}
           onClick={() => setMobileOpen(false)}
         />
@@ -125,7 +124,7 @@ const Navbar = () => {
         <div
           className={cn(
             'absolute inset-x-0 top-0 h-screen bg-background/20 backdrop-blur-lg transition-transform duration-300',
-            mobileOpen ? 'translate-y-0' : '-translate-y-full'
+            mobileOpen ? 'translate-y-0' : '-translate-y-full',
           )}
         >
           {/* Header */}
