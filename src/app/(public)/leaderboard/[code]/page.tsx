@@ -1,6 +1,10 @@
+import Footer from '@/components/home-sections/Footer';
 import LeaderboardBannerFirst from '@/components/leaderboard/LeaderBoardBannerFirst';
+import LeaderBoardConclusion from '@/components/leaderboard/LeaderBoardConclusion';
+import LeaderboardSahre from '@/components/leaderboard/LeaderboardSahre';
 import LeaderboardTable from '@/components/leaderboard/LeaderboardTable';
 import TopThree from '@/components/leaderboard/TopThree';
+import Navbar from '@/components/shared/Navbar';
 import {
   findLeaderboardByCodeOrName,
   mockLeaderboards,
@@ -21,6 +25,7 @@ const CodePage = async ({ params }: CodePageProps) => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
+      <Navbar disablenav/>
       <div className="absolute top-0 right-0 h-screen w-full rotate-180 opacity-5">
         <Image
           src="/svg/bbblurry.svg"
@@ -35,10 +40,16 @@ const CodePage = async ({ params }: CodePageProps) => {
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,transparent_0%,transparent_72%,rgba(10,10,15,0.28)_88%,rgba(10,10,15,0.65)_96%,#0a0a0f_100%)]" />
       </div>
 
-      <div className="mx-auto min-h-screen w-full max-w-(--breakpoint-2xl) px-0 py-6 sm:px-6 md:py-12 lg:px-8">
+      <div className="mx-auto min-h-screen w-full py-10 md:py-16">
         <LeaderboardBannerFirst leaderboard={leaderboard} />
         <TopThree leaderboard={leaderboard} />
         <LeaderboardTable leaderboard={leaderboard} />
+        <LeaderboardSahre
+          leaderboardName={leaderboard.name}
+          leaderboardCode={leaderboard.code}
+        />
+        <LeaderBoardConclusion leaderboardName={leaderboard.name} />
+        <Footer />
       </div>
     </div>
   );
