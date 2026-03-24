@@ -42,7 +42,7 @@ const Footer = () => {
           </ul>
         </div>
       </div>
-      <div className="py-4 flex justify-between text-muted-foreground text-sm border-t">
+      <div className="py-4 flex justify-between text-muted-foreground text-xs text-nowrap border-t">
         <p>© 2026 REFCORE Inc. All rights reserved.</p>
         <div className="flex gap-2 items-center">
           <p className="h-2 w-2 shrink-0 bg-green-400 rounded-full animate-pulse"></p>
