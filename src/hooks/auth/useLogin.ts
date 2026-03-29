@@ -19,12 +19,12 @@ type AppResponse<T> = {
 
 export const useLogin = () => {
   const [loading, setLoading] = useState(false);
-  const supabase = createClient();
   const queryClient = useQueryClient();
 
   const login = async (
     payload: LoginFormData,
   ): Promise<AppResponse<LoginResponseData>> => {
+    const supabase = createClient();
     try {
       setLoading(true);
 

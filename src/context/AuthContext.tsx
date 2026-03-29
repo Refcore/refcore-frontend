@@ -3,7 +3,9 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
+  useState,
   type ReactNode,
 } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -107,6 +109,13 @@ const getMyChannel = async (user_id: string): Promise<MyChannel | null> => {
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsMounted(true);
+  }, []);
+
   const {
     data: currentUserData,
     isLoading: isLoadingUser,
@@ -115,6 +124,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   } = useQuery({
     queryKey: queryKeys.auth.currentUser,
     queryFn: getCurrentUser,
+    enabled: isMounted,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -130,12 +140,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   } = useQuery({
     queryKey: queryKeys.channels.myChannel(authUser?.id),
     queryFn: () => getMyChannel(authUser!.id),
-    enabled: !!authUser?.id,
+    enabled: isMounted && !!authUser?.id,
     staleTime: 1000 * 60 * 5,
   });
 
   const value = useMemo<AuthContextType>(() => {
-    const isLoading = isLoadingUser || (isAuthenticated && isLoadingChannel);
+    const isLoading =
+      !isMounted || isLoadingUser || (isAuthenticated && isLoadingChannel);
+
     const isWhatsappVerified = !!myChannel?.whatsapp_verified;
 
     let registrationStep: 1 | 2 | 3 = 1;
@@ -170,6 +182,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       },
     };
   }, [
+    isMounted,
     authUser,
     currentUser,
     myChannel,
