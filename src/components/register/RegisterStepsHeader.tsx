@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '../ui/button';
+// import { Button } from '../ui/button';
 
 type RegisterStepsHeaderProps = {
   step: number;
@@ -19,9 +19,9 @@ type RegisterStepsHeaderProps = {
 const RegisterStepsHeader = ({
   step,
   totalSteps = 3,
-  onBack,
+  // onBack,
   onNext,
-  showBack = true,
+  // showBack = true,
   showNext = false,
   nextDisabled = false,
   className,
@@ -29,7 +29,7 @@ const RegisterStepsHeader = ({
   return (
     <div className={cn('w-full space-y-5', className)}>
       <div className="flex items-center justify-between gap-4">
-        <Button
+        {/* <Button
           type="button"
           onClick={onBack}
           disabled={!showBack || step === 1}
@@ -42,7 +42,7 @@ const RegisterStepsHeader = ({
         >
           <ArrowLeft className="h-4 w-4" />
           Back
-        </Button>
+        </Button> */}
 
         <p className="text-sm font-medium text-muted-foreground md:text-base">
           <span className="text-foreground">{step}</span> of {totalSteps}

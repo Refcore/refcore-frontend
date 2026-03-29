@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import ReactQueryProvider from '@/providers/ReactQueryProvider';
 import { Poppins } from 'next/font/google';
+import { AuthProvider } from '@/context/AuthContext';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -21,8 +22,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} custom-scrollbar overflow-x-hidden`}>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+      <body
+        className={`${poppins.variable} custom-scrollbar overflow-x-hidden`}
+      >
+        <ReactQueryProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

@@ -2,15 +2,33 @@
 
 import React from 'react';
 import { useRegister } from '@/context/RegisterContext';
-import { registerAccountSchema } from '@/schema/register.schema';
+import {
+  RegisterAccountFormData,
+  registerAccountSchema,
+} from '@/schema/register.schema';
 import FormShell from '../shared/forms/FormShell';
 import TextInput from '../shared/forms/inputs/TextInput';
 import EmailInput from '../shared/forms/inputs/EmailInput';
 import PasswordInput from '../shared/forms/inputs/PasswordInput';
 import FormButton from '../shared/forms/FormButton';
+import { useCreateUser } from '@/hooks/auth/useCreateUser';
 
 const RegisterStep1 = () => {
   const { formData, updateForm, nextStep } = useRegister();
+  const { loading, createUser } = useCreateUser();
+
+  const handleSubmit = async (values: RegisterAccountFormData) => {
+    updateForm(values);
+
+    const response = await createUser(values);
+
+    if (!response.success) {
+      console.log(response.message);
+      return;
+    }
+
+    nextStep();
+  };
 
   return (
     <div className="space-y-8 w-full">
@@ -26,23 +44,19 @@ const RegisterStep1 = () => {
       <FormShell
         schema={registerAccountSchema}
         defaultValues={{
-          fullName: formData.fullName,
+          user_name: formData.user_name,
           email: formData.email,
           password: formData.password,
-          confirmPassword: formData.confirmPassword,
         }}
-        onSubmit={(values) => {
-          updateForm(values);
-          nextStep();
-        }}
+        onSubmit={handleSubmit}
         className="space-y-5"
       >
         <TextInput
-          name="fullName"
-          label="Full name"
-          placeholder="Enter your full name"
+          name="user_name"
+          label="Username"
+          placeholder="Enter preffred Username"
           required
-          autoComplete="name"
+          autoComplete="username"
         />
 
         <EmailInput
@@ -71,9 +85,7 @@ const RegisterStep1 = () => {
         />
 
         <div className="pt-3">
-          <FormButton type="button" validateOnClick onClick={() => nextStep()}>
-            Continue
-          </FormButton>
+          <FormButton loading={loading}>Continue</FormButton>
         </div>
       </FormShell>
     </div>

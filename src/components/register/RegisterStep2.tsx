@@ -3,14 +3,15 @@
 import React, { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useRegister } from '@/context/RegisterContext';
-import {
-  registerWorkspaceSchema,
-  type RegisterWorkspaceFormData,
-} from '@/schema/register.schema';
 import { Sparkles } from 'lucide-react';
 import TextInput from '../shared/forms/inputs/TextInput';
 import FormButton from '../shared/forms/FormButton';
 import FormShell from '../shared/forms/FormShell';
+import {
+  RegisterChannelFormData,
+  registerChannelSchema,
+} from '@/schema/register.schema';
+import { useCreateChannel } from '@/hooks/auth/useCreateChannel';
 
 const generateSlug = (value: string) =>
   value
@@ -37,13 +38,13 @@ const normalizeWhatsappNumber = (value: string) => {
   return digitsOnly.slice(0, 10);
 };
 
-const RegisterStep2Fields = () => {
-  const form = useFormContext<RegisterWorkspaceFormData>();
-  const tvName = useWatch({ control: form.control, name: 'tvName' });
+const RegisterStep2Fields = ({ loading }: { loading: boolean }) => {
+  const form = useFormContext<RegisterChannelFormData>();
+  const tvName = useWatch({ control: form.control, name: 'tv_name' });
 
   useEffect(() => {
     if (form.formState.dirtyFields.slug) return;
-    if (form.getValues('tvName') === '') return;
+    if (form.getValues('tv_name') === '') return;
 
     form.setValue('slug', generateSlug(tvName ?? ''), {
       shouldValidate: true,
@@ -54,7 +55,7 @@ const RegisterStep2Fields = () => {
   return (
     <>
       <TextInput
-        name="tvName"
+        name="tv_name"
         label="WhatsApp TV name"
         placeholder="Enter your WhatsApp TV name"
         required
@@ -62,7 +63,7 @@ const RegisterStep2Fields = () => {
       />
 
       <TextInput
-        name="whatsappNumber"
+        name="whatsapp_number"
         label="WhatsApp number"
         placeholder="+2348012345678"
         description="Use a valid Nigerian WhatsApp number. OTP will be sent to this number next."
@@ -83,7 +84,7 @@ const RegisterStep2Fields = () => {
       />
 
       <div className="pt-3">
-        <FormButton>Continue</FormButton>
+        <FormButton loading={loading}>Continue</FormButton>
       </div>
     </>
   );
@@ -91,6 +92,21 @@ const RegisterStep2Fields = () => {
 
 const RegisterStep2 = () => {
   const { formData, updateForm, nextStep } = useRegister();
+
+  const { loading, createChannel } = useCreateChannel();
+
+  const handleSubmit = async (values: RegisterChannelFormData) => {
+    updateForm(values);
+
+    const response = await createChannel(values);
+
+    if (!response.success) {
+      console.log(response.message);
+      return;
+    }
+
+    nextStep();
+  };
 
   return (
     <div className="space-y-8">
@@ -123,19 +139,16 @@ const RegisterStep2 = () => {
       </div>
 
       <FormShell
-        schema={registerWorkspaceSchema}
+        schema={registerChannelSchema}
         defaultValues={{
-          tvName: formData.tvName,
-          whatsappNumber: formData.whatsappNumber,
+          tv_name: formData.tv_name,
+          whatsapp_number: formData.whatsapp_number,
           slug: formData.slug,
         }}
-        onSubmit={(values) => {
-          updateForm(values);
-          nextStep();
-        }}
+        onSubmit={handleSubmit}
         className="space-y-5"
       >
-        <RegisterStep2Fields />
+        <RegisterStep2Fields loading={loading} />
       </FormShell>
     </div>
   );
