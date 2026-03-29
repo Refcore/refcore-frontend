@@ -3,7 +3,6 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -23,62 +22,11 @@ type RegisterContextType = {
   resetForm: () => void;
 };
 
-const REGISTER_STORAGE_KEY = 'refcore-register-form';
-
 const RegisterContext = createContext<RegisterContextType | undefined>(undefined);
 
-function getStoredRegisterData() {
-  if (typeof window === 'undefined') {
-    return {
-      step: 1,
-      formData: initialFormData,
-    };
-  }
-
-  const savedData = sessionStorage.getItem(REGISTER_STORAGE_KEY);
-
-  if (!savedData) {
-    return {
-      step: 1,
-      formData: initialFormData,
-    };
-  }
-
-  try {
-    const parsed = JSON.parse(savedData) as {
-      step?: number;
-      formData?: RegisterFormData;
-    };
-
-    return {
-      step: parsed.step ?? 1,
-      formData: parsed.formData ?? initialFormData,
-    };
-  } catch (error) {
-    console.error('Failed to parse register session data:', error);
-
-    return {
-      step: 1,
-      formData: initialFormData,
-    };
-  }
-}
-
 export function RegisterProvider({ children }: { children: ReactNode }) {
-  const [step, setStep] = useState<number>(() => getStoredRegisterData().step);
-  const [formData, setFormData] = useState<RegisterFormData>(
-    () => getStoredRegisterData().formData,
-  );
-
-  useEffect(() => {
-    sessionStorage.setItem(
-      REGISTER_STORAGE_KEY,
-      JSON.stringify({
-        step,
-        formData,
-      }),
-    );
-  }, [step, formData]);
+  const [step, setStep] = useState<number>(1);
+  const [formData, setFormData] = useState<RegisterFormData>(initialFormData);
 
   const updateForm = (data: Partial<RegisterFormData>) => {
     setFormData((prev) => ({
@@ -98,7 +46,6 @@ export function RegisterProvider({ children }: { children: ReactNode }) {
   const resetForm = () => {
     setStep(1);
     setFormData(initialFormData);
-    sessionStorage.removeItem(REGISTER_STORAGE_KEY);
   };
 
   const value = useMemo(

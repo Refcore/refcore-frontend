@@ -8,10 +8,16 @@ import CompanyLogo from './CompanyLogo';
 import { homelinks } from '@/consts/homelinks';
 import { AUTH_ROUTES, PUBLIC_ROUTES } from '@/routes';
 import { cn } from '@/lib/utils';
+import { useAuthContext } from '@/context/AuthContext';
+import { Button } from '../ui/button';
+import { useLogout } from '@/hooks/auth/useLogout';
 
 const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const { isAuthenticated, isLoading } = useAuthContext();
+  const { logout, is_logging_out } = useLogout();
 
   // Scroll effect
   useEffect(() => {
@@ -33,6 +39,14 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
       document.body.style.overflow = prev;
     };
   }, [mobileOpen]);
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  if(isLoading){
+    return
+  }
 
   return (
     <>
@@ -78,21 +92,37 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
           )}
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-4">
-            <Link
-              href={AUTH_ROUTES.LOGIN}
-              className="text-sm font-medium text-muted-foreground hover:text-white"
-            >
-              Log in
-            </Link>
+          {isAuthenticated ? (
+            <div className="hidden md:flex items-center gap-4">
+              {' '}
+              <Button
+                disabled={is_logging_out}
+                onClick={handleLogout}
+                className="disabled:cursor-not-allowed text-red-500"
+              >
+                Log Out
+              </Button>
+              <Button className="rounded-full px-5 py-2.5 text-sm font-semibold text-black bg-white hover:bg-gray-200 transition-all">
+                Dashboard
+              </Button>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-4">
+              <Link
+                href={AUTH_ROUTES.LOGIN}
+                className="text-sm font-medium text-muted-foreground hover:text-white"
+              >
+                Log in
+              </Link>
 
-            <Link
-              href={AUTH_ROUTES.REGISTER}
-              className="rounded-full px-5 py-2.5 text-sm font-semibold text-black bg-white hover:bg-gray-200 transition-all"
-            >
-              Get Started
-            </Link>
-          </div>
+              <Link
+                href={AUTH_ROUTES.REGISTER}
+                className="rounded-full px-5 py-2.5 text-sm font-semibold text-black bg-white hover:bg-gray-200 transition-all"
+              >
+                Get Started
+              </Link>
+            </div>
+          )}
 
           {/* Mobile Menu Button */}
           <button
@@ -165,23 +195,37 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
             })}
 
             {/* CTA */}
-            <div className="mt-6 flex flex-col gap-3">
-              <Link
-                href={AUTH_ROUTES.LOGIN}
-                onClick={() => setMobileOpen(false)}
-                className="text-center text-sm text-muted-foreground"
-              >
-                Log in
-              </Link>
+            {isAuthenticated ? (
+              <div className="mt-6 flex flex-col gap-3">
+                {' '}
+                <Button
+                  disabled={is_logging_out}
+                  onClick={handleLogout}
+                  className="disabled:cursor-not-allowed"
+                >
+                  Log Out
+                </Button>
+                <Button>Dashboard</Button>
+              </div>
+            ) : (
+              <div className="mt-6 flex flex-col gap-3">
+                <Link
+                  href={AUTH_ROUTES.LOGIN}
+                  onClick={() => setMobileOpen(false)}
+                  className="text-center text-sm text-muted-foreground"
+                >
+                  Log in
+                </Link>
 
-              <Link
-                href={AUTH_ROUTES.REGISTER}
-                onClick={() => setMobileOpen(false)}
-                className="rounded-full bg-white text-black py-3 text-center font-semibold"
-              >
-                Get Started
-              </Link>
-            </div>
+                <Link
+                  href={AUTH_ROUTES.REGISTER}
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-full bg-white text-black py-3 text-center font-semibold"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ import { registerOtpSchema } from '@/schema/register.schema';
 import { cn } from '@/lib/utils';
 import FormShell from '../shared/forms/FormShell';
 import FormButton from '../shared/forms/FormButton';
+import { useGetCurrentUser } from '@/hooks/auth/useGetCurrentUser';
 
 type RegisterOtpFormData = {
   otp: string;
@@ -163,9 +164,13 @@ const OtpInputGroup = ({ name, length = 4 }: OtpInputGroupProps) => {
 };
 
 const RegisterStep3 = () => {
-  const { formData, updateForm, resetForm } = useRegister();
+  const { formData, updateForm } = useRegister();
   const [otpSent, setOtpSent] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(0);
+
+  const { data: currentUser, isLoading, error } = useGetCurrentUser();
+
+console.log({ currentUser, isLoading, error });
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -200,7 +205,7 @@ const RegisterStep3 = () => {
         </h1>
         <p className="text-sm leading-6 text-muted-foreground md:text-base">
           Send an OTP to{' '}
-          <span className="text-foreground">{formData.whatsappNumber}</span> and
+          <span className="text-foreground">{formData.whatsapp_number}</span> and
           enter it below to complete your setup.
         </p>
       </div>
@@ -238,7 +243,7 @@ const RegisterStep3 = () => {
             ...values,
           });
 
-          resetForm();
+          // resetForm();
         }}
         className="space-y-5"
       >
