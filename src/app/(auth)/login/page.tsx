@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import FormShell from '@/components/shared/forms/FormShell';
 import EmailInput from '@/components/shared/forms/inputs/EmailInput';
@@ -11,11 +11,13 @@ import { useLogin } from '@/hooks/auth/useLogin';
 import { toast } from 'sonner';
 import { ADMIN_ROUTES, AUTH_ROUTES } from '@/routes';
 import Link from 'next/link';
+import { useAuthContext } from '@/context/AuthContext';
 
 
 const LoginPage = () => {
   const router = useRouter();
   const { loading, login } = useLogin();
+    const { isAuthenticated } = useAuthContext();
 
   const handleSubmit = async (values: LoginFormData) => {
     const response = await login(values);
@@ -30,8 +32,18 @@ const LoginPage = () => {
     router.refresh();
   };
 
+    useEffect(() => {
+      if (isAuthenticated) {
+        router.replace(ADMIN_ROUTES.HOME);
+      }
+    }, [isAuthenticated, router]);
+  
+    if (isAuthenticated) {
+      return null;
+    }
+
   return (
-    <div className="w-screen max-w-3xl py-8 md:px-6 md:py-10 glass rounded-xl mt-6 space-y-4">
+    <div className="w-screen max-w-3xl py-8 md:px-6 md:py-10 md:glass px-4 md:border-2 rounded-xl mt-6 space-y-4">
       <div className="space-y-4 text-center md:text-left">
         <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
           Welcome back

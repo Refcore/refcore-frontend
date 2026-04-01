@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { LogOut, Menu, X } from 'lucide-react';
 
 import CompanyLogo from './CompanyLogo';
 import { homelinks } from '@/consts/homelinks';
-import { AUTH_ROUTES, PUBLIC_ROUTES } from '@/routes';
+import { ADMIN_ROUTES, AUTH_ROUTES, PUBLIC_ROUTES } from '@/routes';
 import { cn } from '@/lib/utils';
 import { useAuthContext } from '@/context/AuthContext';
 import { Button } from '../ui/button';
@@ -18,6 +18,8 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
 
   const { isAuthenticated, isLoading } = useAuthContext();
   const { logout, is_logging_out } = useLogout();
+
+  const show = isAuthenticated && !isLoading;
 
   // Scroll effect
   useEffect(() => {
@@ -43,10 +45,6 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
   const handleLogout = () => {
     logout();
   };
-
-  if(isLoading){
-    return
-  }
 
   return (
     <>
@@ -92,19 +90,22 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
           )}
 
           {/* Desktop CTA */}
-          {isAuthenticated ? (
+          {show ? (
             <div className="hidden md:flex items-center gap-4">
               {' '}
               <Button
                 disabled={is_logging_out}
                 onClick={handleLogout}
-                className="disabled:cursor-not-allowed text-red-500"
+                className="disabled:cursor-not-allowed text-red-400 font-bold"
               >
-                Log Out
+                Log Out <LogOut />
               </Button>
-              <Button className="rounded-full px-5 py-2.5 text-sm font-semibold text-black bg-white hover:bg-gray-200 transition-all">
+              <Link
+                href={ADMIN_ROUTES.HOME}
+                className="rounded-full px-5 py-2.5 text-sm font-semibold text-black bg-white hover:bg-gray-200 transition-all"
+              >
                 Dashboard
-              </Button>
+              </Link>
             </div>
           ) : (
             <div className="hidden md:flex items-center gap-4">
@@ -175,7 +176,7 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
                     key={item.text}
                     href={PUBLIC_ROUTES.LEADERBOARD}
                     onClick={() => setMobileOpen(false)}
-                    className="text-lg font-medium text-white"
+                    className="font-medium text-white"
                   >
                     {item.text}
                   </Link>
@@ -187,7 +188,7 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
                   key={item.text}
                   href={`#${item.value}`}
                   onClick={() => setMobileOpen(false)}
-                  className="text-lg font-medium text-white"
+                  className="font-medium text-white"
                 >
                   {item.text}
                 </a>
@@ -195,24 +196,30 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
             })}
 
             {/* CTA */}
-            {isAuthenticated ? (
-              <div className="mt-6 flex flex-col gap-3">
+            {show ? (
+              <div className="mt-6 flex flex-col gap-10">
                 {' '}
                 <Button
                   disabled={is_logging_out}
                   onClick={handleLogout}
-                  className="disabled:cursor-not-allowed"
+                  className="disabled:cursor-not-allowed border-red-400 text-red-400 border-2 py-6 rounded-full font-bold"
                 >
-                  Log Out
+                  Log Out <LogOut />
                 </Button>
-                <Button>Dashboard</Button>
+                <Link
+                  href={AUTH_ROUTES.REGISTER}
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-full bg-white text-black py-3 text-center font-semibold"
+                >
+                  Dashboard
+                </Link>
               </div>
             ) : (
-              <div className="mt-6 flex flex-col gap-3">
+              <div className="mt-6 flex flex-col gap-10">
                 <Link
                   href={AUTH_ROUTES.LOGIN}
                   onClick={() => setMobileOpen(false)}
-                  className="text-center text-sm text-muted-foreground"
+                  className="text-center text-sm border-foreground border-2 py-6 rounded-full font-bold"
                 >
                   Log in
                 </Link>

@@ -6,7 +6,8 @@ import { queryKeys } from '@/lib/query_keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from 'react-toastify';
+
 
 export const useLogout = () => {
   const router = useRouter();

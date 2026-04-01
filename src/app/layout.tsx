@@ -3,6 +3,7 @@ import './globals.css';
 import ReactQueryProvider from '@/providers/ReactQueryProvider';
 import { Poppins } from 'next/font/google';
 import { AuthProvider } from '@/context/AuthContext';
+import ToastProvider from '@/providers/ToastProvider';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -28,6 +29,7 @@ export default function RootLayout({
         <ReactQueryProvider>
           <AuthProvider>{children}</AuthProvider>
         </ReactQueryProvider>
+         <ToastProvider />
       </body>
     </html>
   );

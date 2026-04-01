@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react';
 import { Button } from '../ui/button';
 import { ArrowRight, Check } from 'lucide-react';
@@ -73,16 +75,16 @@ const Hero = () => {
           alt=""
           fill
         />
-       <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(to_top,transparent_0%,transparent_45%,rgba(10,10,15,0.35)_70%,rgba(10,10,15,0.75)_88%,#0a0a0f_100%)]" />
+        <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(to_top,transparent_0%,transparent_45%,rgba(10,10,15,0.35)_70%,rgba(10,10,15,0.75)_88%,#0a0a0f_100%)]" />
       </div>
-        <div className="absolute bg-black/20 top-0 right-0 lg:opacity-2 opacity-7 -z-5 h-full w-full rotate-180">
+      <div className="absolute bg-black/20 top-0 right-0 lg:opacity-2 opacity-7 -z-5 h-full w-full rotate-180">
         <Image
           src={'/svg/wwwhirl.svg'}
           className="pointer-events-none h-full w-full object-cover select-none"
           alt=""
           fill
         />
-       <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(to_top,transparent_0%,transparent_45%,rgba(10,10,15,0.35)_70%,rgba(10,10,15,0.75)_88%,#0a0a0f_100%)]" />
+        <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(to_top,transparent_0%,transparent_45%,rgba(10,10,15,0.35)_70%,rgba(10,10,15,0.75)_88%,#0a0a0f_100%)]" />
       </div>
     </div>
   );

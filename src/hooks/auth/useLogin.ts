@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import type { LoginFormData } from '@/schema/login.schema';
 import { queryKeys } from '@/lib/query_keys';
+import { toast } from 'react-toastify';
 
 type LoginResponseData = {
   user_id: string;
@@ -25,6 +26,7 @@ export const useLogin = () => {
     payload: LoginFormData,
   ): Promise<AppResponse<LoginResponseData>> => {
     const supabase = createClient();
+
     try {
       setLoading(true);
 
@@ -34,6 +36,8 @@ export const useLogin = () => {
       });
 
       if (error) {
+        toast.error(error.message);
+
         return {
           success: false,
           status_code: 401,
@@ -44,6 +48,8 @@ export const useLogin = () => {
       }
 
       if (!data.user) {
+        toast.error('Unable to log in user.');
+
         return {
           success: false,
           status_code: 500,
@@ -56,6 +62,8 @@ export const useLogin = () => {
         queryKey: queryKeys.auth.currentUser,
       });
 
+      toast.success('Login successful.');
+
       return {
         success: true,
         status_code: 200,
@@ -66,6 +74,8 @@ export const useLogin = () => {
         },
       };
     } catch {
+      toast.error('Something went wrong while logging in.');
+
       return {
         success: false,
         status_code: 500,
