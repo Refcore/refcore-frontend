@@ -9,7 +9,7 @@ const LeaderboardPage = () => {
     <div className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(124,58,237,0.14),transparent_32%),radial-gradient(circle_at_right,rgba(11,158,202,0.14),transparent_28%)]" />
 
-      <div className="absolute top-0 right-0 h-full w-full rotate-180 opacity-10">
+      <div className="absolute top-0 right-0 h-full w-full rotate-180 opacity-20">
         <Image
           src="/svg/bbblurry.svg"
           className="pointer-events-none h-full w-full select-none object-cover"
@@ -23,7 +23,7 @@ const LeaderboardPage = () => {
       <div className="mx-auto flex min-h-screen w-full max-w-(--breakpoint-2xl) items-center px-0 py-6 md:py-12 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-3xl">
           <div className="rounded-[32px] md:border-2 md:border-white/5 md:bg-white/1 p-6 backdrop-blur-2xl shadow-[0_20px_80px_rgba(0,0,0,0.35)] md:p-10">
-            <ArrowLeft className='w-5 text-muted-foreground hover:text-foreground hover:-translate-x-1 transition-all'/>{' '}
+            <ArrowLeft className="w-5 text-muted-foreground hover:text-foreground hover:-translate-x-1 transition-all" />{' '}
             <div className="mb-6 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70">
                 <Trophy className="size-4 text-[#0b9eca]" />

@@ -40,7 +40,7 @@ const RegisterPage = () => {
   return (
     <div className="w-screen max-w-3xl py-8 md:px-6 md:py-10">
       <div className="flex w-full items-center">
-        <div className="w-full rounded-2xl p-4 md:glass md:border md:border-border md:p-8">
+        <div className="w-full rounded-2xl p-4 md:glass md:border-2 md:border-border md:p-8">
           <RegisterStepsHeader
             step={currentStep}
             onBack={prevStep}
@@ -51,15 +51,17 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      <p className="mt-4">
-        Already have an account?{' '}
-        <Link
-          className="cursor-pointer text-green-500 underline"
-          href={AUTH_ROUTES.LOGIN}
-        >
-          Login
-        </Link>
-      </p>
+      {!isAuthenticated && (
+        <p className="mt-4 px-4 md:px-0">
+          Already have an account?{' '}
+          <Link
+            className="cursor-pointer text-green-500 underline"
+            href={AUTH_ROUTES.LOGIN}
+          >
+            Login
+          </Link>
+        </p>
+      )}
     </div>
   );
 };
