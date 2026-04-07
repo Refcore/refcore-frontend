@@ -16,6 +16,7 @@ import NavItem from './nav/NavItem';
 import AdminUser from './AdminUser';
 import { usePathname } from 'next/navigation';
 import CompanyLogo from '../shared/CompanyLogo';
+import { ADMIN_ROUTES } from '@/routes';
 
 const MobileNav = () => {
   const pathname = usePathname();
@@ -41,26 +42,24 @@ const MobileNav = () => {
         </DrawerTrigger>
       </div>
 
-      <DrawerContent className="h-full max-h-screen w-[85%] max-w-75 border-r-2 border-white/10 bg-[#0a0a0f] px-4 py-6 text-white">
+      <DrawerContent className="h-full max-h-screen w-[85%] max-w-75 border-r-2 border-white/10 bg-[#0a0a0f] px-3 text-white">
         <DrawerHeader className="mb-4 px-0 text-left">
           <DrawerTitle asChild>
-            <Link href="/admin" className="flex items-center gap-3">
+            <Link href={ADMIN_ROUTES.HOME} className="flex items-center gap-3">
               <CompanyLogo />
             </Link>
           </DrawerTitle>
         </DrawerHeader>
 
         <div className="flex h-full flex-col">
-          <nav className="flex flex-1 flex-col gap-2">
+          <nav className="flex flex-1 flex-col">
             {nav_config.map((item) => (
               <NavItem key={item.href} item={item} />
             ))}
           </nav>
 
           <div className="mt-6 border-t border-white/10 pt-4">
-          <div className='w-full h-15 border-gradient'>
-
-          </div>
+            <div className="w-full h-15 border-gradient"></div>
             <div className="mb-3">
               <AdminUser />
             </div>
