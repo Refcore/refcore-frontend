@@ -4,13 +4,13 @@ export const PUBLIC_ROUTES = {
   LEADERBOARD: '/leaderboard',
   LEADERBOARD_BY_ID: (id: string) => `/leaderboard/${id}`,
   REFERRAL: (code: string) => `/ref/${code}`,
-}
+};
 
 // AUTH ROUTES
 export const AUTH_ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
-}
+};
 
 // ADMIN ROUTES
 export const ADMIN_ROUTES = {
@@ -20,4 +20,7 @@ export const ADMIN_ROUTES = {
   LEADERBOARD: '/admin/leaderboard',
   CONTESTS: '/admin/contests',
   SETTINGS: '/admin/settings',
-}
+  NOTIFICATIONS: '/admin/notifications',
+  ANALYTICS: '/admin/analytics',
+  EXPORT: '/admin/export',
+};
