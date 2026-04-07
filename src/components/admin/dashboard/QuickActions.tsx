@@ -131,7 +131,7 @@ const QuickActions = ({
   return (
     <section
       className={cn(
-        'rounded-xl border border-white/10 bg-[#1c1c26]/60 p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-xl',
+        'rounded-xl border border-white/10 bg-[#1c1c26]/60 p-3 md:p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-xl',
         className,
       )}
     >
