@@ -219,7 +219,7 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
                 <Link
                   href={AUTH_ROUTES.LOGIN}
                   onClick={() => setMobileOpen(false)}
-                  className="text-center text-sm border-foreground border-2 py-6 rounded-full font-bold"
+                  className="text-center text-sm border-foreground border-2 py-3 rounded-full font-bold"
                 >
                   Log in
                 </Link>
