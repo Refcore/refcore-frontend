@@ -1,11 +1,25 @@
+'use client';
+
 import React from 'react';
 import { Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { WhatsAppTVLeaderboard } from '@/demo/leaderboarddata';
-import { getProgressBarClass, getProgressWidth, leaderboardColumns } from './adminLeaderboardColumns';
+import {
+  getProgressBarClass,
+  getProgressWidth,
+  leaderboardColumns,
+} from './adminLeaderboardColumns';
+import AppPagination from '@/components/shared/AppPagination';
 
 type LeaderboardTableProps = {
   leaderboard: WhatsAppTVLeaderboard;
+  currentPage: number;
+  totalPages: number;
+  canPreviousPage: boolean;
+  canNextPage: boolean;
+  onPreviousPage?: () => void;
+  onNextPage?: () => void;
+  onPageChange?: (page: number) => void;
 };
 
 const LeaderboardTable = ({ leaderboard }: LeaderboardTableProps) => {
@@ -34,7 +48,6 @@ const LeaderboardTable = ({ leaderboard }: LeaderboardTableProps) => {
           </span>
         </div>
       </div>
-
       <div className="overflow-x-auto custom-scrollbar">
         <table className="min-w-full">
           <thead className="sticky top-0 z-10 border-b border-white/5 bg-[#13131a]/80 backdrop-blur-md">
@@ -113,13 +126,21 @@ const LeaderboardTable = ({ leaderboard }: LeaderboardTableProps) => {
           </tbody>
         </table>
       </div>
-
       <div className="border-t border-white/5 px-4 py-4 sm:px-6">
         <div className="flex flex-col gap-2 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
           <p>Rankings are based on validated referral totals.</p>
           <p>{participants.length} participants listed</p>
         </div>
-      </div>
+      </div>{' '}
+      <AppPagination
+        currentPage={1}
+        totalPages={5}
+        canPreviousPage={false}
+        canNextPage={true}
+        onPreviousPage={() => {}}
+        onNextPage={() => {}}
+        onPageChange={(page) => console.log(page)}
+      />
     </section>
   );
 };

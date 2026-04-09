@@ -46,7 +46,7 @@ const Graph = () => {
   }, [range]);
 
   return (
-    <Card className="border-white/10 bg-[#111118] text-white shadow-none">
+    <Card className="border-white/10 lg:max-w-151 2xl:max-w-none bg-[#111118] text-white shadow-none">
       <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <CardTitle className="text-lg font-semibold">
@@ -57,7 +57,7 @@ const Graph = () => {
           </p>
         </div>
 
-        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+        <div className="flex w-full gap-2 sm:w-auto">
           {rangeOptions.map((item) => {
             const isActive = range === item.value;
 
@@ -68,7 +68,7 @@ const Graph = () => {
                 variant="ghost"
                 onClick={() => setRange(item.value)}
                 className={cn(
-                  'rounded-full border border-white/10 px-4 text-sm',
+                  'rounded-full border border-white/10 px-4 text-xs',
                   isActive
                     ? 'bg-white text-black hover:bg-white/90'
                     : 'bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-white',

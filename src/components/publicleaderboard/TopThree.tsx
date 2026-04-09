@@ -1,5 +1,5 @@
 import React from 'react';
-import LeaderBoardCard from '@/components/leaderboard/LeaderBoardCard';
+import LeaderBoardCard from '@/components/publicleaderboard/LeaderBoardCard';
 import { WhatsAppTVLeaderboard } from '@/demo/leaderboarddata';
 
 type TopThreeProps = {

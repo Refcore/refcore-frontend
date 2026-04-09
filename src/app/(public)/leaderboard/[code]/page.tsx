@@ -1,9 +1,9 @@
 import Footer from '@/components/home-sections/Footer';
-import LeaderboardBannerFirst from '@/components/leaderboard/LeaderBoardBannerFirst';
-import LeaderBoardConclusion from '@/components/leaderboard/LeaderBoardConclusion';
-import LeaderboardSahre from '@/components/leaderboard/LeaderboardSahre';
-import LeaderboardTable from '@/components/leaderboard/LeaderboardTable';
-import TopThree from '@/components/leaderboard/TopThree';
+import LeaderboardBannerFirst from '@/components/publicleaderboard/LeaderBoardBannerFirst';
+import LeaderBoardConclusion from '@/components/publicleaderboard/LeaderBoardConclusion';
+import LeaderboardSahre from '@/components/publicleaderboard/LeaderboardSahre';
+import LeaderboardTable from '@/components/publicleaderboard/LeaderboardTable';
+import TopThree from '@/components/publicleaderboard/TopThree';
 import Navbar from '@/components/shared/Navbar';
 import {
   findLeaderboardByCodeOrName,

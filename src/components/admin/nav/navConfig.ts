@@ -11,11 +11,18 @@ import {
 } from 'lucide-react';
 import { ADMIN_ROUTES } from '@/routes';
 
+export type NavConfigChildItem = {
+  label: string;
+  href: string;
+};
+
 export type NavConfigItem = {
   label: string;
   href: string;
   icon: LucideIcon;
   badge?: number;
+  hasNestedRoutes?: boolean;
+  children?: NavConfigChildItem[];
 };
 
 export const nav_config: NavConfigItem[] = [
@@ -28,6 +35,17 @@ export const nav_config: NavConfigItem[] = [
     label: 'Contest',
     href: ADMIN_ROUTES.CONTESTS,
     icon: Trophy,
+    hasNestedRoutes: true,
+    children: [
+      {
+        label: 'My Contests',
+        href: ADMIN_ROUTES.CONTESTS,
+      },
+      {
+        label: 'Create Contest',
+        href: ADMIN_ROUTES.CONTESTS_CREATE,
+      },
+    ],
   },
   {
     label: 'Leaderboard',

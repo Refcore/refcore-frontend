@@ -2,7 +2,7 @@ import Image from 'next/image';
 import React from 'react';
 import { Trophy, SearchCheck, ShieldCheck, ArrowLeft } from 'lucide-react';
 
-import LeaderboardSearch from '@/components/leaderboard/LeaderboardSearch';
+import LeaderboardSearch from '@/components/publicleaderboard/LeaderboardSearch';
 
 const LeaderboardPage = () => {
   return (

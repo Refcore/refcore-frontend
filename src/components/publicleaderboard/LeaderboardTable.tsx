@@ -5,7 +5,7 @@ import {
   leaderboardColumns,
   getProgressBarClass,
   getProgressWidth,
-} from '@/components/leaderboard/leaderboard-columns';
+} from '@/components/publicleaderboard/leaderboard-columns';
 import { WhatsAppTVLeaderboard } from '@/demo/leaderboarddata';
 
 type LeaderboardTableProps = {
