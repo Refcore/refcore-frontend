@@ -11,7 +11,13 @@ const LeaderboardPage = () => {
       <PageHeader title="Leaderboard" description="Here is your Leaderboard" />
       <LeaderboardSummary />
       <LeaderboardControls />
-      <AdminLeaderboardTable leaderboard={mockLeaderboards[0]} />
+      <AdminLeaderboardTable
+        currentPage={1}
+        totalPages={5}
+        canPreviousPage={false}
+        canNextPage={false}
+        leaderboard={mockLeaderboards[0]}
+      />
     </div>
   );
 };

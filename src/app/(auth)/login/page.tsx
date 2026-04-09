@@ -79,7 +79,7 @@ const LoginPage = () => {
         />
 
         <div className="pt-3">
-          <FormButton loading={loading}>Sign in</FormButton>
+          <FormButton loadingText='' loading={loading}>Sign in</FormButton>
         </div>
       </FormShell>
       <p>Don&apos;t have an account? <Link className='text-green-500 underline cursor-pinter' href={AUTH_ROUTES.REGISTER}>Register here</Link></p>
