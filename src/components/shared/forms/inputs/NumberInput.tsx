@@ -2,7 +2,7 @@
 
 import BaseFormInput from './bases/BaseFormInput';
 
-type EmailInputProps = {
+type TextInputProps = {
   name: string;
   label?: string;
   placeholder?: string;
@@ -15,16 +15,13 @@ type EmailInputProps = {
   descriptionClassName?: string;
   errorClassName?: string;
   autoComplete?: string;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
+    maxLength?: number;
+      onValueChange?: (value: string) => string;
 };
 
-const EmailInput = (props: EmailInputProps) => {
-  return (
-    <BaseFormInput
-      type="email"
-      autoComplete={props.autoComplete ?? 'email'}
-      {...props}
-    />
-  );
+const NumberInput = (props: TextInputProps) => {
+  return <BaseFormInput type="number" {...props} />;
 };
 
-export default EmailInput;
+export default NumberInput;

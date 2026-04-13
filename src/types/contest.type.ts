@@ -14,29 +14,29 @@ export type Contest = {
   status: ContestStatus;
   visibility: ContestVisibility;
 
-  referralCodePrefix: string;
+  referral_code_prefix: string;
 
-  startDate: string;
-  endDate: string | null;
+  start_date: string;
+  end_date: string | null;
 
-  rewardType: ContestRewardType;
-  rewardValue: string;
-  rewardDescription: string;
+  reward_type: ContestRewardType;
+  reward_value: string;
+  reward_description: string;
 
-  winnerSelection: ContestWinnerSelection;
-  maxWinners: number;
+  winner_selection: ContestWinnerSelection;
+  max_winners: number;
 
-  participantsCount: number;
-  referralsCount: number;
-  viewsCount: number;
+  participants_count: number;
+  referrals_count: number;
+  views_count: number;
 
-  topPerformerName: string | null;
-  topPerformerPhone: string | null;
-  topPerformerReferrals: number;
+  top_performer_name: string | null;
+  top_performer_phone: string | null;
+  top_performer_referrals: number;
 
-  isPublished: boolean;
-  isArchived: boolean;
+  is_published: boolean;
+  is_archived: boolean;
 
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 };
