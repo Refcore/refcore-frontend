@@ -2,7 +2,7 @@
 
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import BaseFormInput from './BaseFormInput';
+import BaseFormInput from './bases/BaseFormInput';
 import { cn } from '@/lib/utils';
 
 type PasswordInputProps = {

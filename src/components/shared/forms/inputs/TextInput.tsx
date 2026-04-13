@@ -1,6 +1,6 @@
 'use client';
 
-import BaseFormInput from './BaseFormInput';
+import BaseFormInput from './bases/BaseFormInput';
 
 type TextInputProps = {
   name: string;
@@ -16,8 +16,9 @@ type TextInputProps = {
   errorClassName?: string;
   autoComplete?: string;
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
-    maxLength?: number;
-      onValueChange?: (value: string) => string;
+  maxLength?: number;
+  onValueChange?: (value: string) => string;
+  onBlur?: (value: string) => void;
 };
 
 const TextInput = (props: TextInputProps) => {

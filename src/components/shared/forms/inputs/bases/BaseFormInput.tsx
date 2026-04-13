@@ -23,6 +23,7 @@ type BaseFormInputProps = {
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
   maxLength?: number;
   onValueChange?: (value: string) => string;
+  onBlur?: (value: string) => void;
 };
 
 const BaseFormInput = ({
@@ -43,6 +44,7 @@ const BaseFormInput = ({
   inputMode,
   maxLength,
   onValueChange,
+  onBlur,
 }: BaseFormInputProps) => {
   const { control } = useFormContext();
 
@@ -98,6 +100,10 @@ const BaseFormInput = ({
               : event.target.value;
 
             field.onChange(nextValue);
+          }}
+          onBlur={(event) => {
+            field.onBlur();
+            onBlur?.(event.target.value);
           }}
         />
 
