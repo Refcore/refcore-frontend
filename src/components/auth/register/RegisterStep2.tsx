@@ -4,9 +4,9 @@ import React, { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useRegister } from '@/context/RegisterContext';
 import { Sparkles } from 'lucide-react';
-import TextInput from '../shared/forms/inputs/TextInput';
-import FormButton from '../shared/forms/FormButton';
-import FormShell from '../shared/forms/FormShell';
+import TextInput from '../../shared/forms/inputs/TextInput';
+import FormButton from '../../shared/forms/FormButton';
+import FormShell from '../../shared/forms/FormShell';
 import {
   RegisterChannelFormData,
   registerChannelSchema,

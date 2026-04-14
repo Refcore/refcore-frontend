@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import RegisterStep1 from '@/components/register/RegisterStep1';
-import RegisterStep2 from '@/components/register/RegisterStep2';
-import RegisterStep3 from '@/components/register/RegisterStep3';
-import RegisterStepsHeader from '@/components/register/RegisterStepsHeader';
+import RegisterStep1 from '@/components/auth/register/RegisterStep1';
+import RegisterStep2 from '@/components/auth/register/RegisterStep2';
+import RegisterStep3 from '@/components/auth/register/RegisterStep3';
+import RegisterStepsHeader from '@/components/auth/register/RegisterStepsHeader';
 import { useRegister } from '@/context/RegisterContext';
 import { useAuthContext } from '@/context/AuthContext';
 import { AUTH_ROUTES } from '@/routes';

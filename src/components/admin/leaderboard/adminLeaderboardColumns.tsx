@@ -92,7 +92,7 @@ export const leaderboardColumns: LeaderboardColumn[] = [
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <p className="truncate text-sm font-semibold text-white">
-              {participant.displayName}
+              {participant.display_name}
             </p>
 
             {participant.rank <= 3 ? (
@@ -130,7 +130,7 @@ export const leaderboardColumns: LeaderboardColumn[] = [
           {participant.referrals}
         </div>
         <div className="mt-1 text-[11px] text-gray-500">
-          code: {participant.referralCode}
+          code: {participant.referral_code}
         </div>
       </div>
     ),
@@ -184,7 +184,7 @@ export const leaderboardColumns: LeaderboardColumn[] = [
       <div className="flex justify-end">
         <LeaderboardActions
           participantId={participant.id}
-          referralCode={participant.referralCode}
+          referralCode={participant.referral_code}
           phone={participant.phone}
         />
       </div>

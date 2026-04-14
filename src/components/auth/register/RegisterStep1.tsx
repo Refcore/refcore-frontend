@@ -6,11 +6,11 @@ import {
   RegisterAccountFormData,
   registerAccountSchema,
 } from '@/schema/register.schema';
-import FormShell from '../shared/forms/FormShell';
-import TextInput from '../shared/forms/inputs/TextInput';
-import EmailInput from '../shared/forms/inputs/EmailInput';
-import PasswordInput from '../shared/forms/inputs/PasswordInput';
-import FormButton from '../shared/forms/FormButton';
+import FormShell from '../../shared/forms/FormShell';
+import TextInput from '../../shared/forms/inputs/TextInput';
+import EmailInput from '../../shared/forms/inputs/EmailInput';
+import PasswordInput from '../../shared/forms/inputs/PasswordInput';
+import FormButton from '../../shared/forms/FormButton';
 import { useCreateUser } from '@/hooks/auth/useCreateUser';
 
 const RegisterStep1 = () => {
