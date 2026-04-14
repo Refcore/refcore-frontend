@@ -95,7 +95,7 @@ export default function LeaderBoardCard({
 
           <div className="min-w-0">
             <h3 className="truncate text-lg font-bold text-white sm:text-xl">
-              {participant.displayName}
+              {participant.display_name}
             </h3>
             <p className="truncate text-sm text-gray-400">@{participant.username}</p>
           </div>
@@ -120,7 +120,7 @@ export default function LeaderBoardCard({
               Referral Code
             </p>
             <p className="mt-2 truncate text-sm font-semibold text-white">
-              {participant.referralCode}
+              {participant.referral_code}
             </p>
             <div className="mt-2 flex items-center gap-2 text-xs text-gray-400">
               <Link2 className="size-3.5" />

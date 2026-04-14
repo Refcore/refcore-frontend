@@ -47,7 +47,7 @@ export default function LeaderboardBannerFirst({
                 <Users className="size-4 text-(--neon-blue)" />
                 <span className="text-gray-400">Total Participants:</span>
                 <span className="font-bold text-white">
-                  {leaderboard.totalParticipants.toLocaleString()}
+                  {leaderboard.total_participants.toLocaleString()}
                 </span>
               </div>
             </div>
@@ -57,7 +57,7 @@ export default function LeaderboardBannerFirst({
                 <Link2 className="size-4 text-(--neon-green)" />
                 <span className="text-gray-400">Total Referrals:</span>
                 <span className="font-bold text-white">
-                  {leaderboard.totalReferrals.toLocaleString()}
+                  {leaderboard.total_referrals.toLocaleString()}
                 </span>
               </div>
             </div>

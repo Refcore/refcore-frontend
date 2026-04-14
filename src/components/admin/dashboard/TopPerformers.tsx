@@ -74,7 +74,7 @@ const TopPerformerRow = ({
 }: {
   participant: LeaderboardParticipant;
 }) => {
-  const styles = rewardTierStyles[participant.rewardTier];
+  const styles = rewardTierStyles[participant.reward_tier];
 
   return (
     <div
@@ -95,7 +95,7 @@ const TopPerformerRow = ({
       <div className="relative h-10 w-10 shrink-0">
         <Image
           src={participant.avatar}
-          alt={participant.displayName}
+          alt={participant.display_name}
           fill
           sizes="40px"
           className={cn(
@@ -108,10 +108,10 @@ const TopPerformerRow = ({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p className="truncate text-sm font-bold text-white">
-            {participant.displayName}
+            {participant.display_name}
           </p>
 
-          {participant.isTopPerformer ? (
+          {participant.is_top_performer ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-white/70">
               <Crown className="size-3 text-yellow-400" />
               Top

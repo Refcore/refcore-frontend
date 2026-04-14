@@ -6,8 +6,8 @@ import { MessageSquareMore } from 'lucide-react';
 import { useRegister } from '@/context/RegisterContext';
 import { registerOtpSchema } from '@/schema/register.schema';
 import { cn } from '@/lib/utils';
-import FormShell from '../shared/forms/FormShell';
-import FormButton from '../shared/forms/FormButton';
+import FormShell from '../../shared/forms/FormShell';
+import FormButton from '../../shared/forms/FormButton';
 import { useGetCurrentUser } from '@/hooks/auth/useGetCurrentUser';
 
 type RegisterOtpFormData = {
