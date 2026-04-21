@@ -2,7 +2,7 @@
 
 import BaseFormInput from './bases/BaseFormInput';
 
-type TextInputProps = {
+type InputProps = {
   name: string;
   label?: string;
   placeholder?: string;
@@ -16,11 +16,13 @@ type TextInputProps = {
   errorClassName?: string;
   autoComplete?: string;
   inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
-    maxLength?: number;
-      onValueChange?: (value: string) => string;
+  maxLength?: number;
+  onValueChange?: (value: string) => string;
+  leftAdornment?: React.ReactNode;
+  rightAdornment?: React.ReactNode;
 };
 
-const NumberInput = (props: TextInputProps) => {
+const NumberInput = (props: InputProps) => {
   return <BaseFormInput type="number" {...props} />;
 };
 

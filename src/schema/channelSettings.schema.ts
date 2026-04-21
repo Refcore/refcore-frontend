@@ -26,9 +26,7 @@ export const channelSettingsSchema = z.object({
       'Enter a valid WhatsApp number in international format.',
     ),
 
-  channel_members_limit: z
-    .union([z.number().int().positive(), z.null()])
-    .optional(),
+  channel_members_limit: z.string().optional(),
 });
 
 export type ChannelSettingsFormValues = z.infer<typeof channelSettingsSchema>;
@@ -39,5 +37,5 @@ export const getInitialChannelSettingsFormValues = (
   tv_name: channel.tv_name ?? '',
   slug: channel.slug ?? '',
   whatsapp_number: channel.whatsapp_number ?? '',
-  channel_members_limit: channel.channel_members_limit ?? null,
+  channel_members_limit: channel.channel_members_limit ?? '',
 });

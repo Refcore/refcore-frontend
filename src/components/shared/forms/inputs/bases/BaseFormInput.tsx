@@ -24,6 +24,7 @@ type BaseFormInputProps = {
   maxLength?: number;
   onValueChange?: (value: string) => string;
   onBlur?: (value: string) => void;
+  leftAdornment?: React.ReactNode;
 };
 
 const BaseFormInput = ({
@@ -40,6 +41,7 @@ const BaseFormInput = ({
   descriptionClassName,
   errorClassName,
   rightAdornment,
+  leftAdornment,
   autoComplete,
   inputMode,
   maxLength,
@@ -86,10 +88,12 @@ const BaseFormInput = ({
             'transition-all duration-200',
             'focus-visible:border-[#00ff9d]/50 focus-visible:ring-[3px] focus-visible:ring-[#00ff9d]/15',
             'md:h-13 md:px-5 md:text-base',
+            leftAdornment ? 'pl-12' : '',
             rightAdornment ? 'pr-12' : '',
             error
               ? 'border-red-400/60 focus-visible:border-red-400/60 focus-visible:ring-red-400/15'
               : '',
+            type === 'number' ? 'hide-number-arrows' : '',
             inputClassName,
           )}
           inputMode={inputMode}
@@ -106,6 +110,12 @@ const BaseFormInput = ({
             onBlur?.(event.target.value);
           }}
         />
+
+        {leftAdornment ? (
+          <div className="absolute inset-y-0 left-3 flex items-center">
+            {leftAdornment}
+          </div>
+        ) : null}
 
         {rightAdornment ? (
           <div className="absolute inset-y-0 right-3 flex items-center">

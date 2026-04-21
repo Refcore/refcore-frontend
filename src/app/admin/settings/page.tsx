@@ -1,14 +1,16 @@
-'use client'
+'use client';
 
 import PageHeader from '@/components/shared/PageHeader';
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { settingsTabs } from '@/components/admin/settings/settingsTab';
-import ChannelSettingsSection from '@/components/admin/settings/ChannelSettingsSection';
+import ChannelSettingsSection from '@/components/admin/settings/channel/ChannelSettingsSection';
 import { useAuthContext } from '@/context/AuthContext';
+import AccountSettingsSection from '@/components/admin/settings/account/AccountSettingsSection';
+import ContestDefaultsSection from '@/components/admin/settings/contests/ContestDefaultSection';
 
 const SettingsPage = () => {
-  const { myChannel } = useAuthContext();
+  const { myChannel, currentUser } = useAuthContext();
 
   return (
     <div className="m-3 mb-10 lg:m-6 relative space-y-6">
@@ -31,9 +33,7 @@ const SettingsPage = () => {
         </TabsList>
 
         <TabsContent value="account">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            Account settings section
-          </div>
+          <AccountSettingsSection user={currentUser!} />
         </TabsContent>
 
         <TabsContent value="channel">
@@ -41,9 +41,7 @@ const SettingsPage = () => {
         </TabsContent>
 
         <TabsContent value="contest_defaults">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            Contest defaults section
-          </div>
+          <ContestDefaultsSection />
         </TabsContent>
 
         <TabsContent value="referral_rules">

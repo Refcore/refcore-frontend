@@ -19,6 +19,8 @@ type TextInputProps = {
   maxLength?: number;
   onValueChange?: (value: string) => string;
   onBlur?: (value: string) => void;
+  leftAdornment?: React.ReactNode;
+  rightAdornment?: React.ReactNode;
 };
 
 const TextInput = (props: TextInputProps) => {
