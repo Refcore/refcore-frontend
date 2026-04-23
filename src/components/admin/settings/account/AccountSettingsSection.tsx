@@ -75,6 +75,8 @@ const AccountSettingsFormContent = () => {
 };
 
 const AccountSettingsSection = ({ user }: AccountSettingsSectionProps) => {
+  if (!user) return;
+
   const initialAccountSettingsFormValues =
     getInitialAccountSettingsFormValues(user);
 
@@ -91,8 +93,6 @@ const AccountSettingsSection = ({ user }: AccountSettingsSectionProps) => {
         month: 'short',
         year: 'numeric',
       }).format(joinedAt);
-
-  if (!user) return;
 
   return (
     <div className="space-y-6">

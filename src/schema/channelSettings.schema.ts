@@ -26,7 +26,28 @@ export const channelSettingsSchema = z.object({
       'Enter a valid WhatsApp number in international format.',
     ),
 
-  channel_members_limit: z.string().optional(),
+  channel_members_limit: z
+    .string()
+    .trim()
+    .optional()
+    .refine(
+      (value) => {
+        if (!value) return true;
+        return /^\d+$/.test(value);
+      },
+      {
+        message: 'Channel members limit must be a whole number',
+      },
+    )
+    .refine(
+      (value) => {
+        if (!value) return true;
+        return Number(value) >= 0;
+      },
+      {
+        message: 'Channel members limit cannot be negative',
+      },
+    ),
 });
 
 export type ChannelSettingsFormValues = z.infer<typeof channelSettingsSchema>;

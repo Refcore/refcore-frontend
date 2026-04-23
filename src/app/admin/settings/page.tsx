@@ -12,6 +12,16 @@ import ContestDefaultsSection from '@/components/admin/settings/contests/Contest
 const SettingsPage = () => {
   const { myChannel, currentUser } = useAuthContext();
 
+  if (!currentUser || !myChannel) {
+    return (
+      <div className="m-3 mb-10 lg:m-6">
+        <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-sm text-white/70">
+          Loading settings...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="m-3 mb-10 lg:m-6 relative space-y-6">
       <PageHeader

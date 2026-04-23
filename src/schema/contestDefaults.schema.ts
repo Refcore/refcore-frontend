@@ -1,7 +1,9 @@
 import { z } from 'zod';
 import { ContestDefaults } from '@/types/contest.type';
-import { contestTimingModeOptions, contestVisibilityOptions } from './contest.schema';
-
+import {
+  contestTimingModeOptions,
+  contestVisibilityOptions,
+} from './contest.schema';
 
 export const contestDefaultsSchema = z.object({
   visibility: z.enum(contestVisibilityOptions, {
@@ -17,7 +19,7 @@ export const contestDefaultsSchema = z.object({
     .trim()
     .max(10, 'Referral code prefix must not exceed 10 characters')
     .regex(
-      /^[A-Z0-9]+$/,
+      /^[A-Z0-9]*$/,
       'Referral code prefix must contain only uppercase letters and numbers',
     ),
 

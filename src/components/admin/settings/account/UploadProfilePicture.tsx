@@ -32,7 +32,7 @@ const UploadProfilePicture = ({
   descriptionClassName,
   errorClassName,
 }: UploadProfilePictureProps) => {
-  const { control, setValue } = useFormContext();
+  const { control, setValue, setError, clearErrors } = useFormContext();
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -77,13 +77,16 @@ const UploadProfilePicture = ({
     if (!selectedFile) return;
 
     if (selectedFile.size > MAX_FILE_SIZE) {
-      setValue(name, null, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
+      setError(name, {
+        type: 'manual',
+        message: 'Profile picture must not exceed 5MB.',
       });
+
+      event.target.value = '';
       return;
     }
+
+    clearErrors(name);
 
     setValue(name, selectedFile, {
       shouldDirty: true,
@@ -153,6 +156,11 @@ const UploadProfilePicture = ({
                     'border border-white/10 bg-[#00ff9d] text-black shadow-lg transition hover:scale-105',
                     'md:size-9',
                   )}
+                  aria-label={
+                    previewUrl
+                      ? 'Change profile picture'
+                      : 'Upload profile picture'
+                  }
                 >
                   <Camera className="size-4 md:size-4.5" />
                 </button>
@@ -163,7 +171,9 @@ const UploadProfilePicture = ({
           <div className="min-w-0 flex-1 space-y-3 text-center sm:text-left">
             <div className="space-y-1">
               <p className="text-sm font-medium text-white md:text-base">
-                {previewUrl ? 'Update profile picture' : 'Upload profile picture'}
+                {previewUrl
+                  ? 'Update profile picture'
+                  : 'Upload profile picture'}
               </p>
               <p
                 className={cn(
@@ -225,6 +235,8 @@ const UploadProfilePicture = ({
 
       {error ? (
         <p
+          role="alert"
+          aria-live="polite"
           className={cn(
             'text-xs font-medium leading-5 text-red-400 md:text-sm',
             errorClassName,
