@@ -24,18 +24,17 @@ const FormButton = ({
   onClick,
   className,
   loading = false,
-  disabled = false,
+  disabled,
   validateOnClick = false,
   fullWidth = true,
   loadingText = 'Loading...',
 }: FormButtonProps) => {
   const form = useFormContext();
 
-  const isDisabled =
-    disabled ||
-    loading ||
-    form.formState.isSubmitting ||
-    !form.formState.isValid;
+  const fallbackDisabled =
+    loading || form.formState.isSubmitting || !form.formState.isDirty;
+
+  const isDisabled = disabled ?? fallbackDisabled;
 
   const handleClick = async () => {
     if (isDisabled) return;

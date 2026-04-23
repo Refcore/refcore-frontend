@@ -4,4 +4,5 @@ export type User = {
   user_name: string | null;
   created_at: string;
   updated_at: string;
-}
+  profile_picture: string;
+};

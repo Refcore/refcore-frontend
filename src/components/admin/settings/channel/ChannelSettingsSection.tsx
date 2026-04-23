@@ -130,7 +130,14 @@ const ChannelSettingsSection = ({ channel }: ChannelSettingsSectionProps) => {
     getInitialChannelSettingsFormValues(channel);
 
   const handleSubmit = (values: ChannelSettingsFormValues) => {
-    console.log(values);
+    const payload = {
+      ...values,
+      channel_members_limit: values.channel_members_limit
+        ? Number(values.channel_members_limit)
+        : null,
+    };
+
+    console.log(payload);
   };
 
   const pending = channel.status === 'pending_verification';

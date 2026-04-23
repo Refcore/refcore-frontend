@@ -2,7 +2,11 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ReactNode } from 'react';
-import type { DefaultValues, SubmitHandler, UseFormReturn } from 'react-hook-form';
+import type {
+  DefaultValues,
+  SubmitHandler,
+  UseFormReturn,
+} from 'react-hook-form';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -10,9 +14,7 @@ type FormShellProps<TSchema extends z.ZodObject<z.ZodRawShape>> = {
   schema: TSchema;
   defaultValues: DefaultValues<z.infer<TSchema>>;
   onSubmit: SubmitHandler<z.infer<TSchema>>;
-  children:
-    | ReactNode
-    | ((form: UseFormReturn<z.infer<TSchema>>) => ReactNode);
+  children: ReactNode | ((form: UseFormReturn<z.infer<TSchema>>) => ReactNode);
   className?: string;
   id?: string;
 };
@@ -29,6 +31,7 @@ const FormShell = <TSchema extends z.ZodObject<z.ZodRawShape>>({
     resolver: zodResolver(schema) as never,
     defaultValues,
     mode: 'onChange',
+    reValidateMode: 'onChange',
   });
 
   return (

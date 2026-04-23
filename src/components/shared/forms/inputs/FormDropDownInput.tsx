@@ -39,15 +39,13 @@ type FormDropDownInputProps = {
   errorClassName?: string;
   options: DropdownOption[];
   defaultValue?: string;
+  leftAdornment?: React.ReactNode;
+  rightAdornment?: React.ReactNode;
 };
 
-const normalizeOptions = (
-  options: DropdownOption[],
-): NormalizedOption[] => {
+const normalizeOptions = (options: DropdownOption[]): NormalizedOption[] => {
   return options.map((option) =>
-    typeof option === 'string'
-      ? { label: option, value: option }
-      : option,
+    typeof option === 'string' ? { label: option, value: option } : option,
   );
 };
 
@@ -67,6 +65,8 @@ const FormDropDownInput = ({
   errorClassName,
   options,
   defaultValue,
+  rightAdornment,
+  leftAdornment,
 }: FormDropDownInputProps) => {
   const { control } = useFormContext();
 
@@ -134,7 +134,17 @@ const FormDropDownInput = ({
             triggerClassName,
           )}
         >
-          <SelectValue placeholder={placeholder} />
+          {leftAdornment ? (
+            <div className="pointer-events-none flex items-center text-white/45">
+              {leftAdornment}
+            </div>
+          ) : null}{' '}
+          <SelectValue placeholder={placeholder} />{' '}
+          {rightAdornment ? (
+            <div className="pointer-events-none flex items-center text-white/45">
+              {rightAdornment}
+            </div>
+          ) : null}
         </SelectTrigger>
 
         <SelectContent

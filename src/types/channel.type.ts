@@ -9,5 +9,5 @@ export type MyChannel = {
   status: 'pending_verification' | 'active' | 'suspended';
   created_at: string;
   updated_at: string;
-  channel_members_limit: number | null;
+  channel_members_limit: string | null;
 };

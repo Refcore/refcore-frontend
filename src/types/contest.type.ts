@@ -40,3 +40,11 @@ export type Contest = {
   created_at: string;
   updated_at: string;
 };
+
+export type ContestDefaults = {
+  visibility: 'public' | 'private';
+  contest_timing_mode: 'manual' | 'automatic';
+  referral_code_prefix: string;
+  reward_description: string;
+  max_winners: number;
+};
