@@ -36,6 +36,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-overbg: var(--overbg);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -114,6 +115,8 @@
   --gradient-primary: linear-gradient(135deg, #b700ff, #00d0ff);
   --gradient-success: linear-gradient(135deg, #00ff9d, #00d0ff);
   --gradient-purle-blue: linear-gradient(135deg, #d400ff, #0059ff, #00d0ff);
+
+  --overbg: #13131a;
 }
 
 @layer base {

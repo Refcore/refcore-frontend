@@ -1,18 +1,11 @@
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import type { RegisterAccountFormData } from '@/schema/register.schema';
+import { AppResponse } from '@/types/response.type';
 
 type CreateUserResponseData = {
   user_id: string;
   email: string;
-};
-
-type AppResponse<T> = {
-  success: boolean;
-  status_code: number;
-  message: string;
-  data: T | null;
-  error_code?: string;
 };
 
 export const useCreateUser = () => {

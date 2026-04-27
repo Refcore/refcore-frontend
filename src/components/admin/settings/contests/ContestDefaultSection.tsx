@@ -31,7 +31,7 @@ const ContestDefaultsFormContent = () => {
 
   return (
     <>
-      <div className="space-y-4 border-b pb-10 md:rounded-xl md:border md:border-white/10 md:bg-white/5 md:p-5">
+      <div className="space-y-4 border-b pb-10 md:rounded-xl md:border md:border-white/10 md:bg-overbg/50 md:p-5">
         <div className="space-y-1">
           <h4 className="text-sm font-semibold text-white md:text-base">
             Default Contest Preferences
@@ -113,7 +113,7 @@ const ContestDefaultsSection = ({
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4 border-b pb-10 md:rounded-xl md:border md:border-white/10 md:bg-white/5 md:p-5">
+      <div className="space-y-4 border-b pb-10 md:rounded-xl md:border md:border-white/10 md:bg-overbg/85 md:p-5">
         <div className="space-y-1">
           <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
             <Settings2 className="size-5 text-neon-green" />

@@ -17,6 +17,7 @@ import AdminUser from './AdminUser';
 import { usePathname } from 'next/navigation';
 import CompanyLogo from '../shared/CompanyLogo';
 import { ADMIN_ROUTES } from '@/routes';
+import ChannelAvatarMobile from './ChannelAvatarMobile';
 
 const MobileNav = () => {
   const pathname = usePathname();
@@ -29,7 +30,7 @@ const MobileNav = () => {
 
   return (
     <Drawer direction="left" open={open} onOpenChange={setOpen}>
-      <div className="bg-background z-1 border-b w-full sticky top-0 p-3 lg:hidden block">
+      <div className="bg-background z-1 border-b w-full sticky top-0 p-3 lg:hidden flex items-center justify-between">
         <DrawerTrigger asChild>
           <Button
             type="button"
@@ -40,6 +41,8 @@ const MobileNav = () => {
             <MenuSquareIcon className="size-7 " />
           </Button>
         </DrawerTrigger>
+
+        <ChannelAvatarMobile />
       </div>
 
       <DrawerContent className="h-full max-h-screen w-[85%] max-w-75 border-r-2 border-white/10 bg-[#0a0a0f] px-3 text-white">

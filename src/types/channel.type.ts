@@ -10,4 +10,5 @@ export type MyChannel = {
   created_at: string;
   updated_at: string;
   channel_members_limit: string | null;
+  channel_banner: string | null;
 };
