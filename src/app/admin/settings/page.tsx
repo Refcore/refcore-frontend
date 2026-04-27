@@ -8,6 +8,8 @@ import ChannelSettingsSection from '@/components/admin/settings/channel/ChannelS
 import { useAuthContext } from '@/context/AuthContext';
 import AccountSettingsSection from '@/components/admin/settings/account/AccountSettingsSection';
 import ContestDefaultsSection from '@/components/admin/settings/contests/ContestDefaultSection';
+import RefferalRulesSection from '@/components/admin/settings/rules/RefferalRulesSection';
+import NotificationsSettingsSection from '@/components/admin/settings/notifications/NotificationsSettingsSection';
 
 const SettingsPage = () => {
   const { myChannel, currentUser } = useAuthContext();
@@ -55,22 +57,14 @@ const SettingsPage = () => {
         </TabsContent>
 
         <TabsContent value="referral_rules">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            Referral rules section
-          </div>
+          <RefferalRulesSection />
         </TabsContent>
 
         <TabsContent value="notifications">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            Notifications settings section
-          </div>
+          <NotificationsSettingsSection />
         </TabsContent>
 
-        <TabsContent value="security">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            Security settings section
-          </div>
-        </TabsContent>
+
       </Tabs>
     </div>
   );

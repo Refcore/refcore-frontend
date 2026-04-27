@@ -2,13 +2,13 @@
 
 import * as React from 'react';
 import Image from 'next/image';
-import { Camera, Upload, User2, X } from 'lucide-react';
+import { Camera, Upload, X, ImageIcon } from 'lucide-react';
 import { useController, useFormContext } from 'react-hook-form';
-
-import { cn } from '@/lib/utils';
 import { getStorageFileUrl } from '@/utils/getStorageFileUrl';
 
-type UploadProfilePictureProps = {
+import { cn } from '@/lib/utils';
+
+type UploadChannelBannerProps = {
   name: string;
   label?: string;
   description?: string;
@@ -22,17 +22,17 @@ type UploadProfilePictureProps = {
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-const UploadProfilePicture = ({
+const UploadChannelBanner = ({
   name,
-  label = 'Profile Picture',
-  description = 'Upload a PNG, JPG, or WEBP image up to 5MB.',
+  label = 'Channel Banner',
+  description = 'Upload a PNG, JPG, or WEBP banner up to 5MB.',
   required = false,
   disabled = false,
   className,
   labelClassName,
   descriptionClassName,
   errorClassName,
-}: UploadProfilePictureProps) => {
+}: UploadChannelBannerProps) => {
   const { control, setValue, setError, clearErrors } = useFormContext();
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -50,12 +50,12 @@ const UploadProfilePicture = ({
   );
 
   React.useEffect(() => {
-    if (typeof field.value === 'string') {
-      setPreviewUrl(
-        field.value ? getStorageFileUrl('profile_pictures', field.value) : null,
-      );
-      return;
-    }
+     if (typeof field.value === 'string') {
+        setPreviewUrl(
+          field.value ? getStorageFileUrl('channel_banners', field.value) : null,
+        );
+        return;
+      }
 
     if (field.value instanceof File) {
       const objectUrl = URL.createObjectURL(field.value);
@@ -82,7 +82,7 @@ const UploadProfilePicture = ({
     if (selectedFile.size > MAX_FILE_SIZE) {
       setError(name, {
         type: 'manual',
-        message: 'Profile picture must not exceed 5MB.',
+        message: 'Channel banner must not exceed 5MB.',
       });
 
       event.target.value = '';
@@ -100,7 +100,7 @@ const UploadProfilePicture = ({
     event.target.value = '';
   };
 
-  const handleRemoveImage = () => {
+  const handleRemoveBanner = () => {
     setValue(name, null, {
       shouldDirty: true,
       shouldTouch: true,
@@ -128,104 +128,93 @@ const UploadProfilePicture = ({
 
       <div
         className={cn(
-          'rounded-xl border border-white/10 bg-white/5 p-2 md:p-3',
+          'rounded-xl border border-white/10 bg-white/5 p-4 md:p-5',
           error ? 'border-red-400/60' : '',
           disabled ? 'opacity-70' : '',
         )}
       >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div className="mx-auto sm:mx-0">
-            <div className="relative size-24 overflow-hidden rounded-full border border-white/10 bg-white/5 sm:size-28 md:size-32">
+        <div className="space-y-4">
+          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-white/5">
+            <div className="relative aspect-3/1 w-full">
               {previewUrl ? (
                 <Image
                   src={previewUrl}
-                  alt="Profile picture preview"
+                  alt="Channel banner preview"
                   fill
                   className="object-cover"
                   unoptimized
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center">
-                  <User2 className="size-10 text-white/30 md:size-12" />
+                  <div className="flex flex-col items-center gap-2 text-white/35">
+                    <ImageIcon className="size-8 md:size-10" />
+                    <span className="text-xs md:text-sm">
+                      No banner uploaded
+                    </span>
+                  </div>
                 </div>
               )}
-
-              {!disabled ? (
-                <button
-                  type="button"
-                  onClick={handleOpenFilePicker}
-                  className={cn(
-                    'absolute bottom-1 right-1 flex size-8 items-center justify-center rounded-full',
-                    'border border-white/10 bg-[#00ff9d] text-black shadow-lg transition hover:scale-105',
-                    'md:size-9',
-                  )}
-                  aria-label={
-                    previewUrl
-                      ? 'Change profile picture'
-                      : 'Upload profile picture'
-                  }
-                >
-                  <Camera className="size-4 md:size-4.5" />
-                </button>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="min-w-0 flex-1 space-y-3 text-center sm:text-left">
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-white md:text-base">
-                {previewUrl
-                  ? 'Update profile picture'
-                  : 'Upload profile picture'}
-              </p>
-              <p
-                className={cn(
-                  'text-xs leading-5 text-white/50 md:text-sm',
-                  descriptionClassName,
-                )}
-              >
-                {description}
-              </p>
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            {!disabled ? (
               <button
                 type="button"
                 onClick={handleOpenFilePicker}
+                className={cn(
+                  'absolute bottom-3 right-3 flex size-9 items-center justify-center rounded-full',
+                  'border border-white/10 bg-[#00ff9d] text-black shadow-lg transition hover:scale-105',
+                )}
+              >
+                <Camera className="size-4" />
+              </button>
+            ) : null}
+          </div>
+
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            <button
+              type="button"
+              onClick={handleOpenFilePicker}
+              disabled={disabled}
+              className={cn(
+                'inline-flex items-center justify-center gap-2 rounded-xl px-4 py-1 text-sm font-medium transition',
+                'border border-white/10 bg-white/5 text-white hover:bg-white/10',
+                'disabled:cursor-not-allowed disabled:opacity-60',
+              )}
+            >
+              <Upload className="size-4" />
+              <span>{previewUrl ? 'Change Banner' : 'Choose Banner'}</span>
+            </button>
+
+            {previewUrl ? (
+              <button
+                type="button"
+                onClick={handleRemoveBanner}
                 disabled={disabled}
                 className={cn(
                   'inline-flex items-center justify-center gap-2 rounded-xl px-4 py-1 text-sm font-medium transition',
-                  'border border-white/10 bg-white/5 text-white hover:bg-white/10',
+                  'border border-red-400/25 bg-red-500/10 text-red-300 hover:bg-red-500/15',
                   'disabled:cursor-not-allowed disabled:opacity-60',
                 )}
               >
-                <Upload className="size-4" />
-                <span>{previewUrl ? 'Change Image' : 'Choose Image'}</span>
+                <X className="size-4" />
+                <span>Remove</span>
               </button>
+            ) : null}
+          </div>
 
-              {previewUrl ? (
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  disabled={disabled}
-                  className={cn(
-                    'inline-flex items-center justify-center gap-2 rounded-xl px-4 py-1 text-sm font-medium transition',
-                    'border border-red-400/25 bg-red-500/10 text-red-300 hover:bg-red-500/15',
-                    'disabled:cursor-not-allowed disabled:opacity-60',
-                  )}
-                >
-                  <X className="size-4" />
-                  <span>Remove</span>
-                </button>
-              ) : null}
-            </div>
+          <p
+            className={cn(
+              'text-xs leading-5 text-white/50 md:text-sm',
+              descriptionClassName,
+            )}
+          >
+            {description}
+          </p>
 
-        
+          <div className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-white/45">
+            Recommended: wide banner image, around 1500 x 500px
           </div>
         </div>
-            <div className="rounded-xl border mt-3 md:mt-0 border-white/10 bg-black/20 px-3 py-2 text-xs text-white/45">
-              Recommended: square image, at least 400x400px
-            </div>
 
         <input
           ref={inputRef}
@@ -239,8 +228,6 @@ const UploadProfilePicture = ({
 
       {error ? (
         <p
-          role="alert"
-          aria-live="polite"
           className={cn(
             'text-xs font-medium leading-5 text-red-400 md:text-sm',
             errorClassName,
@@ -253,4 +240,4 @@ const UploadProfilePicture = ({
   );
 };
 
-export default UploadProfilePicture;
+export default UploadChannelBanner;

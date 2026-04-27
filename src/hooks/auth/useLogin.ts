@@ -4,18 +4,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { LoginFormData } from '@/schema/login.schema';
 import { queryKeys } from '@/lib/query_keys';
 import { toast } from 'react-toastify';
+import { AppResponse } from '@/types/response.type';
 
 type LoginResponseData = {
   user_id: string;
   email: string;
-};
-
-type AppResponse<T> = {
-  success: boolean;
-  status_code: number;
-  message: string;
-  data: T | null;
-  error_code?: string;
 };
 
 export const useLogin = () => {

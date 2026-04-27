@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'storage.googleapis.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'vbgxtawndhslmciadtbh.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
     ],
   },
 };

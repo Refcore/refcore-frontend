@@ -24,14 +24,6 @@ export const accountSettingsSchema = z.object({
     .min(2, 'Username must be at least 2 characters')
     .max(50, 'Username must not exceed 50 characters'),
 
-  full_name: z
-    .string()
-    .trim()
-    .min(2, 'Full name must be at least 2 characters')
-    .max(80, 'Full name must not exceed 80 characters')
-    .optional()
-    .or(z.literal('')),
-
   email: z
     .string()
     .trim()

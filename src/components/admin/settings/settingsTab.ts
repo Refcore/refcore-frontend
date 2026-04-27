@@ -30,8 +30,4 @@ export const settingsTabs: SettingsTabItem[] = [
     label: 'Notifications',
     value: 'notifications',
   },
-  {
-    label: 'Security',
-    value: 'security',
-  },
 ];

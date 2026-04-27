@@ -15,6 +15,8 @@ import {
   channelSettingsSchema,
   getInitialChannelSettingsFormValues,
 } from '@/schema/channelSettings.schema';
+import UploadChannelBanner from './UploadBanner';
+import { useUpdateChannel } from '@/hooks/admin/channel/useUpdateChannel';
 
 type ChannelSettingsSectionProps = {
   channel: MyChannel;
@@ -36,7 +38,7 @@ const formatVerifiedAt = (value: string | null) => {
   }).format(date);
 };
 
-const ChannelSettingsFormFields = () => {
+const ChannelSettingsFormFields = ({ loading }: { loading: boolean }) => {
   const { getValues, setValue, formState } =
     useFormContext<ChannelSettingsFormValues>();
 
@@ -64,7 +66,7 @@ const ChannelSettingsFormFields = () => {
 
   return (
     <>
-      <div className="space-y-4 border-b pb-10 md:rounded-xl md:border md:border-white/10 md:bg-white/5 md:p-5">
+      <div className="space-y-4 border-b pb-10 md:rounded-xl md:border md:border-white/10 md:bg-overbg/50 md:p-5">
         <div className="space-y-1">
           <h4 className="text-sm font-semibold text-white md:text-base">
             Channel Information
@@ -75,48 +77,56 @@ const ChannelSettingsFormFields = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <TextInput
-            name="tv_name"
-            label="TV Name"
-            required
-            placeholder="Enter TV name"
-            description="This is the main channel name shown across REFCORE."
-            onBlur={handleTvNameBlur}
+        <div className="space-y-4 grid grid-cols-1 gap-4 xl:grid-cols-5">
+          <UploadChannelBanner
+            name="channel_banner"
+            label="Channel Banner"
+            description="Upload a banner image for your channel page."
+            className='col-span-3'
           />
+          <div className="space-y-4 col-span-2">
+            <TextInput
+              name="tv_name"
+              label="TV Name"
+              required
+              placeholder="Enter TV name"
+              description="This is the main channel name shown across REFCORE."
+              onBlur={handleTvNameBlur}
+            />
 
-          <TextInput
-            name="slug"
-            label="Channel Slug"
-            required
-            placeholder="e.g. lagos-gist-tv"
-            description="This will be used in your public URLs. Use lowercase letters, numbers, and hyphens only."
-          />
+            <TextInput
+              name="slug"
+              label="Channel Slug"
+              required
+              placeholder="e.g. lagos-gist-tv"
+              description="This will be used in your public URLs. Use lowercase letters, numbers, and hyphens only."
+            />
+            <TextInput
+              name="whatsapp_number"
+              label="WhatsApp Number"
+              required
+              placeholder="+2348012345678"
+              description="Use the WhatsApp number connected to this channel."
+            />
+
+            <NumberInput
+              name="channel_members_limit"
+              label="Channel Members Limit"
+              placeholder="Enter member limit"
+              description="Optional. Leave empty if there is no fixed member limit."
+              inputMode="numeric"
+            />
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <TextInput
-            name="whatsapp_number"
-            label="WhatsApp Number"
-            required
-            placeholder="+2348012345678"
-            description="Use the WhatsApp number connected to this channel."
-          />
-
-          <NumberInput
-            name="channel_members_limit"
-            label="Channel Members Limit"
-            placeholder="Enter member limit"
-            description="Optional. Leave empty if there is no fixed member limit."
-            inputMode="numeric"
-          />
-        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2"></div>
       </div>
 
       <div className="flex w-full justify-end">
         <FormButton
           className="md:max-w-100"
           disabled={!isDirty || isSubmitting}
+          loading={loading}
         >
           Save Changes
         </FormButton>
@@ -129,15 +139,21 @@ const ChannelSettingsSection = ({ channel }: ChannelSettingsSectionProps) => {
   const initialChannelSettingsFormValues =
     getInitialChannelSettingsFormValues(channel);
 
-  const handleSubmit = (values: ChannelSettingsFormValues) => {
-    const payload = {
-      ...values,
+  const { loading, updateChannel } = useUpdateChannel();
+
+  console.log(channel);
+
+  const handleSubmit = async (values: ChannelSettingsFormValues) => {
+    await updateChannel({
+      channel_id: channel.id,
+      tv_name: values.tv_name,
+      slug: values.slug,
+      whatsapp_number: values.whatsapp_number,
       channel_members_limit: values.channel_members_limit
         ? Number(values.channel_members_limit)
         : null,
-    };
-
-    console.log(payload);
+      channel_banner: values.channel_banner ?? null,
+    });
   };
 
   const pending = channel.status === 'pending_verification';
@@ -146,7 +162,7 @@ const ChannelSettingsSection = ({ channel }: ChannelSettingsSectionProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4 border-b pb-10 md:rounded-xl md:border md:border-white/10 md:bg-white/5 md:p-5">
+      <div className="space-y-4 border-b pb-10 md:rounded-xl md:border md:border-white/10 md:bg-overbg/85 md:p-5">
         <div className="space-y-1">
           <h3 className="flex items-center gap-2 text-lg font-semibold text-white">
             <Settings2 className="size-5 text-neon-green" />
@@ -190,7 +206,7 @@ const ChannelSettingsSection = ({ channel }: ChannelSettingsSectionProps) => {
         schema={channelSettingsSchema}
         className="space-y-6 py-4"
       >
-        <ChannelSettingsFormFields />
+        <ChannelSettingsFormFields loading={loading} />
       </FormShell>
     </div>
   );

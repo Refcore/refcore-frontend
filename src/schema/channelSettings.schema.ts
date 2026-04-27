@@ -1,6 +1,16 @@
 import { MyChannel } from '@/types/channel.type';
 import { z } from 'zod';
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+const channelBannerSchema = z
+  .union([z.string().trim(), z.instanceof(File), z.null(), z.undefined()])
+  .refine((value) => {
+    if (!value) return true;
+    if (typeof value === 'string') return true;
+    return value.size <= MAX_FILE_SIZE;
+  }, 'Channel banner must not exceed 5MB');
+
 export const channelSettingsSchema = z.object({
   tv_name: z
     .string()
@@ -48,6 +58,8 @@ export const channelSettingsSchema = z.object({
         message: 'Channel members limit cannot be negative',
       },
     ),
+
+  channel_banner: channelBannerSchema,
 });
 
 export type ChannelSettingsFormValues = z.infer<typeof channelSettingsSchema>;
@@ -59,4 +71,5 @@ export const getInitialChannelSettingsFormValues = (
   slug: channel.slug ?? '',
   whatsapp_number: channel.whatsapp_number ?? '',
   channel_members_limit: channel.channel_members_limit ?? '',
+   channel_banner: channel.channel_banner ?? '',
 });
