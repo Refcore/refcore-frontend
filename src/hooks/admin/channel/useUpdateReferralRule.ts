@@ -6,6 +6,8 @@ import { createClient } from '@/utils/supabase/client';
 import { useAuthContext } from '@/context/AuthContext';
 import { AppResponse } from '@/types/response.type';
 import type { ReferralRules } from '@/types/rule.type';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query_keys';
 
 type UpdateReferralRulePayload = {
   referral_rules: ReferralRules;
@@ -14,11 +16,13 @@ type UpdateReferralRulePayload = {
 type UpdateReferralRuleResponseData = {
   channel_id: string;
   referral_rules: ReferralRules;
+  owner_id: string;
 };
 
 export const useUpdateReferralRule = () => {
   const [loading, setLoading] = useState(false);
   const { myChannel } = useAuthContext();
+  const queryClient = useQueryClient();
 
   const updateReferralRule = async (
     payload: UpdateReferralRulePayload,
@@ -43,7 +47,7 @@ export const useUpdateReferralRule = () => {
           referral_rules: payload.referral_rules,
         })
         .eq('id', myChannel.id)
-        .select('id, referral_rules')
+        .select('id, owner_id, referral_rules')
         .single();
 
       if (error) {
@@ -55,6 +59,10 @@ export const useUpdateReferralRule = () => {
         };
       }
 
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.channels.myChannel(myChannel.owner_id),
+      });
+
       toast.success('Referral rule updated successfully');
 
       return {
@@ -64,6 +72,7 @@ export const useUpdateReferralRule = () => {
         data: {
           channel_id: data.id,
           referral_rules: data.referral_rules,
+          owner_id: data.owner_id,
         },
       };
     } catch (error) {

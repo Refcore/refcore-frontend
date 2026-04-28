@@ -41,8 +41,6 @@ type NumberReferralRuleField =
   | 'rate_limit_per_phone_per_hour'
   | 'minimum_referral_interval_seconds';
 
-type LoadingField = keyof ReferralRules | null;
-
 const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
   const initialRules = React.useMemo(
     () => getInitialReferralRulesValues(rules),
@@ -54,7 +52,31 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
   const [ruleValues, setRuleValues] =
     React.useState<ReferralRules>(initialRules);
 
-  const [loadingField, setLoadingField] = React.useState<LoadingField>(null);
+  const [loadingFields, setLoadingFields] = React.useState<
+    Set<keyof ReferralRules>
+  >(new Set());
+
+  const setFieldLoading = React.useCallback(
+    (field: keyof ReferralRules, loading: boolean) => {
+      setLoadingFields((prev) => {
+        const next = new Set(prev);
+
+        if (loading) {
+          next.add(field);
+        } else {
+          next.delete(field);
+        }
+
+        return next;
+      });
+    },
+    [],
+  );
+
+  const isFieldLoading = React.useCallback(
+    (field: keyof ReferralRules) => loadingFields.has(field),
+    [loadingFields],
+  );
 
   React.useEffect(() => {
     setRuleValues(initialRules);
@@ -63,16 +85,15 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
   const handleBooleanRuleChange =
     (field: BooleanReferralRuleField) => async (value: string) => {
       const nextValue = fromBooleanSelectValue(value);
-
-      const previousRules = ruleValues;
+      const previousValue = ruleValues[field];
 
       const nextRules: ReferralRules = {
-        ...previousRules,
+        ...ruleValues,
         [field]: nextValue,
       };
 
       setRuleValues(nextRules);
-      setLoadingField(field);
+      setFieldLoading(field, true);
 
       try {
         const response = await updateReferralRule({
@@ -81,10 +102,14 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
 
         if (!response.success) {
           toast.error(response.message);
-          setRuleValues(previousRules);
+
+          setRuleValues((current) => ({
+            ...current,
+            [field]: previousValue,
+          }));
         }
       } finally {
-        setLoadingField(null);
+        setFieldLoading(field, false);
       }
     };
 
@@ -92,17 +117,22 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
     (field: NumberReferralRuleField) =>
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const rawValue = event.target.value;
+
       const nextValue = rawValue === '' ? null : Number(rawValue);
 
-      const previousRules = ruleValues;
+      if (nextValue !== null && !Number.isFinite(nextValue)) {
+        return;
+      }
+
+      const previousValue = ruleValues[field];
 
       const nextRules: ReferralRules = {
-        ...previousRules,
+        ...ruleValues,
         [field]: nextValue,
       };
 
       setRuleValues(nextRules);
-      setLoadingField(field);
+      setFieldLoading(field, true);
 
       try {
         const response = await updateReferralRule({
@@ -111,10 +141,14 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
 
         if (!response.success) {
           toast.error(response.message);
-          setRuleValues(previousRules);
+
+          setRuleValues((current) => ({
+            ...current,
+            [field]: previousValue,
+          }));
         }
       } finally {
-        setLoadingField(null);
+        setFieldLoading(field, false);
       }
     };
 
@@ -178,7 +212,7 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
             description={referralRulesFieldMeta.allow_self_referral.description}
             value={toBooleanSelectValue(ruleValues.allow_self_referral)}
             options={booleanRuleOptions}
-            loading={loadingField == 'allow_self_referral'}
+            loading={isFieldLoading('allow_self_referral')}
             leftAdornment={<UserRoundX className="size-4" />}
             onChange={handleBooleanRuleChange('allow_self_referral')}
             triggerClassName={
@@ -197,10 +231,10 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
               ruleValues.allow_duplicate_phone_numbers,
             )}
             options={booleanRuleOptions}
-            loading={loadingField === 'allow_duplicate_phone_numbers'}
+            loading={isFieldLoading('allow_duplicate_phone_numbers')}
             leftAdornment={<Phone className="size-4" />}
             onChange={handleBooleanRuleChange('allow_duplicate_phone_numbers')}
-             triggerClassName={
+            triggerClassName={
               !ruleValues.allow_duplicate_phone_numbers
                 ? 'border-red-500/30 focus:ring-red-500/30'
                 : ''
@@ -216,10 +250,10 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
               ruleValues.require_whatsapp_join_message,
             )}
             options={booleanRuleOptions}
-            loading={loadingField === 'require_whatsapp_join_message'}
+            loading={isFieldLoading('require_whatsapp_join_message')}
             leftAdornment={<MessageSquareShare className="size-4" />}
             onChange={handleBooleanRuleChange('require_whatsapp_join_message')}
-             triggerClassName={
+            triggerClassName={
               !ruleValues.require_whatsapp_join_message
                 ? 'border-red-500/30 focus:ring-red-500/30'
                 : ''
@@ -235,10 +269,10 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
               ruleValues.count_referral_only_after_join,
             )}
             options={booleanRuleOptions}
-            loading={loadingField === 'count_referral_only_after_join'}
+            loading={isFieldLoading('count_referral_only_after_join')}
             leftAdornment={<Users className="size-4" />}
             onChange={handleBooleanRuleChange('count_referral_only_after_join')}
-             triggerClassName={
+            triggerClassName={
               !ruleValues.count_referral_only_after_join
                 ? 'border-red-500/30 focus:ring-red-500/30'
                 : ''
@@ -272,12 +306,12 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
               ruleValues.manual_review_suspicious_referrals,
             )}
             options={booleanRuleOptions}
-            loading={loadingField === 'manual_review_suspicious_referrals'}
+            loading={isFieldLoading('manual_review_suspicious_referrals')}
             leftAdornment={<ShieldCheck className="size-4" />}
             onChange={handleBooleanRuleChange(
               'manual_review_suspicious_referrals',
             )}
-             triggerClassName={
+            triggerClassName={
               !ruleValues.manual_review_suspicious_referrals
                 ? 'border-red-500/30 focus:ring-red-500/30'
                 : ''
@@ -293,12 +327,12 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
               ruleValues.auto_block_suspicious_referrals,
             )}
             options={booleanRuleOptions}
-            loading={loadingField === 'auto_block_suspicious_referrals'}
+            loading={isFieldLoading('auto_block_suspicious_referrals')}
             leftAdornment={<AlertTriangle className="size-4" />}
             onChange={handleBooleanRuleChange(
               'auto_block_suspicious_referrals',
             )}
-             triggerClassName={
+            triggerClassName={
               !ruleValues.auto_block_suspicious_referrals
                 ? 'border-red-500/30 focus:ring-red-500/30'
                 : ''
@@ -328,9 +362,10 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
                 referralRulesFieldMeta.max_referrals_per_user.description
               }
               value={ruleValues.max_referrals_per_user ?? ''}
-              loading={loadingField === 'max_referrals_per_user'}
+              loading={isFieldLoading('max_referrals_per_user')}
               onChange={handleNumberRuleChange('max_referrals_per_user')}
               leftAdornment={<Users className="size-4" />}
+              debounceDelay={1500}
             />
           </div>
 
@@ -342,9 +377,10 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
                 referralRulesFieldMeta.rate_limit_per_phone_per_hour.description
               }
               value={ruleValues.rate_limit_per_phone_per_hour ?? ''}
-              loading={loadingField === 'rate_limit_per_phone_per_hour'}
+              loading={isFieldLoading('rate_limit_per_phone_per_hour')}
               onChange={handleNumberRuleChange('rate_limit_per_phone_per_hour')}
               leftAdornment={<Phone className="size-4" />}
+              debounceDelay={1500}
             />
           </div>
 
@@ -359,11 +395,12 @@ const RefferalRulesSection = ({ rules }: RefferalRulesSectionProps) => {
                   .description
               }
               value={ruleValues.minimum_referral_interval_seconds ?? ''}
-              loading={loadingField === 'minimum_referral_interval_seconds'}
+              loading={isFieldLoading('minimum_referral_interval_seconds')}
               onChange={handleNumberRuleChange(
                 'minimum_referral_interval_seconds',
               )}
               leftAdornment={<Clock3 className="size-4" />}
+              debounceDelay={1500}
             />
           </div>
         </div>

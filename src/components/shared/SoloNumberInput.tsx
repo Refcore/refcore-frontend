@@ -48,7 +48,7 @@ const SoloNumberInput = ({
   max,
   step,
   error,
-  debounceDelay = 1500,
+  debounceDelay = 0,
   onChange,
   onBlur,
 }: SoloNumberInputProps) => {
@@ -60,28 +60,53 @@ const SoloNumberInput = ({
 
   const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
+  const pendingEventRef =
+    React.useRef<React.ChangeEvent<HTMLInputElement> | null>(null);
+
   React.useEffect(() => {
     setInternalValue(value ?? '');
   }, [value]);
 
+  const flushPendingChange = React.useCallback(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
+
+    if (pendingEventRef.current) {
+      onChange?.(pendingEventRef.current);
+      pendingEventRef.current = null;
+    }
+  }, [onChange]);
+
   React.useEffect(() => {
     return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
+      flushPendingChange();
     };
-  }, []);
+  }, [flushPendingChange]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInternalValue(event.target.value);
+
+    if (debounceDelay <= 0) {
+      onChange?.(event);
+      return;
+    }
+
+    pendingEventRef.current = event;
 
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
 
     debounceTimerRef.current = setTimeout(() => {
-      onChange?.(event);
+      flushPendingChange();
     }, debounceDelay);
+  };
+
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    flushPendingChange();
+    onBlur?.(event);
   };
 
   return (
@@ -115,7 +140,7 @@ const SoloNumberInput = ({
           max={max}
           step={step}
           onChange={handleChange}
-          onBlur={onBlur}
+          onBlur={handleBlur}
           className={cn(
             'h-12 rounded-xl border-2 border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/35',
             'transition-all duration-200',

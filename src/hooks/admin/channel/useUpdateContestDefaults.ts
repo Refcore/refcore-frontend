@@ -6,6 +6,8 @@ import { createClient } from '@/utils/supabase/client';
 import { useAuthContext } from '@/context/AuthContext';
 import { AppResponse } from '@/types/response.type';
 import { ContestDefaults } from '@/types/contest.type';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query_keys';
 
 type UpdateContestDefaultsResponseData = {
   channel_id: string;
@@ -15,6 +17,7 @@ type UpdateContestDefaultsResponseData = {
 export const useUpdateContestDefaults = () => {
   const [loading, setLoading] = useState(false);
   const { myChannel } = useAuthContext();
+  const queryClient = useQueryClient();
 
   const updateContestDefaults = async (
     contest_defaults: ContestDefaults,
@@ -50,6 +53,10 @@ export const useUpdateContestDefaults = () => {
           data: null,
         };
       }
+
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.channels.myChannel(myChannel.owner_id),
+      });
 
       toast.success('Contest defaults updated successfully');
 

@@ -107,7 +107,26 @@ const NotificationsSettingsSection = ({
   const [notificationValues, setNotificationValues] =
     React.useState<NotificationSettings>(initialValues);
 
-  const [loadingKey, setLoadingKey] = React.useState<string | null>(null);
+  const [loadingKeys, setLoadingKeys] = React.useState<Set<string>>(new Set());
+
+  const setRowLoading = React.useCallback((key: string, loading: boolean) => {
+    setLoadingKeys((prev) => {
+      const next = new Set(prev);
+
+      if (loading) {
+        next.add(key);
+      } else {
+        next.delete(key);
+      }
+
+      return next;
+    });
+  }, []);
+
+  const isLoadingKey = React.useCallback(
+    (key: string) => loadingKeys.has(key),
+    [loadingKeys],
+  );
 
   React.useEffect(() => {
     setNotificationValues(initialValues);
@@ -118,16 +137,16 @@ const NotificationsSettingsSection = ({
     field: NotificationFieldKey,
     checked: boolean,
   ) => {
-    const previousValues = notificationValues;
+    const fieldKey = String(field);
+    const loadingKey = `${group}.${fieldKey}.in_app`;
 
-    const currentGroup = previousValues[group] as Record<
-      string,
-      ChannelPreference
-    >;
+    const previousChannel = (
+      notificationValues[group] as Record<string, ChannelPreference>
+    )[fieldKey];
 
-    const nextChannels: ChannelPreference = checked
+    const nextChannel: ChannelPreference = checked
       ? {
-          ...currentGroup[String(field)],
+          ...previousChannel,
           in_app: true,
         }
       : {
@@ -136,17 +155,15 @@ const NotificationsSettingsSection = ({
         };
 
     const nextValues = {
-      ...previousValues,
+      ...notificationValues,
       [group]: {
-        ...currentGroup,
-        [String(field)]: nextChannels,
+        ...(notificationValues[group] as Record<string, ChannelPreference>),
+        [fieldKey]: nextChannel,
       },
     } as NotificationSettings;
 
-    const key = `${group}.${String(field)}.in_app`;
-
     setNotificationValues(nextValues);
-    setLoadingKey(key);
+    setRowLoading(loadingKey, true);
 
     try {
       const response = await updateNotificationSettings({
@@ -155,10 +172,20 @@ const NotificationsSettingsSection = ({
 
       if (!response.success) {
         toast.error(response.message);
-        setNotificationValues(previousValues);
+
+        setNotificationValues(
+          (current) =>
+            ({
+              ...current,
+              [group]: {
+                ...(current[group] as Record<string, ChannelPreference>),
+                [fieldKey]: previousChannel,
+              },
+            }) as NotificationSettings,
+        );
       }
     } finally {
-      setLoadingKey(null);
+      setRowLoading(loadingKey, false);
     }
   };
 
@@ -167,27 +194,25 @@ const NotificationsSettingsSection = ({
     field: NotificationFieldKey,
     value: string,
   ) => {
-    const previousValues = notificationValues;
+    const fieldKey = String(field);
+    const loadingKey = `${group}.${fieldKey}.delivery_mode`;
 
-    const nextChannels: ChannelPreference = getDeliveryModeChannels(value);
+    const previousChannel = (
+      notificationValues[group] as Record<string, ChannelPreference>
+    )[fieldKey];
 
-    const currentGroup = previousValues[group] as Record<
-      string,
-      ChannelPreference
-    >;
+    const nextChannel: ChannelPreference = getDeliveryModeChannels(value);
 
     const nextValues = {
-      ...previousValues,
+      ...notificationValues,
       [group]: {
-        ...currentGroup,
-        [String(field)]: nextChannels,
+        ...(notificationValues[group] as Record<string, ChannelPreference>),
+        [fieldKey]: nextChannel,
       },
     } as NotificationSettings;
 
-    const key = `${group}.${String(field)}.delivery_mode`;
-
     setNotificationValues(nextValues);
-    setLoadingKey(key);
+    setRowLoading(loadingKey, true);
 
     try {
       const response = await updateNotificationSettings({
@@ -196,10 +221,20 @@ const NotificationsSettingsSection = ({
 
       if (!response.success) {
         toast.error(response.message);
-        setNotificationValues(previousValues);
+
+        setNotificationValues(
+          (current) =>
+            ({
+              ...current,
+              [group]: {
+                ...(current[group] as Record<string, ChannelPreference>),
+                [fieldKey]: previousChannel,
+              },
+            }) as NotificationSettings,
+        );
       }
     } finally {
-      setLoadingKey(null);
+      setRowLoading(loadingKey, false);
     }
   };
 
@@ -228,7 +263,9 @@ const NotificationsSettingsSection = ({
       const fieldMeta = fields[fieldKey];
       const fieldValue = values[fieldKey];
       const rowLoadingKey = `${groupKey}.${String(fieldKey)}`;
-      const isRowLoading = loadingKey?.startsWith(rowLoadingKey) ?? false;
+      const isRowLoading = Array.from(loadingKeys).some((key) =>
+        key.startsWith(rowLoadingKey),
+      );
       const deliveryMode = getDeliveryModeValue(fieldValue);
       const showInAppToggle = deliveryMode !== 'disabled';
 
@@ -265,9 +302,7 @@ const NotificationsSettingsSection = ({
                 description="Choose whether this alert should appear inside the REFCORE dashboard."
                 checked={fieldValue.in_app}
                 disabled={isRowLoading}
-                loading={
-                  loadingKey === `${groupKey}.${String(fieldKey)}.in_app`
-                }
+                loading={isLoadingKey(`${groupKey}.${String(fieldKey)}.in_app`)}
                 onInfo={fieldMeta.in_app.onInfo}
                 offInfo={fieldMeta.in_app.offInfo}
                 onCheckedChange={(checked) =>
@@ -283,9 +318,7 @@ const NotificationsSettingsSection = ({
               options={deliveryModeOptions}
               disabled={isRowLoading}
               visualState={deliveryMode}
-              loading={
-                loadingKey === `${groupKey}.${String(fieldKey)}.delivery_mode`
-              }
+              loading={isLoadingKey(`${groupKey}.${String(fieldKey)}.delivery_mode`)}
               leftAdornment={<MessageCircleMore className="size-4" />}
               onChange={(value) =>
                 handleDeliveryModeChange(groupKey, fieldKey, value)

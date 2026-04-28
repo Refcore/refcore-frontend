@@ -23,7 +23,7 @@ const getMyChannel = async (user_id: string): Promise<MyChannel | null> => {
         updated_at,
         channel_members_limit,
         channel_banner,
-         contest_defaults,
+        contest_defaults,
         referral_rules,
         notification_settings
       `,
