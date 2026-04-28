@@ -53,18 +53,20 @@ const SettingsPage = () => {
         </TabsContent>
 
         <TabsContent value="contest_defaults">
-          <ContestDefaultsSection />
+          <ContestDefaultsSection
+            contestDefaults={myChannel.contest_defaults}
+          />
         </TabsContent>
 
         <TabsContent value="referral_rules">
-          <RefferalRulesSection />
+          <RefferalRulesSection rules={myChannel.referral_rules} />
         </TabsContent>
 
         <TabsContent value="notifications">
-          <NotificationsSettingsSection />
+          <NotificationsSettingsSection
+            settings={myChannel.notification_settings}
+          />
         </TabsContent>
-
-
       </Tabs>
     </div>
   );

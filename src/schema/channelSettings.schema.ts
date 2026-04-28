@@ -70,6 +70,6 @@ export const getInitialChannelSettingsFormValues = (
   tv_name: channel.tv_name ?? '',
   slug: channel.slug ?? '',
   whatsapp_number: channel.whatsapp_number ?? '',
-  channel_members_limit: channel.channel_members_limit ?? '',
-   channel_banner: channel.channel_banner ?? '',
+  channel_members_limit: channel.channel_members_limit?.toString() ?? '',
+  channel_banner: channel.channel_banner ?? '',
 });

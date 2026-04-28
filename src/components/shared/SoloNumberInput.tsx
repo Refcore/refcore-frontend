@@ -24,6 +24,7 @@ type SoloNumberInputProps = {
   max?: number;
   step?: number;
   error?: string;
+  debounceDelay?: number;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 };
@@ -47,10 +48,41 @@ const SoloNumberInput = ({
   max,
   step,
   error,
+  debounceDelay = 1500,
   onChange,
   onBlur,
 }: SoloNumberInputProps) => {
   const isDisabled = disabled || loading;
+
+  const [internalValue, setInternalValue] = React.useState<string | number>(
+    value ?? '',
+  );
+
+  const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  React.useEffect(() => {
+    setInternalValue(value ?? '');
+  }, [value]);
+
+  React.useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInternalValue(event.target.value);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      onChange?.(event);
+    }, debounceDelay);
+  };
 
   return (
     <div className={cn('w-full space-y-2', className)}>
@@ -72,16 +104,17 @@ const SoloNumberInput = ({
             {leftAdornment}
           </div>
         ) : null}
+
         <Input
           type="number"
-          value={value ?? ''}
+          value={internalValue}
           placeholder={placeholder}
           disabled={isDisabled}
           aria-invalid={!!error}
           min={min}
           max={max}
           step={step}
-          onChange={onChange}
+          onChange={handleChange}
           onBlur={onBlur}
           className={cn(
             'h-12 rounded-xl border-2 border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/35',
