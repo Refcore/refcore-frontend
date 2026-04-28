@@ -96,7 +96,10 @@ const getMyChannel = async (user_id: string): Promise<MyChannel | null> => {
         created_at,
         updated_at,
         channel_members_limit,
-        channel_banner
+        channel_banner,
+        contest_defaults,
+        referral_rules,
+        notification_settings
       `,
     )
     .eq('owner_id', user_id)

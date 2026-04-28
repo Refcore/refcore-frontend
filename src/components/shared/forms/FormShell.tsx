@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { ReactNode } from 'react';
+import { useEffect, useMemo, type ReactNode } from 'react';
 import type {
   DefaultValues,
   SubmitHandler,
@@ -33,6 +33,21 @@ const FormShell = <TSchema extends z.ZodObject<z.ZodRawShape>>({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
+
+  const defaultValuesSignature = useMemo(
+    () => JSON.stringify(defaultValues),
+    [defaultValues],
+  );
+
+  useEffect(() => {
+    form.reset(defaultValues, {
+      keepErrors: false,
+      keepDirty: false,
+      keepTouched: false,
+      keepIsSubmitted: false,
+      keepSubmitCount: false,
+    });
+  }, [defaultValuesSignature, defaultValues, form]);
 
   return (
     <FormProvider {...form}>

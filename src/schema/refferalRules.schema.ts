@@ -95,7 +95,7 @@ export const referralRulesSchema = z.object({
 
 export type ReferralRulesValues = z.infer<typeof referralRulesSchema>;
 
-export const initialReferralRulesValues: ReferralRulesValues = {
+export const initialReferralRulesValues: ReferralRules = {
   allow_self_referral: false,
   allow_duplicate_phone_numbers: false,
   require_whatsapp_join_message: true,
@@ -109,7 +109,7 @@ export const initialReferralRulesValues: ReferralRulesValues = {
 
 export const getInitialReferralRulesValues = (
   rules?: ReferralRules | null,
-): ReferralRulesValues => ({
+): ReferralRules => ({
   allow_self_referral:
     rules?.allow_self_referral ??
     initialReferralRulesValues.allow_self_referral,

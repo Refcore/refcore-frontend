@@ -10,6 +10,7 @@ import {
   UserPlus,
   Waves,
 } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 import type { NotificationSettings } from '@/types/notificationsettings.type';
 import {
@@ -18,6 +19,7 @@ import {
 } from '@/schema/notificationSettings.schema';
 import SoloToggle from '@/components/shared/SoloToggle';
 import SoloDropDownInput from '@/components/shared/SoloDropDownInput';
+import { useUpdateNotificationSettings } from '@/hooks/admin/channel/useUpdateNotificationSettings';
 
 type NotificationsSettingsSectionProps = {
   settings?: NotificationSettings | null;
@@ -31,14 +33,17 @@ type ChannelPreference = {
 type NotificationGroupKey = keyof NotificationSettings;
 
 type AdminFieldKey = keyof NotificationSettings['admin_notifications'];
-type ParticipantFieldKey = keyof NotificationSettings['participant_notifications'];
+type ParticipantFieldKey =
+  keyof NotificationSettings['participant_notifications'];
+
+type NotificationFieldKey = AdminFieldKey | ParticipantFieldKey;
 
 const deliveryModeOptions = [
   { label: 'Disabled', value: 'disabled' },
   { label: 'In-App Only', value: 'in_app' },
   { label: 'WhatsApp Only', value: 'whatsapp' },
   { label: 'In-App + WhatsApp', value: 'both' },
-] as const;
+];
 
 const getDeliveryModeValue = (value: ChannelPreference) => {
   if (value.in_app && value.whatsapp) return 'both';
@@ -97,8 +102,31 @@ const NotificationsSettingsSection = ({
     [settings],
   );
 
-  const [notificationValues, setNotificationValues] = React.useState(initialValues);
-  const [loadingKey, setLoadingKey] = React.useState<string | null>(null);
+  const { updateNotificationSettings } = useUpdateNotificationSettings();
+
+  const [notificationValues, setNotificationValues] =
+    React.useState<NotificationSettings>(initialValues);
+
+  const [loadingKeys, setLoadingKeys] = React.useState<Set<string>>(new Set());
+
+  const setRowLoading = React.useCallback((key: string, loading: boolean) => {
+    setLoadingKeys((prev) => {
+      const next = new Set(prev);
+
+      if (loading) {
+        next.add(key);
+      } else {
+        next.delete(key);
+      }
+
+      return next;
+    });
+  }, []);
+
+  const isLoadingKey = React.useCallback(
+    (key: string) => loadingKeys.has(key),
+    [loadingKeys],
+  );
 
   React.useEffect(() => {
     setNotificationValues(initialValues);
@@ -106,61 +134,107 @@ const NotificationsSettingsSection = ({
 
   const handleInAppToggle = async (
     group: NotificationGroupKey,
-    field: string,
+    field: NotificationFieldKey,
     checked: boolean,
   ) => {
-    setNotificationValues((prev) => ({
-      ...prev,
-      [group]: {
-        ...prev[group],
-        [field]: {
-          ...prev[group][field as keyof (typeof prev)[typeof group]],
-          in_app: checked,
-        },
-      },
-    }));
+    const fieldKey = String(field);
+    const loadingKey = `${group}.${fieldKey}.in_app`;
 
-    const key = `${group}.${field}.in_app`;
-    setLoadingKey(key);
+    const previousChannel = (
+      notificationValues[group] as Record<string, ChannelPreference>
+    )[fieldKey];
+
+    const nextChannel: ChannelPreference = checked
+      ? {
+          ...previousChannel,
+          in_app: true,
+        }
+      : {
+          in_app: false,
+          whatsapp: false,
+        };
+
+    const nextValues = {
+      ...notificationValues,
+      [group]: {
+        ...(notificationValues[group] as Record<string, ChannelPreference>),
+        [fieldKey]: nextChannel,
+      },
+    } as NotificationSettings;
+
+    setNotificationValues(nextValues);
+    setRowLoading(loadingKey, true);
 
     try {
-      console.log({
-        group,
-        field,
-        channel: 'in_app',
-        value: checked,
+      const response = await updateNotificationSettings({
+        notification_settings: nextValues,
       });
+
+      if (!response.success) {
+        toast.error(response.message);
+
+        setNotificationValues(
+          (current) =>
+            ({
+              ...current,
+              [group]: {
+                ...(current[group] as Record<string, ChannelPreference>),
+                [fieldKey]: previousChannel,
+              },
+            }) as NotificationSettings,
+        );
+      }
     } finally {
-      setLoadingKey(null);
+      setRowLoading(loadingKey, false);
     }
   };
 
   const handleDeliveryModeChange = async (
     group: NotificationGroupKey,
-    field: string,
+    field: NotificationFieldKey,
     value: string,
   ) => {
-    const nextChannels = getDeliveryModeChannels(value);
+    const fieldKey = String(field);
+    const loadingKey = `${group}.${fieldKey}.delivery_mode`;
 
-    setNotificationValues((prev) => ({
-      ...prev,
+    const previousChannel = (
+      notificationValues[group] as Record<string, ChannelPreference>
+    )[fieldKey];
+
+    const nextChannel: ChannelPreference = getDeliveryModeChannels(value);
+
+    const nextValues = {
+      ...notificationValues,
       [group]: {
-        ...prev[group],
-        [field]: nextChannels,
+        ...(notificationValues[group] as Record<string, ChannelPreference>),
+        [fieldKey]: nextChannel,
       },
-    }));
+    } as NotificationSettings;
 
-    const key = `${group}.${field}.delivery_mode`;
-    setLoadingKey(key);
+    setNotificationValues(nextValues);
+    setRowLoading(loadingKey, true);
 
     try {
-      console.log({
-        group,
-        field,
-        channels: nextChannels,
+      const response = await updateNotificationSettings({
+        notification_settings: nextValues,
       });
+
+      if (!response.success) {
+        toast.error(response.message);
+
+        setNotificationValues(
+          (current) =>
+            ({
+              ...current,
+              [group]: {
+                ...(current[group] as Record<string, ChannelPreference>),
+                [fieldKey]: previousChannel,
+              },
+            }) as NotificationSettings,
+        );
+      }
     } finally {
-      setLoadingKey(null);
+      setRowLoading(loadingKey, false);
     }
   };
 
@@ -188,11 +262,17 @@ const NotificationsSettingsSection = ({
     return (Object.keys(fields) as TFieldKey[]).map((fieldKey) => {
       const fieldMeta = fields[fieldKey];
       const fieldValue = values[fieldKey];
+      const rowLoadingKey = `${groupKey}.${String(fieldKey)}`;
+      const isRowLoading = Array.from(loadingKeys).some((key) =>
+        key.startsWith(rowLoadingKey),
+      );
+      const deliveryMode = getDeliveryModeValue(fieldValue);
+      const showInAppToggle = deliveryMode !== 'disabled';
 
       return (
         <div
           key={`${groupKey}-${String(fieldKey)}`}
-          className="rounded-xl md:border border-white/10 bg-overbg/85 p-2 md:p-4"
+          className="rounded-xl border-white/10 bg-overbg/85 p-2 md:border md:p-4"
         >
           <div className="mb-4 flex items-start gap-3">
             <div className="mt-0.5 shrink-0 rounded-lg border border-white/10 bg-black/20 p-2 text-white/70">
@@ -209,30 +289,39 @@ const NotificationsSettingsSection = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-            <SoloToggle
-              label="In-App Notification"
-              description="Choose whether this alert should appear inside the REFCORE dashboard."
-              checked={fieldValue.in_app}
-              loading={loadingKey === `${groupKey}.${String(fieldKey)}.in_app`}
-              onInfo={fieldMeta.in_app.onInfo}
-              offInfo={fieldMeta.in_app.offInfo}
-              onCheckedChange={(checked) =>
-                handleInAppToggle(groupKey, String(fieldKey), checked)
-              }
-            />
+          <div
+            className={
+              showInAppToggle
+                ? 'grid grid-cols-1 gap-4 xl:grid-cols-2'
+                : 'grid grid-cols-1 gap-4'
+            }
+          >
+            {showInAppToggle ? (
+              <SoloToggle
+                label="In-App Notification"
+                description="Choose whether this alert should appear inside the REFCORE dashboard."
+                checked={fieldValue.in_app}
+                disabled={isRowLoading}
+                loading={isLoadingKey(`${groupKey}.${String(fieldKey)}.in_app`)}
+                onInfo={fieldMeta.in_app.onInfo}
+                offInfo={fieldMeta.in_app.offInfo}
+                onCheckedChange={(checked) =>
+                  handleInAppToggle(groupKey, fieldKey, checked)
+                }
+              />
+            ) : null}
 
             <SoloDropDownInput
               label="Delivery Mode"
               description="Choose the channel combination for this notification event."
-              value={getDeliveryModeValue(fieldValue)}
+              value={deliveryMode}
               options={deliveryModeOptions}
-              loading={
-                loadingKey === `${groupKey}.${String(fieldKey)}.delivery_mode`
-              }
+              disabled={isRowLoading}
+              visualState={deliveryMode}
+              loading={isLoadingKey(`${groupKey}.${String(fieldKey)}.delivery_mode`)}
               leftAdornment={<MessageCircleMore className="size-4" />}
               onChange={(value) =>
-                handleDeliveryModeChange(groupKey, String(fieldKey), value)
+                handleDeliveryModeChange(groupKey, fieldKey, value)
               }
             />
           </div>
@@ -253,6 +342,7 @@ const NotificationsSettingsSection = ({
             <Settings2 className="size-5 text-neon-green" />
             Notification Settings
           </h3>
+
           <p className="text-xs text-white/55 md:text-sm">
             Configure how admins and participants receive important contest,
             referral, and leaderboard updates.
@@ -275,7 +365,8 @@ const NotificationsSettingsSection = ({
             </p>
             <p className="mt-2 text-sm font-medium text-white">
               {getDeliveryModeLabel(
-                notificationValues.participant_notifications.referral_successful,
+                notificationValues.participant_notifications
+                  .referral_successful,
               )}
             </p>
           </div>
@@ -294,37 +385,38 @@ const NotificationsSettingsSection = ({
         </div>
       </div>
 
-      {(Object.keys(notificationSettingsFieldMeta) as NotificationGroupKey[]).map(
-        (groupKey) => {
-          const groupMeta = notificationSettingsFieldMeta[groupKey];
-          const groupValues = notificationValues[groupKey];
+      {(
+        Object.keys(notificationSettingsFieldMeta) as NotificationGroupKey[]
+      ).map((groupKey) => {
+        const groupMeta = notificationSettingsFieldMeta[groupKey];
+        const groupValues = notificationValues[groupKey];
 
-          return (
-            <div
-              key={groupKey}
-              className="md:space-y-4 space-y-10 md:rounded-xl md:border md:border-white/10 md:bg-overbg/50 md:p-5"
-            >
-              <div className="space-y-1">
-                <h4 className="flex items-center gap-2 text-sm font-semibold text-white md:text-base">
-                  {sectionIcons[groupKey]}
-                  {groupMeta.title}
-                </h4>
-                <p className="text-xs text-white/55 md:text-sm">
-                  {groupMeta.description}
-                </p>
-              </div>
+        return (
+          <div
+            key={groupKey}
+            className="space-y-10 md:space-y-4 md:rounded-xl md:border md:border-white/10 md:bg-overbg/50 md:p-5"
+          >
+            <div className="space-y-1">
+              <h4 className="flex items-center gap-2 text-sm font-semibold text-white md:text-base">
+                {sectionIcons[groupKey]}
+                {groupMeta.title}
+              </h4>
 
-              <div className="md:space-y-4 space-y-10">
-                {renderNotificationRows(
-                  groupKey,
-                  groupMeta.fields as never,
-                  groupValues as never,
-                )}
-              </div>
+              <p className="text-xs text-white/55 md:text-sm">
+                {groupMeta.description}
+              </p>
             </div>
-          );
-        },
-      )}
+
+            <div className="space-y-10 md:space-y-4">
+              {renderNotificationRows(
+                groupKey,
+                groupMeta.fields as never,
+                groupValues as never,
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

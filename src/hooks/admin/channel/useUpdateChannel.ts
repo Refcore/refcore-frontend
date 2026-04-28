@@ -4,6 +4,8 @@ import { createClient } from '@/utils/supabase/client';
 import { uploadChannelBanner } from '@/lib/storage/uploadChannelBanner';
 import { deleteStorageFile } from '@/utils/deleteStoredFile';
 import { AppResponse } from '@/types/response.type';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query_keys';
 
 type UpdateChannelPayload = {
   channel_id: string;
@@ -21,6 +23,7 @@ type UpdateChannelResponseData = {
 
 export const useUpdateChannel = () => {
   const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const updateChannel = async (
     payload: UpdateChannelPayload,
@@ -42,7 +45,8 @@ export const useUpdateChannel = () => {
           success: false,
           status_code: 400,
           message:
-            existing_channel_error.message || 'Failed to fetch existing channel',
+            existing_channel_error.message ||
+            'Failed to fetch existing channel',
           data: null,
         };
       }
@@ -72,7 +76,7 @@ export const useUpdateChannel = () => {
         .from('channels')
         .update(update_payload)
         .eq('id', payload.channel_id)
-        .select('id, channel_banner')
+        .select('id, owner_id, channel_banner')
         .single();
 
       if (error) {
@@ -98,6 +102,10 @@ export const useUpdateChannel = () => {
           console.error('Failed to delete old channel banner:', delete_error);
         }
       }
+
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.channels.myChannel(data.owner_id),
+      });
 
       toast.success('Channel updated successfully');
 

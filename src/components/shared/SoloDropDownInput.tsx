@@ -23,6 +23,13 @@ type NormalizedOption = {
   value: string;
 };
 
+type DropdownVisualState =
+  | 'default'
+  | 'disabled'
+  | 'in_app'
+  | 'whatsapp'
+  | 'both';
+
 type SoloDropDownInputProps = {
   value?: string;
   label?: string;
@@ -31,6 +38,7 @@ type SoloDropDownInputProps = {
   required?: boolean;
   disabled?: boolean;
   loading?: boolean;
+  visualState?: DropdownVisualState;
   className?: string;
   labelClassName?: string;
   triggerClassName?: string;
@@ -53,6 +61,25 @@ const normalizeOptions = (
   );
 };
 
+const getTriggerVisualClassName = (visualState: DropdownVisualState) => {
+  switch (visualState) {
+    case 'disabled':
+      return 'border-red-400/50 bg-red-500/10 text-red-100 focus:border-red-400/60 focus:ring-red-400/15';
+
+    case 'in_app':
+      return 'border-[#00d0ff]/50 bg-[#00d0ff]/10 text-white focus:border-[#00d0ff]/70 focus:ring-[#00d0ff]/15';
+
+    case 'whatsapp':
+      return 'border-[#00ff9d]/50 bg-[#00ff9d]/10 text-white focus:border-[#00ff9d]/70 focus:ring-[#00ff9d]/15';
+
+    case 'both':
+      return 'border-[#b700ff]/60 bg-[#b700ff]/10 text-white focus:border-[#b700ff]/70 focus:ring-[#b700ff]/20';
+
+    default:
+      return 'border-[#00d0ff]/50 bg-white/5 text-white focus:border-[#00d0ff]/50 focus:ring-[#00d0ff]/15';
+  }
+};
+
 const SoloDropDownInput = ({
   value = '',
   label,
@@ -61,6 +88,7 @@ const SoloDropDownInput = ({
   required = false,
   disabled = false,
   loading = false,
+  visualState = 'default',
   className,
   labelClassName,
   triggerClassName,
@@ -81,12 +109,18 @@ const SoloDropDownInput = ({
 
   const isDisabled = disabled || loading;
 
+  const handleValueChange = (nextValue: string) => {
+    if (isDisabled) return;
+    onChange?.(nextValue);
+  };
+
   return (
     <div className={cn('w-full space-y-2', className)}>
       {label ? (
         <label
           className={cn(
             'inline-flex items-center gap-1 text-sm font-medium text-white/90 md:text-base',
+            isDisabled ? 'opacity-60' : '',
             labelClassName,
           )}
         >
@@ -95,18 +129,22 @@ const SoloDropDownInput = ({
         </label>
       ) : null}
 
-      <Select value={value} onValueChange={onChange} disabled={isDisabled}>
+      <Select
+        value={value}
+        onValueChange={handleValueChange}
+        disabled={isDisabled}
+      >
         <SelectTrigger
+          disabled={isDisabled}
           aria-invalid={!!error}
           className={cn(
-            'h-12 rounded-lg border-2 border-white/10 bg-white/5 px-4 text-sm text-white',
-            'placeholder:text-white/35',
+            'h-12 rounded-lg border-2 px-4 text-sm',
+            'placeholder:text-white/35 data-placeholder:text-white/35',
             'transition-all duration-200',
-            'focus:border-[#00ff9d]/50 focus:ring-[3px] focus:ring-[#00ff9d]/15',
-            'data-placeholder:text-white/35',
             'md:h-13 md:px-5 md:text-base',
-
-            isDisabled ? 'cursor-not-allowed opacity-70' : '',
+            getTriggerVisualClassName(visualState),
+            loading ? 'cursor-wait opacity-80' : '',
+            isDisabled && !loading ? 'cursor-not-allowed opacity-60' : '',
             error
               ? 'border-red-400/60 focus:border-red-400/60 focus:ring-red-400/15'
               : '',
@@ -115,7 +153,18 @@ const SoloDropDownInput = ({
         >
           <div className="relative flex w-full items-center">
             {leftAdornment ? (
-              <div className="pointer-events-none flex mr-2 items-center text-white/45">
+              <div
+                className={cn(
+                  'pointer-events-none mr-2 flex items-center',
+                  visualState === 'whatsapp'
+                    ? 'text-[#00ff9d]'
+                    : visualState === 'both'
+                      ? 'text-[#b700ff]'
+                      : visualState === 'disabled'
+                        ? 'text-red-300'
+                        : '',
+                )}
+              >
                 {leftAdornment}
               </div>
             ) : null}
@@ -126,10 +175,10 @@ const SoloDropDownInput = ({
 
             {loading ? (
               <div className="pointer-events-none absolute right-6 flex items-center text-white/45">
-                <Loader2 className="size-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin text-[#00d0ff]" />
               </div>
             ) : rightAdornment ? (
-              <div className="pointer-events-none flex ml-2 items-center text-white/45">
+              <div className="pointer-events-none ml-2 flex items-center text-white/45">
                 {rightAdornment}
               </div>
             ) : null}
@@ -164,6 +213,7 @@ const SoloDropDownInput = ({
         <p
           className={cn(
             'text-xs leading-5 text-white/50 md:text-sm',
+            isDisabled ? 'opacity-60' : '',
             descriptionClassName,
           )}
         >

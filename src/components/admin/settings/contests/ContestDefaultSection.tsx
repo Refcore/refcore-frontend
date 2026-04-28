@@ -19,12 +19,13 @@ import {
 } from '@/schema/contest.schema';
 import NumberInput from '@/components/shared/forms/inputs/NumberInput';
 import FormDropDownInput from '@/components/shared/forms/inputs/FormDropDownInput';
+import { useUpdateContestDefaults } from '@/hooks/admin/channel/useUpdateContestDefaults';
 
 type ContestDefaultsSectionProps = {
   contestDefaults?: ContestDefaults | null;
 };
 
-const ContestDefaultsFormContent = () => {
+const ContestDefaultsFormContent = ({ loading }: { loading: boolean }) => {
   const {
     formState: { isSubmitting },
   } = useFormContext<ContestDefaultsFormValues>();
@@ -93,7 +94,11 @@ const ContestDefaultsFormContent = () => {
       </div>
 
       <div className="flex w-full justify-end">
-        <FormButton className="md:max-w-100" loading={isSubmitting}>
+        <FormButton
+          className="md:max-w-100"
+          loading={isSubmitting || loading}
+          disabled={isSubmitting || loading}
+        >
           Save Changes
         </FormButton>
       </div>
@@ -107,8 +112,11 @@ const ContestDefaultsSection = ({
   const initialContestDefaultsFormValues =
     getInitialContestDefaultsFormValues(contestDefaults);
 
+  const { updateContestDefaults, loading } = useUpdateContestDefaults();
+
   const handleSubmit = (values: ContestDefaultsFormValues) => {
     console.log(values);
+    updateContestDefaults(values);
   };
 
   return (
@@ -155,7 +163,7 @@ const ContestDefaultsSection = ({
         schema={contestDefaultsSchema}
         className="space-y-6 py-4"
       >
-        <ContestDefaultsFormContent />
+        <ContestDefaultsFormContent loading={loading} />
       </FormShell>
     </div>
   );

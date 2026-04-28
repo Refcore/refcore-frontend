@@ -7,6 +7,7 @@ import { Button } from '../ui/button';
 import { LogOut } from 'lucide-react';
 import DialogueTool from '../shared/DialogueTool';
 import LogoutModal from '../modals/LogoutModal';
+import { getStorageFileUrl } from '@/utils/getStorageFileUrl';
 
 const AdminUser = () => {
   const { currentUser, myChannel } = useAuthContext();
@@ -19,7 +20,9 @@ const AdminUser = () => {
 
   const tv_name = myChannel?.tv_name || '';
 
-  const avatar = null;
+  const avatar = currentUser?.profile_picture
+    ? getStorageFileUrl('profile_pictures', currentUser.profile_picture)
+    : null;
 
   const initials = user_name
     .trim()
@@ -62,7 +65,7 @@ const AdminUser = () => {
         title="Confirm Logout"
         description="Are you sure you want to Logout?"
         content={<LogoutModal onClose={() => setOpen(false)} />}
-        contentClassName='border-2'
+        contentClassName="border-2"
       >
         <Button className="w-full text-red-500 y-2 bg-background/30">
           <LogOut /> Logout

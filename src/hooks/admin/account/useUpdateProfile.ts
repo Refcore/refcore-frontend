@@ -4,6 +4,8 @@ import { toast } from 'react-toastify';
 import { uploadProfilePicture } from '@/lib/storage/uploadProfilePicture';
 import { deleteStorageFile } from '@/utils/deleteStoredFile';
 import { AppResponse } from '@/types/response.type';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query_keys';
 
 type UpdateProfilePayload = {
   user_id: string;
@@ -18,6 +20,7 @@ type UpdateProfileResponseData = {
 
 export const useUpdateProfile = () => {
   const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const updateProfile = async (
     payload: UpdateProfilePayload,
@@ -91,6 +94,10 @@ export const useUpdateProfile = () => {
           console.error('Failed to delete old profile picture:', delete_error);
         }
       }
+
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.auth.currentUser,
+      });
 
       toast.success('Profile updated successfully');
 
