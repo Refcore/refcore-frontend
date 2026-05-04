@@ -15,7 +15,7 @@ const Sidebar = () => {
         href={ADMIN_ROUTES.HOME}
         className="mb-8 flex items-center gap-3 px-2"
       >
-        <CompanyLogo />
+        <CompanyLogo width={100} height={25} className='overflow-hidden h-12'/>
       </Link>
 
       <nav className="flex flex-1 flex-col gap-2">

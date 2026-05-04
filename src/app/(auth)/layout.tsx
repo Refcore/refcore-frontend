@@ -28,10 +28,10 @@ export default function AuthLayout({ children }: DashboardLayoutProps) {
 
   return (
     <section className="min-h-screen relative bg-background py-6 custom-scrollbar flex flex-col justify-center items-center">
-      <CompanyLogo />
+       <CompanyLogo width={150} height={40} className='overflow-hidden h-25'/>
       <main className="z-1">{children}</main>
 
-      <div className="absolute bg-black/20 top-0 right-0 opacity-15 h-full w-full rotate-180">
+      <div className="absolute bg-black/20 top-0 right-0 opacity-10 h-full w-full rotate-180">
         <Image
           src="/svg/bbblurry.svg"
           className="pointer-events-none h-full w-full object-cover select-none"
