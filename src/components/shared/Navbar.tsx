@@ -57,7 +57,7 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
       >
         <div className="mx-auto flex h-20 w-full max-w-(--breakpoint-2xl) items-center justify-between px-6 md:px-12">
           {/* Logo */}
-          <CompanyLogo />
+           <CompanyLogo width={100} height={25} className='overflow-hidden h-12'/>
 
           {!disablenav && (
             <ul className="hidden md:flex items-center gap-8">
@@ -160,7 +160,7 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-5">
-            <CompanyLogo />
+             <CompanyLogo width={100} height={25} className='overflow-hidden h-12'/>
 
             <button onClick={() => setMobileOpen(false)}>
               <X className="w-6 h-6" />

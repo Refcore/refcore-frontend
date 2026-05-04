@@ -1,15 +1,36 @@
-import { Zap } from 'lucide-react';
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
-export default function CompanyLogo({ noText }: { noText?: boolean }) {
+type CompanyLogoProps = {
+  noText?: boolean;
+  className?: string;
+  imageClassName?: string;
+  width?: number;
+  height?: number;
+};
+
+export default function CompanyLogo({
+  noText = false,
+  className,
+  imageClassName,
+  width,
+  height,
+}: CompanyLogoProps) {
+  const logoSrc = noText ? '/images/logo-main.png' : '/images/logo-text.png';
+
+  const imageWidth = width ?? (noText ? 40 : 150);
+  const imageHeight = height ?? (noText ? 40 : 44);
+
   return (
-    <div className="flex items-center gap-2">
-      <div className="w-8 h-8 rounded-md bg-gradient-success flex items-center justify-center">
-        <Zap className="w-4 h-4 text-black" />
-      </div>
-
-      {!noText && (
-        <span className="text-xl font-bold tracking-wider">REFCORE</span>
-      )}
+    <div className={cn('flex items-center', className)}>
+      <Image
+        alt="REFCORE logo"
+        src={logoSrc}
+        width={imageWidth}
+        height={imageHeight}
+        priority
+        className={cn('h-auto w-auto object-contain', imageClassName)}
+      />
     </div>
   );
 }

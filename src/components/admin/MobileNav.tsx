@@ -49,7 +49,11 @@ const MobileNav = () => {
         <DrawerHeader className="mb-4 px-0 text-left">
           <DrawerTitle asChild>
             <Link href={ADMIN_ROUTES.HOME} className="flex items-center gap-3">
-              <CompanyLogo />
+              <CompanyLogo
+                width={100}
+                height={25}
+                className="overflow-hidden h-12"
+              />
             </Link>
           </DrawerTitle>
         </DrawerHeader>
