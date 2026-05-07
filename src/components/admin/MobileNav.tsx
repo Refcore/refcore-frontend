@@ -50,8 +50,9 @@ const MobileNav = () => {
           <DrawerTitle asChild>
             <Link href={ADMIN_ROUTES.HOME} className="flex items-center gap-3">
               <CompanyLogo
-                width={100}
-                height={25}
+                noText
+                width={60}
+                height={20}
                 className="overflow-hidden h-12"
               />
             </Link>
