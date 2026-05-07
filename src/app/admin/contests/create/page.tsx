@@ -11,13 +11,14 @@ import {
   contestVisibilityDropdownOptions,
   CreateContestFormValues,
   createContestSchema,
-  initialCreateContestFormValues,
+  getInitialCreateContestFormValues,
 } from '@/schema/contest.schema';
 import { PlusSquare } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import React from 'react';
 import { cn } from '@/lib/utils';
 import NumberInput from '@/components/shared/forms/inputs/NumberInput';
+import { useAuthContext } from '@/context/AuthContext';
 
 const CreateContestFormFields = () => {
   const { getValues, setValue } = useFormContext();
@@ -44,7 +45,7 @@ const CreateContestFormFields = () => {
 
   return (
     <>
-      <div className="space-y-4 md:rounded-xl md:border md:border-white/10 md:bg-white/5 border-b pb-10 md:p-5">
+      <div className="space-y-4 md:rounded-xl md:border md:border-white/10 md:bg-overbg/85 border-b pb-10 md:p-5">
         <div className="space-y-1">
           <h4 className="text-sm font-semibold text-white md:text-base">
             Basic Information
@@ -94,7 +95,7 @@ const CreateContestFormFields = () => {
 
       <ContestTimingSection />
 
-      <div className="space-y-4 md:rounded-xl md:border md:border-white/10 md:bg-white/5 border-b pb-10 md:p-5">
+      <div className="space-y-4 md:rounded-xl md:border md:border-white/10 md:bg-overbg/85 border-b pb-10 md:p-5">
         <div className="space-y-1">
           <h4 className="text-sm font-semibold text-white md:text-base">
             Referral and Reward Setup
@@ -149,7 +150,7 @@ const ContestTimingSection = () => {
   const isAutomatic = contestTimingMode === 'automatic';
 
   return (
-    <div className="space-y-4 md:rounded-xl md:border md:border-white/10 md:bg-white/5 border-b pb-10 md:p-5">
+    <div className="space-y-4 md:rounded-xl md:border md:border-white/10 md:bg-overbg/85 border-b pb-10 md:p-5">
       <div className="space-y-1">
         <h4 className="text-sm font-semibold text-white md:text-base">
           Contest Timing
@@ -195,6 +196,10 @@ const ContestTimingSection = () => {
 };
 
 const CreateContestPage = () => {
+  const { myChannel } = useAuthContext();
+
+  const defaults = myChannel?.contest_defaults;
+
   const handleSubmit = (values: CreateContestFormValues) => {
     const payload = {
       ...values,
@@ -215,7 +220,7 @@ const CreateContestPage = () => {
       </h3>
 
       <FormShell
-        defaultValues={initialCreateContestFormValues}
+        defaultValues={getInitialCreateContestFormValues(defaults)}
         onSubmit={handleSubmit}
         schema={createContestSchema}
         className="space-y-6 py-4"

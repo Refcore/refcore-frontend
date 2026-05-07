@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ContestDefaults } from '@/types/contest.type';
 
 export const contestVisibilityOptions = ['public', 'private'] as const;
 
@@ -106,15 +107,17 @@ export const createContestSchema = z
 
 export type CreateContestFormValues = z.infer<typeof createContestSchema>;
 
-export const initialCreateContestFormValues: CreateContestFormValues = {
+export const getInitialCreateContestFormValues = (
+  defaults?: ContestDefaults | null,
+): CreateContestFormValues => ({
   title: '',
   slug: '',
   description: '',
-  visibility: 'public',
-  contest_timing_mode: 'manual',
-  referral_code_prefix: '',
+  visibility: defaults?.visibility ?? 'public',
+  contest_timing_mode: defaults?.contest_timing_mode ?? 'manual',
+  referral_code_prefix: defaults?.referral_code_prefix ?? '',
   start_date: '',
   end_date: null,
-  reward_description: '',
-  max_winners: 1,
-};
+  reward_description: defaults?.reward_description ?? '',
+  max_winners: defaults?.max_winners ?? 1,
+});
