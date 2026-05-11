@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-// import { toast } from 'react-toastify';
 import { createClient } from '@/utils/supabase/client';
 import { useAuthContext } from '@/context/AuthContext';
 import { AppResponse } from '@/types/response.type';
@@ -23,12 +22,11 @@ export const useUpdateNotificationSettings = () => {
   const [loading, setLoading] = useState(false);
   const { myChannel } = useAuthContext();
   const queryClient = useQueryClient();
+  const supabase = createClient();
 
   const updateNotificationSettings = async (
     payload: UpdateNotificationSettingsPayload,
   ): Promise<AppResponse<UpdateNotificationSettingsResponseData>> => {
-    const supabase = createClient();
-
     try {
       setLoading(true);
 
@@ -41,40 +39,45 @@ export const useUpdateNotificationSettings = () => {
         };
       }
 
-      const { data, error } = await supabase
-        .from('channels')
-        .update({
-          notification_settings: payload.notification_settings,
-        })
-        .eq('id', myChannel.id)
-        .select('id, owner_id, notification_settings')
-        .single();
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-      if (error) {
+      if (sessionError || !session?.access_token) {
         return {
           success: false,
-          status_code: 400,
-          message: error.message || 'Failed to update notification settings',
+          status_code: 401,
+          message: 'You must be signed in to update notification settings.',
           data: null,
+          error_code: sessionError?.code,
         };
       }
 
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.channels.myChannel(myChannel.owner_id),
+      const response = await fetch('/api/channels/notification-settings/update', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          channel_id: myChannel.id,
+          notification_settings: payload.notification_settings,
+        }),
       });
 
-      // toast.success('Notification settings updated successfully');
+      const result =
+        (await response.json()) as AppResponse<UpdateNotificationSettingsResponseData>;
 
-      return {
-        success: true,
-        status_code: 200,
-        message: 'Notification settings updated successfully',
-        data: {
-          channel_id: data.id,
-          notification_settings: data.notification_settings,
-          owner_id: data.owner_id,
-        },
-      };
+      if (!response.ok || !result.success) {
+        return result;
+      }
+
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.channels.myChannel(result.data?.owner_id),
+      });
+
+      return result;
     } catch (error) {
       return {
         success: false,

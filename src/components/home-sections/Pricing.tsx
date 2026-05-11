@@ -4,7 +4,7 @@ import { plans } from '@/consts/plans';
 
 const Pricing = () => {
   return (
-    <div className="flex flex-col items-center gap-10 mx-auto w-full max-w-(--breakpoint-2xl) py-20 md:py-24 px-6 md:px-12">
+    <div className="flex flex-col items-center gap-10 mx-auto w-full max-w-(--breakpoint-2xl) py-20 md:py-24 px-3 md:px-12">
       <h3 className="text-4xl md:text-6xl font-bold text-center">
         Simple Pricing for Growing Channels
       </h3>

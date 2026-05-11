@@ -11,6 +11,7 @@ import { queryKeys } from '@/lib/query_keys';
 
 type UpdateContestDefaultsResponseData = {
   channel_id: string;
+  owner_id: string;
   contest_defaults: ContestDefaults;
 };
 
@@ -18,65 +19,82 @@ export const useUpdateContestDefaults = () => {
   const [loading, setLoading] = useState(false);
   const { myChannel } = useAuthContext();
   const queryClient = useQueryClient();
+  const supabase = createClient();
 
   const updateContestDefaults = async (
     contest_defaults: ContestDefaults,
   ): Promise<AppResponse<UpdateContestDefaultsResponseData>> => {
-    const supabase = createClient();
-
     try {
       setLoading(true);
 
       if (!myChannel?.id) {
-        return {
+        const errorResponse: AppResponse<UpdateContestDefaultsResponseData> = {
           success: false,
           status_code: 400,
           message: 'Channel not found',
           data: null,
         };
+
+        toast.error(errorResponse.message);
+        return errorResponse;
       }
 
-      const { data, error } = await supabase
-        .from('channels')
-        .update({
-          contest_defaults,
-        })
-        .eq('id', myChannel.id)
-        .select('id, contest_defaults')
-        .single();
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-      if (error) {
-        return {
+      if (sessionError || !session?.access_token) {
+        const errorResponse: AppResponse<UpdateContestDefaultsResponseData> = {
           success: false,
-          status_code: 400,
-          message: error.message || 'Failed to update contest defaults',
+          status_code: 401,
+          message: 'You must be signed in to update contest defaults.',
           data: null,
+          error_code: sessionError?.code,
         };
+
+        toast.error(errorResponse.message);
+        return errorResponse;
+      }
+
+      const response = await fetch('/api/channels/contest-defaults/update', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          channel_id: myChannel.id,
+          contest_defaults,
+        }),
+      });
+
+      const result =
+        (await response.json()) as AppResponse<UpdateContestDefaultsResponseData>;
+
+      if (!response.ok || !result.success) {
+        toast.error(result.message || 'Failed to update contest defaults');
+        return result;
       }
 
       await queryClient.invalidateQueries({
-        queryKey: queryKeys.channels.myChannel(myChannel.owner_id),
+        queryKey: queryKeys.channels.myChannel(result.data?.owner_id),
       });
 
-      toast.success('Contest defaults updated successfully');
+      toast.success(result.message || 'Contest defaults updated successfully');
 
-      return {
-        success: true,
-        status_code: 200,
-        message: 'Contest defaults updated successfully',
-        data: {
-          channel_id: data.id,
-          contest_defaults: data.contest_defaults,
-        },
-      };
+      return result;
     } catch (error) {
-      return {
+      const errorResponse: AppResponse<UpdateContestDefaultsResponseData> = {
         success: false,
         status_code: 500,
         message:
           error instanceof Error ? error.message : 'Something went wrong',
         data: null,
       };
+
+      toast.error(errorResponse.message);
+      return errorResponse;
     } finally {
       setLoading(false);
     }

@@ -4,16 +4,20 @@ import { Discord } from '../icons/Discord';
 
 const Footer = () => {
   return (
-    <footer className="relative overflow-hidden space-y-8 mx-auto w-full max-w-(--breakpoint-2xl) py-15 pb-4 md:pt-16 px-6 md:px-12">
+    <footer className="relative overflow-hidden space-y-8 mx-auto w-full max-w-(--breakpoint-2xl) py-15 pb-4 md:pt-16 px-3 md:px-12">
       <div className="flex flex-col md:flex-row gap-8 md:gap-0">
         <div className="w-full md:max-w-100 space-y-4">
-          <CompanyLogo />
+          <CompanyLogo
+            width={100}
+            height={25}
+            className="overflow-hidden h-12"
+          />
           <p className="text-xs max-w-65 text-muted-foreground">
             Automated WhatsApp Referral Contest System. Build, gamify, and grow
             your audience effortlessly.
           </p>
 
-          <div className='flex gap-3 text-muted-foreground'>
+          <div className="flex gap-3 text-muted-foreground">
             <XIcon /> <Discord />
           </div>
         </div>

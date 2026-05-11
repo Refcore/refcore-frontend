@@ -55,7 +55,7 @@ const Navbar = ({ disablenav }: { disablenav?: boolean }) => {
           scrolled && 'bg-background/80 backdrop-blur-md',
         )}
       >
-        <div className="mx-auto flex h-20 w-full max-w-(--breakpoint-2xl) items-center justify-between px-6 md:px-12">
+        <div className="mx-auto flex h-20 w-full max-w-(--breakpoint-2xl) items-center justify-between px-3 md:px-12">
           {/* Logo */}
            <CompanyLogo width={100} height={25} className='overflow-hidden h-12'/>
 

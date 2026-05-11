@@ -18,6 +18,6 @@ export const contestTabs: ContestTabItem[] = [
   },
   {
     label: 'Drafts',
-    value: 'drafts',
+    value: 'draft',
   },
 ];

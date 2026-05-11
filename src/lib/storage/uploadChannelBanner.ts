@@ -28,6 +28,7 @@ export const uploadChannelBanner = async ({
     .from('channel_banners')
     .upload(file_path, file, {
       upsert: true,
+      contentType: file.type,
     });
 
   if (error) {

@@ -9,7 +9,7 @@ import HeroFloatingCard from './HeroFloatingCard';
 const Hero = () => {
   return (
     <div className="relative min-h-screen w-full">
-      <div className="mx-auto pt-25 lg:pt-30 border-white h-full flex flex-col lg:flex-row w-full max-w-(--breakpoint-2xl) justify-between px-6 md:px-12">
+      <div className="mx-auto pt-25 lg:pt-30 border-white h-full flex flex-col lg:flex-row w-full max-w-(--breakpoint-2xl) justify-between px-3 md:px-12">
         <div className="flex-1 flex flex-col items-center lg:items-start w-full lg:w-[50%] gap-6 md:gap-10 xl:gap-12 2xl:gap-16">
           <div className="text-xs border-2 rounded-2xl px-4 py-2 backdrop-blur-2xl flex items-center gap-2 w-fit">
             <p className="h-2 w-2 shrink-0 bg-green-400 rounded-full animate-pulse"></p>{' '}
@@ -19,7 +19,7 @@ const Hero = () => {
             Run Viral <br />
             WhatsApp <br />
             <span className="text-gradient-success">
-              Referral Contests
+              Referral <br className='md:hidden'/> Contests
             </span>{' '}
             Automatically
           </h1>

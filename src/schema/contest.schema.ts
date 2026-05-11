@@ -116,7 +116,7 @@ export const getInitialCreateContestFormValues = (
   visibility: defaults?.visibility ?? 'public',
   contest_timing_mode: defaults?.contest_timing_mode ?? 'manual',
   referral_code_prefix: defaults?.referral_code_prefix ?? '',
-  start_date: '',
+  start_date: null,
   end_date: null,
   reward_description: defaults?.reward_description ?? '',
   max_winners: defaults?.max_winners ?? 1,
