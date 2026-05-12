@@ -51,8 +51,12 @@ export const useLogin = () => {
         };
       }
 
-      await queryClient.refetchQueries({
+      await queryClient.invalidateQueries({
         queryKey: queryKeys.auth.currentUser,
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.channels.myChannel(data.user.id),
       });
 
       toast.success('Login successful.');

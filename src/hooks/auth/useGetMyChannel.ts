@@ -3,39 +3,38 @@ import { createClient } from '@/utils/supabase/client';
 import { queryKeys } from '@/lib/query_keys';
 import { useAuthContext } from '@/context/AuthContext';
 import { MyChannel } from '@/types/channel.type';
+import { AppResponse } from '@/types/response.type';
 
-const getMyChannel = async (user_id: string): Promise<MyChannel | null> => {
+const getMyChannel = async (): Promise<MyChannel | null> => {
   const supabase = createClient();
 
-  const { data, error } = await supabase
-    .from('channels')
-    .select(
-      `
-        id,
-        owner_id,
-        tv_name,
-        slug,
-        whatsapp_number,
-        whatsapp_verified,
-        whatsapp_verified_at,
-        status,
-        created_at,
-        updated_at,
-        channel_members_limit,
-        channel_banner,
-        contest_defaults,
-        referral_rules,
-        notification_settings
-      `,
-    )
-    .eq('owner_id', user_id)
-    .maybeSingle();
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
 
-  if (error) {
-    throw new Error(error.message);
+  if (sessionError) {
+    throw new Error(sessionError.message);
   }
 
-  return data;
+  if (!session?.access_token) {
+    return null;
+  }
+
+  const response = await fetch('/api/channels/my-channel', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
+  });
+
+  const result = (await response.json()) as AppResponse<MyChannel | null>;
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || 'Unable to fetch channel.');
+  }
+
+  return result.data;
 };
 
 export const useGetMyChannel = () => {
@@ -47,7 +46,7 @@ export const useGetMyChannel = () => {
 
   return useQuery({
     queryKey: queryKeys.channels.myChannel(authUser?.id),
-    queryFn: () => getMyChannel(authUser!.id),
+    queryFn: getMyChannel,
     enabled: isAuthenticated && !!authUser?.id && !isAuthLoading,
     staleTime: 1000 * 60 * 5,
   });

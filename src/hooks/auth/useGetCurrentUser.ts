@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/utils/supabase/client';
 import { queryKeys } from '@/lib/query_keys';
 import { User } from '@/model/user.model';
+import { AppResponse } from '@/types/response.type';
 
 type CurrentUserResponse = {
   auth_user: {
@@ -15,35 +16,33 @@ const getCurrentUser = async (): Promise<CurrentUserResponse | null> => {
   const supabase = createClient();
 
   const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
 
-  if (authError) {
-    throw new Error(authError.message);
+  if (sessionError) {
+    throw new Error(sessionError.message);
   }
 
-  if (!user) {
+  if (!session?.access_token) {
     return null;
   }
 
-  const { data: profile, error: profileError } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', user.id)
-    .maybeSingle();
+  const response = await fetch('/api/auth/current-user', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
+  });
 
-  if (profileError && profileError.code !== 'PGRST116') {
-    throw new Error(profileError.message);
+  const result =
+    (await response.json()) as AppResponse<CurrentUserResponse>;
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || 'Unable to fetch current user.');
   }
 
-  return {
-    auth_user: {
-      id: user.id,
-      email: user.email ?? null,
-    },
-    profile: profile ?? null,
-  };
+  return result.data;
 };
 
 export const useGetCurrentUser = () => {

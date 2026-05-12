@@ -16,74 +16,76 @@ type UpdateProfilePayload = {
 type UpdateProfileResponseData = {
   user_id: string;
   profile_picture: string | null;
+  old_profile_picture?: string | null;
 };
 
 export const useUpdateProfile = () => {
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
+  const supabase = createClient();
 
   const updateProfile = async (
     payload: UpdateProfilePayload,
   ): Promise<AppResponse<UpdateProfileResponseData>> => {
-    const supabase = createClient();
-
-    const { data: existing_user, error: existing_user_error } = await supabase
-      .from('users')
-      .select('profile_picture')
-      .eq('id', payload.user_id)
-      .single();
-
-    if (existing_user_error) {
-      return {
-        success: false,
-        status_code: 400,
-        message:
-          existing_user_error.message || 'Failed to fetch existing profile',
-        data: null,
-      };
-    }
-
-    const old_profile_picture = existing_user?.profile_picture ?? null;
-
     try {
       setLoading(true);
+
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError || !session?.access_token || !session.user?.id) {
+        const errorResponse: AppResponse<UpdateProfileResponseData> = {
+          success: false,
+          status_code: 401,
+          message: 'You must be signed in to update your profile.',
+          data: null,
+          error_code: sessionError?.code,
+        };
+
+        toast.error(errorResponse.message);
+        return errorResponse;
+      }
 
       let profile_picture = payload.profile_picture ?? null;
 
       if (profile_picture instanceof File) {
         const upload_result = await uploadProfilePicture({
           file: profile_picture,
-          user_id: payload.user_id,
+          user_id: session.user.id,
         });
 
         profile_picture = upload_result.file_path;
       }
 
-      const update_payload = {
-        user_name: payload.user_name,
-        profile_picture,
-      };
+      const response = await fetch('/api/profile/update', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          user_name: payload.user_name,
+          profile_picture,
+        }),
+      });
 
-      const { data, error } = await supabase
-        .from('users')
-        .update(update_payload)
-        .eq('id', payload.user_id)
-        .select('id, profile_picture')
-        .single();
+      const result =
+        (await response.json()) as AppResponse<UpdateProfileResponseData>;
 
-      if (error) {
-        return {
-          success: false,
-          status_code: 400,
-          message: error.message || 'Failed to update profile',
-          data: null,
-        };
+      if (!response.ok || !result.success) {
+        toast.error(result.message || 'Failed to update profile');
+        return result;
       }
+
+      const old_profile_picture = result.data?.old_profile_picture ?? null;
+      const new_profile_picture = result.data?.profile_picture ?? null;
 
       if (
         payload.profile_picture instanceof File &&
         old_profile_picture &&
-        old_profile_picture !== profile_picture
+        old_profile_picture !== new_profile_picture
       ) {
         try {
           await deleteStorageFile({
@@ -99,25 +101,20 @@ export const useUpdateProfile = () => {
         queryKey: queryKeys.auth.currentUser,
       });
 
-      toast.success('Profile updated successfully');
+      toast.success(result.message || 'Profile updated successfully');
 
-      return {
-        success: true,
-        status_code: 200,
-        message: 'Profile updated successfully',
-        data: {
-          user_id: data.id,
-          profile_picture: data.profile_picture,
-        },
-      };
+      return result;
     } catch (error) {
-      return {
+      const errorResponse: AppResponse<UpdateProfileResponseData> = {
         success: false,
         status_code: 500,
         message:
           error instanceof Error ? error.message : 'Something went wrong',
         data: null,
       };
+
+      toast.error(errorResponse.message);
+      return errorResponse;
     } finally {
       setLoading(false);
     }

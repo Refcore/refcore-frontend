@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
-
 export const useLogout = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -30,7 +29,12 @@ export const useLogout = () => {
         queryKey: queryKeys.auth.currentUser,
       });
 
+      queryClient.removeQueries({
+        queryKey: queryKeys.channels.all,
+      });
+
       toast.success('Logged out successfully');
+
       router.replace(AUTH_ROUTES.LOGIN);
       router.refresh();
     } catch {

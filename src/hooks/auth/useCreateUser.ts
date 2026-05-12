@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { createClient } from '@/utils/supabase/client';
 import type { RegisterAccountFormData } from '@/schema/register.schema';
 import { AppResponse } from '@/types/response.type';
@@ -18,53 +19,60 @@ export const useCreateUser = () => {
     try {
       setLoading(true);
 
-      const { data, error } = await supabase.auth.signUp({
-        email: payload.email,
-        password: payload.password,
-        options: {
-          data: {
-            user_name: payload.user_name,
-          },
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify(payload),
       });
 
-      if (error) {
+      const result =
+        (await response.json()) as AppResponse<CreateUserResponseData>;
+
+      if (!response.ok || !result.success) {
+        toast.error(result.message || 'Unable to create user account.');
+        return result;
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: payload.email,
+        password: payload.password,
+      });
+
+      if (signInError) {
+        toast.error(
+          'Account created, but automatic sign in failed. Please sign in manually.',
+        );
+
         return {
+          ...result,
           success: false,
-          status_code: error.message.toLowerCase().includes('already')
-            ? 409
-            : 400,
-          message: error.message,
-          data: null,
-          error_code: error.code,
+          status_code: 401,
+          message:
+            'Account created, but automatic sign in failed. Please sign in manually.',
+          error_code: signInError.code,
         };
       }
 
-      if (!data.user) {
-        return {
-          success: false,
-          status_code: 500,
-          message: 'Unable to create user account.',
-          data: null,
-        };
-      }
+      toast.success(result.message || 'User created successfully.');
 
-      return {
-        success: true,
-        status_code: 201,
-        message: 'User created successfully.',
-        data: {
-          user_id: data.user.id,
-          email: data.user.email ?? payload.email,
-        },
-      };
-    } catch {
-      return {
+      return result;
+    } catch (error) {
+      console.error('Create user hook error:', error);
+
+      const errorResponse: AppResponse<CreateUserResponseData> = {
         success: false,
         status_code: 500,
-        message: 'Something went wrong while creating the account.',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while creating the user.',
         data: null,
       };
+
+      toast.error(errorResponse.message);
+      return errorResponse;
     } finally {
       setLoading(false);
     }

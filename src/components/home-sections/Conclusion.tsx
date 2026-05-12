@@ -3,7 +3,7 @@ import { Button } from '../ui/button';
 
 const Conclusion = () => {
   return (
-    <div className="py-20 md:py-24 px-6 md:px-12 relative">
+    <div className="py-20 md:py-24 px-3 md:px-12 relative">
       <div className="flex flex-col items-center gap-10 mx-auto w-full max-w-(--breakpoint-2xl)">
         <h3 className="text-4xl md:text-6xl font-bold text-center">
           Stop Counting Manually. <br className="block" />

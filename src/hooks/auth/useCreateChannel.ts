@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { createClient } from '@/utils/supabase/client';
 import type { RegisterChannelFormData } from '@/schema/register.schema';
 import { AppResponse } from '@/types/response.type';
@@ -22,67 +23,58 @@ export const useCreateChannel = () => {
       setLoading(true);
 
       const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-      if (userError || !user) {
-        return {
+      if (sessionError || !session?.access_token) {
+        const errorResponse: AppResponse<CreateChannelResponseData> = {
           success: false,
           status_code: 401,
           message: 'You must be signed in to create a channel.',
           data: null,
-          error_code: userError?.code,
+          error_code: sessionError?.code,
         };
+
+        toast.error(errorResponse.message);
+        return errorResponse;
       }
 
-      const { data, error } = await supabase
-        .from('channels')
-        .insert({
-          owner_id: user.id,
-          tv_name: payload.tv_name,
-          slug: payload.slug,
-          whatsapp_number: payload.whatsapp_number,
-        })
-        .select('id, owner_id, slug, whatsapp_verified, status')
-        .single();
-
-      if (error) {
-        const duplicateField =
-          error.message.toLowerCase().includes('slug')
-            ? 'Slug already exists.'
-            : error.message.toLowerCase().includes('whatsapp')
-              ? 'WhatsApp number already exists.'
-              : error.message;
-
-        return {
-          success: false,
-          status_code: error.code === '23505' ? 409 : 400,
-          message: duplicateField,
-          data: null,
-          error_code: error.code,
-        };
-      }
-
-      return {
-        success: true,
-        status_code: 201,
-        message: 'Channel created successfully.',
-        data: {
-          channel_id: data.id,
-          owner_id: data.owner_id,
-          slug: data.slug,
-          whatsapp_verified: data.whatsapp_verified,
-          status: data.status,
+      const response = await fetch('/api/channels/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
         },
-      };
-    } catch {
-      return {
+        body: JSON.stringify(payload),
+      });
+
+      const result =
+        (await response.json()) as AppResponse<CreateChannelResponseData>;
+
+      if (!response.ok || !result.success) {
+        toast.error(result.message || 'Unable to create channel.');
+        return result;
+      }
+
+      toast.success(result.message || 'Channel created successfully.');
+
+      return result;
+    } catch (error) {
+      console.error('Create channel hook error:', error);
+
+      const errorResponse: AppResponse<CreateChannelResponseData> = {
         success: false,
         status_code: 500,
-        message: 'Something went wrong while creating the channel.',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while creating the channel.',
         data: null,
       };
+
+      toast.error(errorResponse.message);
+      return errorResponse;
     } finally {
       setLoading(false);
     }

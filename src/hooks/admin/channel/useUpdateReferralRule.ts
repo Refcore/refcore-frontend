@@ -23,66 +23,86 @@ export const useUpdateReferralRule = () => {
   const [loading, setLoading] = useState(false);
   const { myChannel } = useAuthContext();
   const queryClient = useQueryClient();
+  const supabase = createClient();
 
   const updateReferralRule = async (
     payload: UpdateReferralRulePayload,
   ): Promise<AppResponse<UpdateReferralRuleResponseData>> => {
-    const supabase = createClient();
-
     try {
       setLoading(true);
 
       if (!myChannel?.id) {
-        return {
+        const errorResponse: AppResponse<UpdateReferralRuleResponseData> = {
           success: false,
           status_code: 400,
           message: 'Channel not found',
           data: null,
         };
+
+        toast.error(errorResponse.message);
+        return errorResponse;
       }
 
-      const { data, error } = await supabase
-        .from('channels')
-        .update({
-          referral_rules: payload.referral_rules,
-        })
-        .eq('id', myChannel.id)
-        .select('id, owner_id, referral_rules')
-        .single();
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-      if (error) {
-        return {
+      if (sessionError || !session?.access_token) {
+        const errorResponse: AppResponse<UpdateReferralRuleResponseData> = {
           success: false,
-          status_code: 400,
-          message: error.message || 'Failed to update referral rule',
+          status_code: 401,
+          message: 'You must be signed in to update referral rules.',
           data: null,
+          error_code: sessionError?.code,
         };
+
+        toast.error(errorResponse.message);
+        return errorResponse;
+      }
+
+      const response = await fetch('/api/channels/referral-rules/update', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          channel_id: myChannel.id,
+          referral_rules: payload.referral_rules,
+        }),
+      });
+
+      const result =
+        (await response.json()) as AppResponse<UpdateReferralRuleResponseData>;
+
+      if (!response.ok || !result.success) {
+        toast.error(result.message || 'Failed to update referral rule');
+        return result;
       }
 
       await queryClient.invalidateQueries({
-        queryKey: queryKeys.channels.myChannel(myChannel.owner_id),
+        queryKey: queryKeys.channels.myChannel(result.data?.owner_id),
       });
 
-      toast.success('Referral rule updated successfully');
+      toast.success(result.message || 'Referral rule updated successfully');
 
-      return {
-        success: true,
-        status_code: 200,
-        message: 'Referral rule updated successfully',
-        data: {
-          channel_id: data.id,
-          referral_rules: data.referral_rules,
-          owner_id: data.owner_id,
-        },
-      };
+      return result;
     } catch (error) {
-      return {
+      console.error('Update referral rule hook error:', error);
+
+      const errorResponse: AppResponse<UpdateReferralRuleResponseData> = {
         success: false,
         status_code: 500,
         message:
-          error instanceof Error ? error.message : 'Something went wrong',
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while updating the referral rule.',
         data: null,
       };
+
+      toast.error(errorResponse.message);
+      return errorResponse;
     } finally {
       setLoading(false);
     }

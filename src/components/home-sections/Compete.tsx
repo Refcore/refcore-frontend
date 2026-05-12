@@ -4,7 +4,7 @@ import CompeteRight from './CompeteRight';
 
 const Compete = () => {
   return (
-    <div className="relative overflow-hidden flex flex-col lg:flex-row items-end gap-10 mx-auto w-full max-w-(--breakpoint-2xl) py-20 md:py-24 px-6 md:px-12">
+    <div className="relative overflow-hidden flex flex-col lg:flex-row items-end gap-10 mx-auto w-full max-w-(--breakpoint-2xl) py-20 md:py-24 px-3 md:px-12">
       <div className="flex-1 space-y-4">
         <h3 className="text-4xl md:text-6xl font-bold">
           Built to Make Users <br className="block md:hidden" />

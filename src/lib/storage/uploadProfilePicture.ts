@@ -28,6 +28,7 @@ export const uploadProfilePicture = async ({
     .from('profile_pictures')
     .upload(file_path, file, {
       upsert: true,
+      contentType: file.type,
     });
 
   if (error) {

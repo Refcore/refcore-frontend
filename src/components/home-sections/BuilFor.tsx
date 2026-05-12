@@ -6,7 +6,7 @@ import PerformanceCard from './PerformanceCard';
 
 const BuilFor = () => {
   return (
-    <div className="relative overflow-hidden flex flex-col items-center gap-10 mx-auto w-full max-w-(--breakpoint-2xl) py-20 md:py-24 px-6 md:px-12">
+    <div className="relative overflow-hidden flex flex-col items-center gap-10 mx-auto w-full max-w-(--breakpoint-2xl) py-20 md:py-24 px-3 md:px-12">
       <h3 className="text-4xl md:text-6xl font-bold text-center">
         Built for <br className="block md:hidden" />
         <span className="text-gradient-success">Performance</span>
@@ -21,7 +21,7 @@ const BuilFor = () => {
         ))}
       </div>
 
-      <div className="pointer-events-none blur-3xl scale-300 opacity-20 h-full w-full absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,green_0%,transparent_18%,rgba(10,10,15,0.35)_42%,rgba(10,10,15,0.72)_68%,#0a0a0f_100%)]" />
+      <div className="pointer-events-none blur-3xl scale-300 opacity-10 h-full w-full absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,green_0%,transparent_18%,rgba(10,10,15,0.35)_42%,rgba(10,10,15,0.72)_68%,#0a0a0f_100%)]" />
     </div>
   );
 };

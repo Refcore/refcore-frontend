@@ -18,40 +18,39 @@ type UpdateChannelPayload = {
 
 type UpdateChannelResponseData = {
   channel_id: string;
+  owner_id: string;
   channel_banner: string | null;
+  old_channel_banner?: string | null;
 };
 
 export const useUpdateChannel = () => {
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
+  const supabase = createClient();
 
   const updateChannel = async (
     payload: UpdateChannelPayload,
   ): Promise<AppResponse<UpdateChannelResponseData>> => {
-    const supabase = createClient();
-
     try {
       setLoading(true);
 
-      const { data: existing_channel, error: existing_channel_error } =
-        await supabase
-          .from('channels')
-          .select('channel_banner')
-          .eq('id', payload.channel_id)
-          .single();
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-      if (existing_channel_error) {
-        return {
+      if (sessionError || !session?.access_token) {
+        const errorResponse: AppResponse<UpdateChannelResponseData> = {
           success: false,
-          status_code: 400,
-          message:
-            existing_channel_error.message ||
-            'Failed to fetch existing channel',
+          status_code: 401,
+          message: 'You must be signed in to update your channel.',
           data: null,
+          error_code: sessionError?.code,
         };
-      }
 
-      const old_channel_banner = existing_channel?.channel_banner ?? null;
+        toast.error(errorResponse.message);
+        return errorResponse;
+      }
 
       let channel_banner = payload.channel_banner ?? null;
 
@@ -64,34 +63,37 @@ export const useUpdateChannel = () => {
         channel_banner = upload_result.file_path;
       }
 
-      const update_payload = {
-        tv_name: payload.tv_name,
-        slug: payload.slug,
-        whatsapp_number: payload.whatsapp_number,
-        channel_members_limit: payload.channel_members_limit ?? null,
-        channel_banner,
-      };
+      const response = await fetch('/api/channels/update', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          channel_id: payload.channel_id,
+          tv_name: payload.tv_name,
+          slug: payload.slug,
+          whatsapp_number: payload.whatsapp_number,
+          channel_members_limit: payload.channel_members_limit ?? null,
+          channel_banner,
+        }),
+      });
 
-      const { data, error } = await supabase
-        .from('channels')
-        .update(update_payload)
-        .eq('id', payload.channel_id)
-        .select('id, owner_id, channel_banner')
-        .single();
+      const result =
+        (await response.json()) as AppResponse<UpdateChannelResponseData>;
 
-      if (error) {
-        return {
-          success: false,
-          status_code: 400,
-          message: error.message || 'Failed to update channel',
-          data: null,
-        };
+      if (!response.ok || !result.success) {
+        toast.error(result.message || 'Failed to update channel');
+        return result;
       }
+
+      const old_channel_banner = result.data?.old_channel_banner ?? null;
+      const new_channel_banner = result.data?.channel_banner ?? null;
 
       if (
         payload.channel_banner instanceof File &&
         old_channel_banner &&
-        old_channel_banner !== channel_banner
+        old_channel_banner !== new_channel_banner
       ) {
         try {
           await deleteStorageFile({
@@ -104,28 +106,23 @@ export const useUpdateChannel = () => {
       }
 
       await queryClient.invalidateQueries({
-        queryKey: queryKeys.channels.myChannel(data.owner_id),
+        queryKey: queryKeys.channels.myChannel(result.data?.owner_id),
       });
 
-      toast.success('Channel updated successfully');
+      toast.success(result.message || 'Channel updated successfully');
 
-      return {
-        success: true,
-        status_code: 200,
-        message: 'Channel updated successfully',
-        data: {
-          channel_id: data.id,
-          channel_banner: data.channel_banner,
-        },
-      };
+      return result;
     } catch (error) {
-      return {
+      const errorResponse: AppResponse<UpdateChannelResponseData> = {
         success: false,
         status_code: 500,
         message:
           error instanceof Error ? error.message : 'Something went wrong',
         data: null,
       };
+
+      toast.error(errorResponse.message);
+      return errorResponse;
     } finally {
       setLoading(false);
     }

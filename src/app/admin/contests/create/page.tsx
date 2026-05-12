@@ -19,8 +19,9 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import NumberInput from '@/components/shared/forms/inputs/NumberInput';
 import { useAuthContext } from '@/context/AuthContext';
+import { useCreateContest } from '@/hooks/admin/contests/useCreateContest';
 
-const CreateContestFormFields = () => {
+const CreateContestFormFields = ({ loading }: { loading: boolean }) => {
   const { getValues, setValue } = useFormContext();
 
   const handleTitleBlur = (titleValue: string) => {
@@ -138,7 +139,9 @@ const CreateContestFormFields = () => {
         />
       </div>
       <div className="w-full flex justify-end">
-        <FormButton className="md:max-w-100"> Create </FormButton>
+        <FormButton loading={loading} className="md:max-w-100">
+          Create{' '}
+        </FormButton>
       </div>
     </>
   );
@@ -198,6 +201,8 @@ const ContestTimingSection = () => {
 const CreateContestPage = () => {
   const { myChannel } = useAuthContext();
 
+  const { createContest, loading } = useCreateContest();
+
   const defaults = myChannel?.contest_defaults;
 
   const handleSubmit = (values: CreateContestFormValues) => {
@@ -208,8 +213,7 @@ const CreateContestPage = () => {
       end_date:
         values.contest_timing_mode === 'manual' ? null : values.end_date,
     };
-
-    console.log(payload);
+    createContest(payload);
   };
 
   return (
@@ -225,7 +229,7 @@ const CreateContestPage = () => {
         schema={createContestSchema}
         className="space-y-6 py-4"
       >
-        <CreateContestFormFields />
+        <CreateContestFormFields loading={loading} />
       </FormShell>
     </div>
   );
