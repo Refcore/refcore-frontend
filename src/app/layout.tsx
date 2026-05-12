@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://refcore-frontend.vercel.app/images/og-image.png',
+        url: 'https://drive.google.com/file/d/1Ihi1HH6rsANQxpgUuxYspkyXB8SHSxsA/view?usp=sharing',
         width: 1200,
         height: 630,
         alt: 'REFCORE automated WhatsApp referral contest platform',
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: 'REFCORE | Automated WhatsApp Referral Contests',
     description:
       'Run automated WhatsApp referral contests with live leaderboard tracking and anti-cheat support.',
-    images: ['https://refcore-frontend.vercel.app/images/og-image.png'],
+    images: ['https://drive.google.com/file/d/1Ihi1HH6rsANQxpgUuxYspkyXB8SHSxsA/view?usp=sharing'],
   },
 
   icons: {
