@@ -213,8 +213,6 @@ const CreateContestPage = () => {
       end_date:
         values.contest_timing_mode === 'manual' ? null : values.end_date,
     };
-
-    console.log(payload);
     createContest(payload);
   };
 

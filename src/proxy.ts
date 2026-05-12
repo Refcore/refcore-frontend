@@ -1,16 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from '@/utils/supabase/middleware';
 
-const PUBLIC_API_ROUTES = ['/api/auth/register'];
+const PUBLIC_API_ROUTES = new Set(['/api/auth/register']);
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isApiRoute = pathname.startsWith('/api');
 
-  const isPublicApiRoute = PUBLIC_API_ROUTES.some((route) =>
-    pathname.startsWith(route),
-  );
+  const isPublicApiRoute =
+    request.method === 'POST' && PUBLIC_API_ROUTES.has(pathname);
 
   if (isApiRoute && !isPublicApiRoute) {
     const authHeader = request.headers.get('authorization');

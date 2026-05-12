@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getApiAuthUser } from '@/lib/api-auth';
 import { createContestSchema } from '@/schema/contest.schema';
+import { Prisma } from '@/generated/prisma/client';
 
 export async function POST(request: Request) {
   try {
@@ -153,6 +154,22 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 409,
+          message: 'Contest slug already exists for this channel.',
+          data: null,
+          error_code: 'CONTEST_SLUG_ALREADY_EXISTS',
+        },
+        { status: 409 },
+      );
+    }
+
     console.error('Create contest API error:', error);
 
     return NextResponse.json(

@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getApiAuthUser } from '@/lib/api-auth';
+import { z } from 'zod';
+import { notificationSettingsSchema } from '@/schema/notificationSettings.schema';
+
+const updateNotificationSettingsBodySchema = z.object({
+  channel_id: z.string().uuid('Invalid channel ID.'),
+  notification_settings: notificationSettingsSchema,
+});
 
 export async function PATCH(request: Request) {
   try {
@@ -12,34 +19,39 @@ export async function PATCH(request: Request) {
       });
     }
 
-    const body = await request.json();
+    let body: unknown;
 
-    const channel_id = body.channel_id as string;
-    const notification_settings = body.notification_settings;
-
-    if (!channel_id) {
+    try {
+      body = await request.json();
+    } catch {
       return NextResponse.json(
         {
           success: false,
           status_code: 400,
-          message: 'Channel ID is required.',
+          message: 'Invalid JSON body.',
           data: null,
         },
         { status: 400 },
       );
     }
 
-    if (!notification_settings) {
+    const parsed = updateNotificationSettingsBodySchema.safeParse(body);
+
+    if (!parsed.success) {
       return NextResponse.json(
         {
           success: false,
           status_code: 400,
-          message: 'Notification settings are required.',
+          message: 'Invalid notification settings payload.',
           data: null,
+          error_code: 'INVALID_NOTIFICATION_SETTINGS_PAYLOAD',
+          errors: z.treeifyError(parsed.error),
         },
         { status: 400 },
       );
     }
+
+    const { channel_id, notification_settings } = parsed.data;
 
     const existing_channel = await prisma.channels.findUnique({
       where: {

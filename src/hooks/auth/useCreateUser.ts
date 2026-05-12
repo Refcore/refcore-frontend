@@ -58,16 +58,20 @@ export const useCreateUser = () => {
       toast.success(result.message || 'User created successfully.');
 
       return result;
-    } catch {
+    } catch (error) {
+      console.error('Create user hook error:', error);
+
       const errorResponse: AppResponse<CreateUserResponseData> = {
         success: false,
         status_code: 500,
-        message: 'Something went wrong while creating the account.',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while creating the user.',
         data: null,
       };
 
       toast.error(errorResponse.message);
-
       return errorResponse;
     } finally {
       setLoading(false);

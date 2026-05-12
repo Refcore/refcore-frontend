@@ -13,10 +13,29 @@ export async function PATCH(request: Request) {
       });
     }
 
-    const body = await request.json();
+    let body: unknown;
 
-    const channel_id = body.channel_id as string;
-    const contest_defaults = body.contest_defaults;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Invalid JSON body.',
+          data: null,
+        },
+        { status: 400 },
+      );
+    }
+
+    const request_body = body as {
+      channel_id?: string;
+      contest_defaults?: unknown;
+    };
+
+    const channel_id = request_body.channel_id;
+    const contest_defaults = request_body.contest_defaults;
 
     if (!channel_id) {
       return NextResponse.json(

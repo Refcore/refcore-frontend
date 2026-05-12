@@ -60,11 +60,16 @@ export const useCreateChannel = () => {
       toast.success(result.message || 'Channel created successfully.');
 
       return result;
-    } catch {
+    } catch (error) {
+      console.error('Create channel hook error:', error);
+
       const errorResponse: AppResponse<CreateChannelResponseData> = {
         success: false,
         status_code: 500,
-        message: 'Something went wrong while creating the channel.',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while creating the channel.',
         data: null,
       };
 

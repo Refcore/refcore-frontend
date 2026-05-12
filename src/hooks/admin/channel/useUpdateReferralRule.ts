@@ -89,11 +89,15 @@ export const useUpdateReferralRule = () => {
 
       return result;
     } catch (error) {
+      console.error('Update referral rule hook error:', error);
+
       const errorResponse: AppResponse<UpdateReferralRuleResponseData> = {
         success: false,
         status_code: 500,
         message:
-          error instanceof Error ? error.message : 'Something went wrong',
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while updating the referral rule.',
         data: null,
       };
 

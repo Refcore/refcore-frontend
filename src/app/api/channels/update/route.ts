@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getApiAuthUser } from '@/lib/api-auth';
+import { Prisma } from '@/generated/prisma/client';
 
 export async function PATCH(request: Request) {
   try {
@@ -165,6 +166,36 @@ export async function PATCH(request: Request) {
       },
     });
   } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    ) {
+      const target = error.meta?.target;
+
+      const fields = Array.isArray(target)
+        ? target
+        : typeof target === 'string'
+          ? [target]
+          : [];
+
+      const message = fields.includes('slug')
+        ? 'Slug already exists.'
+        : fields.includes('whatsapp_number')
+          ? 'WhatsApp number already exists.'
+          : 'Channel already exists.';
+
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 409,
+          message,
+          data: null,
+          error_code: 'CHANNEL_ALREADY_EXISTS',
+        },
+        { status: 409 },
+      );
+    }
+
     console.error('Update channel API error:', error);
 
     return NextResponse.json(
