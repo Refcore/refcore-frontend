@@ -59,8 +59,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const publicUser = await prisma.public_users.create({
-      data: {
+    const publicUser = await prisma.public_users.upsert({
+      where: {
+        id: data.user.id,
+      },
+      update: {
+        email: data.user.email ?? payload.email,
+        user_name: payload.user_name,
+      },
+      create: {
         id: data.user.id,
         email: data.user.email ?? payload.email,
         user_name: payload.user_name,

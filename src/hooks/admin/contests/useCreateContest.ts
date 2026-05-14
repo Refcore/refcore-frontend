@@ -22,6 +22,7 @@ export const useCreateContest = () => {
 
   const createContest = async (
     payload: CreateContestFormValues,
+    onsuccess?: () => void,
   ): Promise<AppResponse<CreateContestResponseData>> => {
     try {
       setLoading(true);
@@ -81,6 +82,7 @@ export const useCreateContest = () => {
       });
 
       toast.success(result.message || 'Contest created successfully.');
+      onsuccess?.();
 
       return result;
     } catch (error) {

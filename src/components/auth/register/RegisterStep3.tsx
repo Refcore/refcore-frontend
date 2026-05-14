@@ -20,7 +20,7 @@ type OtpInputGroupProps = {
 };
 
 const OtpInputGroup = ({ name, length = 4 }: OtpInputGroupProps) => {
-  const { setValue, watch, formState, trigger } =
+  const { setValue, watch, formState, trigger, register } =
     useFormContext<RegisterOtpFormData>();
 
   const otpValue = watch(name) ?? '';
@@ -123,7 +123,7 @@ const OtpInputGroup = ({ name, length = 4 }: OtpInputGroupProps) => {
         <span>OTP code</span>
         <span className="text-(--neon-green)">*</span>
       </label>
-
+      <input type="hidden" {...register(name)} />
       <div className="grid grid-cols-4 gap-3 md:gap-4">
         {digits.map((digit, index) => (
           <input
@@ -148,8 +148,10 @@ const OtpInputGroup = ({ name, length = 4 }: OtpInputGroupProps) => {
             )}
           />
         ))}
-      </div>
-
+      </div>{' '}
+      this will never be the best way to handle otp inputs but it was fun to
+      build and works well for a 4 digit otp, feel free to suggest improvements
+      in the future
       {formState.errors[name] ? (
         <p className="text-xs font-medium leading-5 text-red-400 md:text-sm">
           {formState.errors[name]?.message as string}
@@ -170,7 +172,7 @@ const RegisterStep3 = () => {
 
   const { data: currentUser, isLoading, error } = useGetCurrentUser();
 
-console.log({ currentUser, isLoading, error });
+  console.log({ currentUser, isLoading, error });
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -192,7 +194,7 @@ console.log({ currentUser, isLoading, error });
   const handleSendOtp = () => {
     setOtpSent(true);
     setSecondsLeft(60);
-
+    console.log(otpSent);
     // hook your OTP API call here later
     // await sendOtp(formData.whatsappNumber)
   };
@@ -205,8 +207,8 @@ console.log({ currentUser, isLoading, error });
         </h1>
         <p className="text-sm leading-6 text-muted-foreground md:text-base">
           Send an OTP to{' '}
-          <span className="text-foreground">{formData.whatsapp_number}</span> and
-          enter it below to complete your setup.
+          <span className="text-foreground">{formData.whatsapp_number}</span>{' '}
+          and enter it below to complete your setup.
         </p>
       </div>
 
@@ -227,55 +229,34 @@ console.log({ currentUser, isLoading, error });
           </div>
         </div>
       </div>
-
       <FormShell
         schema={registerOtpSchema}
         defaultValues={{
-          otp: formData.otp,
+          otp: formData.otp ?? '',
         }}
         onSubmit={(values) => {
           updateForm(values);
+          handleSendOtp();
 
           // hook your verify/register submit here later
-          // verify otp then submit full registration payload
-          console.log('Final registration payload:', {
-            ...formData,
-            ...values,
-          });
-
-          // resetForm();
         }}
-        className="space-y-5"
       >
-        {(form) => (
-          <>
-            <button
-              type="button"
-              onClick={handleSendOtp}
-              disabled={secondsLeft > 0}
-              className={cn(
-                'inline-flex h-12 cursor-pointer w-full items-center justify-center rounded-xl border px-4 text-sm font-medium transition md:h-13 md:text-base',
-                secondsLeft > 0
-                  ? 'cursor-not-allowed border-border bg-secondary text-muted-foreground opacity-70'
-                  : 'border-(--neon-green)/20 bg-(--neon-blue) text-black hover:opacity-90',
-              )}
-            >
-              {secondsLeft > 0
-                ? `${otpSent ? 'Resend OTP' : 'Send OTP'} in ${secondsLeft}s`
-                : otpSent
-                  ? 'Resend OTP'
-                  : 'Send OTP'}
-            </button>
+        {(form) => {
+          const otpValue = form.watch('otp') ?? '';
+          const isOtpComplete = otpValue.length === 4;
 
-            <OtpInputGroup name="otp" />
+          return (
+            <>
+              <OtpInputGroup name="otp" />
 
-            <div className="pt-3">
-              <FormButton disabled={!otpSent || !form.formState.isValid}>
-                Complete registration
+              <FormButton
+                disabled={!isOtpComplete || form.formState.isSubmitting}
+              >
+                Verify OTP
               </FormButton>
-            </div>
-          </>
-        )}
+            </>
+          );
+        }}
       </FormShell>
     </div>
   );

@@ -17,6 +17,7 @@ export const contestDefaultsSchema = z.object({
   referral_code_prefix: z
     .string()
     .trim()
+    .toUpperCase()
     .max(10, 'Referral code prefix must not exceed 10 characters')
     .regex(
       /^[A-Z0-9]*$/,
@@ -47,3 +48,23 @@ export const getInitialContestDefaultsFormValues = (
   reward_description: defaults?.reward_description ?? '',
   max_winners: defaults?.max_winners ?? 1,
 });
+
+const normalizeContestDefaultsForCompare = (
+  values: ContestDefaultsFormValues,
+) => ({
+  visibility: values.visibility,
+  contest_timing_mode: values.contest_timing_mode,
+  referral_code_prefix: values.referral_code_prefix.trim().toUpperCase(),
+  reward_description: values.reward_description.trim(),
+  max_winners: Number(values.max_winners),
+});
+
+export const hasContestDefaultsChanged = (
+  currentValues: ContestDefaultsFormValues,
+  defaultValues: ContestDefaultsFormValues,
+) => {
+  return (
+    JSON.stringify(normalizeContestDefaultsForCompare(currentValues)) !==
+    JSON.stringify(normalizeContestDefaultsForCompare(defaultValues))
+  );
+};

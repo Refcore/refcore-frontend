@@ -13,11 +13,15 @@ import { ADMIN_ROUTES, AUTH_ROUTES } from '@/routes';
 import Link from 'next/link';
 import { useAuthContext } from '@/context/AuthContext';
 
+const loginDefaultValues: LoginFormData = {
+  email: '',
+  password: '',
+};
 
 const LoginPage = () => {
   const router = useRouter();
   const { loading, login } = useLogin();
-    const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated } = useAuthContext();
 
   const handleSubmit = async (values: LoginFormData) => {
     const response = await login(values);
@@ -32,15 +36,15 @@ const LoginPage = () => {
     router.refresh();
   };
 
-    useEffect(() => {
-      if (isAuthenticated) {
-        router.replace(ADMIN_ROUTES.HOME);
-      }
-    }, [isAuthenticated, router]);
-  
+  useEffect(() => {
     if (isAuthenticated) {
-      return null;
+      router.replace(ADMIN_ROUTES.HOME);
     }
+  }, [isAuthenticated, router]);
+
+  if (isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="w-screen max-w-3xl py-8 md:px-6 md:py-10 md:glass px-4 md:border-2 rounded-xl mt-6 space-y-4">
@@ -55,10 +59,7 @@ const LoginPage = () => {
 
       <FormShell
         schema={loginSchema}
-        defaultValues={{
-          email: '',
-          password: '',
-        }}
+        defaultValues={loginDefaultValues}
         onSubmit={handleSubmit}
         className="space-y-6"
       >
@@ -79,10 +80,20 @@ const LoginPage = () => {
         />
 
         <div className="pt-3">
-          <FormButton loadingText='' loading={loading}>Sign in</FormButton>
+          <FormButton loadingText="" loading={loading}>
+            Sign in
+          </FormButton>
         </div>
       </FormShell>
-      <p>Don&apos;t have an account? <Link className='text-green-500 underline cursor-pinter' href={AUTH_ROUTES.REGISTER}>Register here</Link></p>
+      <p>
+        Don&apos;t have an account?{' '}
+        <Link
+          className="text-green-500 underline cursor-pinter"
+          href={AUTH_ROUTES.REGISTER}
+        >
+          Register here
+        </Link>
+      </p>
     </div>
   );
 };

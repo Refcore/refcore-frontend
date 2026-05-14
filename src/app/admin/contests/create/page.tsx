@@ -14,8 +14,8 @@ import {
   getInitialCreateContestFormValues,
 } from '@/schema/contest.schema';
 import { PlusSquare } from 'lucide-react';
-import { useFormContext } from 'react-hook-form';
-import React from 'react';
+import { useFormContext, UseFormReturn } from 'react-hook-form';
+import React, { useMemo, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import NumberInput from '@/components/shared/forms/inputs/NumberInput';
 import { useAuthContext } from '@/context/AuthContext';
@@ -205,6 +205,13 @@ const CreateContestPage = () => {
 
   const defaults = myChannel?.contest_defaults;
 
+  const formRef = useRef<UseFormReturn<CreateContestFormValues> | null>(null);
+
+  const initialCreateContestFormValues = useMemo(
+    () => getInitialCreateContestFormValues(defaults),
+    [defaults],
+  );
+
   const handleSubmit = (values: CreateContestFormValues) => {
     const payload = {
       ...values,
@@ -213,7 +220,10 @@ const CreateContestPage = () => {
       end_date:
         values.contest_timing_mode === 'manual' ? null : values.end_date,
     };
-    createContest(payload);
+
+    createContest(payload, () => {
+      formRef.current?.reset(initialCreateContestFormValues);
+    });
   };
 
   return (
@@ -229,7 +239,11 @@ const CreateContestPage = () => {
         schema={createContestSchema}
         className="space-y-6 py-4"
       >
-        <CreateContestFormFields loading={loading} />
+        {(form) => {
+          formRef.current = form;
+
+          return <CreateContestFormFields loading={loading} />;
+        }}
       </FormShell>
     </div>
   );
