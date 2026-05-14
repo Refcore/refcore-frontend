@@ -31,8 +31,13 @@ const FormButton = ({
 }: FormButtonProps) => {
   const form = useFormContext();
 
+  const dirtyFieldsCount = Object.keys(form.formState.dirtyFields).length;
+
   const fallbackDisabled =
-    loading || form.formState.isSubmitting || !form.formState.isDirty;
+    loading ||
+    form.formState.isSubmitting ||
+    dirtyFieldsCount === 0 ||
+    !form.formState.isValid;
 
   const isDisabled = disabled ?? fallbackDisabled;
 

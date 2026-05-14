@@ -47,7 +47,8 @@ const FormShell = <TSchema extends z.ZodObject<z.ZodRawShape>>({
       keepIsSubmitted: false,
       keepSubmitCount: false,
     });
-  }, [defaultValuesSignature, defaultValues, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValuesSignature]);
 
   return (
     <FormProvider {...form}>

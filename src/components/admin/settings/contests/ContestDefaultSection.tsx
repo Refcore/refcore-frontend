@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Settings2, Trophy, Hash, Eye, Clock3 } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import FormShell from '@/components/shared/forms/FormShell';
@@ -20,15 +20,47 @@ import {
 import NumberInput from '@/components/shared/forms/inputs/NumberInput';
 import FormDropDownInput from '@/components/shared/forms/inputs/FormDropDownInput';
 import { useUpdateContestDefaults } from '@/hooks/admin/channel/useUpdateContestDefaults';
+import { useAuthContext } from '@/context/AuthContext';
 
 type ContestDefaultsSectionProps = {
   contestDefaults?: ContestDefaults | null;
 };
 
-const ContestDefaultsFormContent = ({ loading }: { loading: boolean }) => {
+const normalizeContestDefaultsForCompare = (
+  values: ContestDefaultsFormValues,
+) => ({
+  visibility: values.visibility,
+  contest_timing_mode: values.contest_timing_mode,
+  referral_code_prefix: values.referral_code_prefix.trim().toUpperCase(),
+  reward_description: values.reward_description.trim(),
+  max_winners: Number(values.max_winners),
+});
+
+const hasContestDefaultsChanged = (
+  currentValues: ContestDefaultsFormValues,
+  defaultValues: ContestDefaultsFormValues,
+) => {
+  return (
+    JSON.stringify(normalizeContestDefaultsForCompare(currentValues)) !==
+    JSON.stringify(normalizeContestDefaultsForCompare(defaultValues))
+  );
+};
+
+const ContestDefaultsFormContent = ({
+  loading,
+  defaultValues,
+}: {
+  loading: boolean;
+  defaultValues: ContestDefaultsFormValues;
+}) => {
   const {
+    watch,
     formState: { isSubmitting },
   } = useFormContext<ContestDefaultsFormValues>();
+
+  const currentValues = watch();
+
+  const hasChanges = hasContestDefaultsChanged(currentValues, defaultValues);
 
   return (
     <>
@@ -97,7 +129,7 @@ const ContestDefaultsFormContent = ({ loading }: { loading: boolean }) => {
         <FormButton
           className="md:max-w-100"
           loading={isSubmitting || loading}
-          disabled={isSubmitting || loading}
+          disabled={!hasChanges || isSubmitting || loading}
         >
           Save Changes
         </FormButton>
@@ -109,8 +141,12 @@ const ContestDefaultsFormContent = ({ loading }: { loading: boolean }) => {
 const ContestDefaultsSection = ({
   contestDefaults,
 }: ContestDefaultsSectionProps) => {
-  const initialContestDefaultsFormValues =
-    getInitialContestDefaultsFormValues(contestDefaults);
+  const { myChannel } = useAuthContext();
+
+  const initialContestDefaultsFormValues = useMemo(
+    () => getInitialContestDefaultsFormValues(myChannel?.contest_defaults),
+    [myChannel?.contest_defaults],
+  );
 
   const { updateContestDefaults, loading } = useUpdateContestDefaults();
 
@@ -163,7 +199,10 @@ const ContestDefaultsSection = ({
         schema={contestDefaultsSchema}
         className="space-y-6 py-4"
       >
-        <ContestDefaultsFormContent loading={loading} />
+        <ContestDefaultsFormContent
+          loading={loading}
+          defaultValues={initialContestDefaultsFormValues}
+        />
       </FormShell>
     </div>
   );

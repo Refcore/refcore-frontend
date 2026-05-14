@@ -308,3 +308,131 @@
 .animate-scroll {
   animation: scroll 20s linear infinite;
 }
+
+.refcore-loader {
+  --piece-size: clamp(18px, 5vw, 30px);
+
+  position: relative;
+  width: calc(var(--piece-size) * 4.4);
+  height: calc(var(--piece-size) * 5.2);
+  display: inline-block;
+  filter:
+    drop-shadow(0 0 10px rgba(0, 208, 255, 0.25))
+    drop-shadow(0 0 16px rgba(183, 0, 255, 0.12));
+}
+
+.refcore-piece {
+  position: absolute;
+  width: calc(var(--piece-size) * 1.35);
+  height: var(--piece-size);
+  border-radius: 4px;
+  clip-path: polygon(22% 0, 100% 0, 78% 100%, 0 100%);
+  opacity: 0.25;
+  animation: refcore-pulse 1.4s ease-in-out infinite;
+}
+
+/* top floating blade */
+.refcore-piece.p1 {
+  top: 0;
+  left: calc(var(--piece-size) * 2);
+  background: linear-gradient(135deg, #00ff9d, #00d0ff);
+  animation-delay: 0ms;
+}
+
+/* center upper blade */
+.refcore-piece.p2 {
+  top: calc(var(--piece-size) * 1.05);
+  left: calc(var(--piece-size) * 1.25);
+  background: linear-gradient(135deg, #00d0ff, #00ff9d);
+  animation-delay: 120ms;
+}
+
+/* center connector */
+.refcore-piece.p3 {
+  top: calc(var(--piece-size) * 2.05);
+  left: calc(var(--piece-size) * 1.95);
+  background: linear-gradient(135deg, #00ff9d, #00d0ff);
+  animation-delay: 240ms;
+}
+
+/* right lower blade */
+.refcore-piece.p4 {
+  top: calc(var(--piece-size) * 2.95);
+  left: calc(var(--piece-size) * 2.45);
+  background: linear-gradient(135deg, #00d0ff, #006cff);
+  animation-delay: 360ms;
+}
+
+/* bottom blade */
+.refcore-piece.p5 {
+  top: calc(var(--piece-size) * 4);
+  left: calc(var(--piece-size) * 1.45);
+  background: linear-gradient(135deg, #006cff, #8a00ff);
+  animation-delay: 480ms;
+}
+
+/* left lower blade */
+.refcore-piece.p6 {
+  top: calc(var(--piece-size) * 2.95);
+  left: calc(var(--piece-size) * 0.25);
+  background: linear-gradient(135deg, #b700ff, #8a00ff);
+  animation-delay: 600ms;
+}
+
+/* inner dark cut to create the logo-gap feel */
+.refcore-loader::after {
+  content: '';
+  position: absolute;
+  width: calc(var(--piece-size) * 1.15);
+  height: calc(var(--piece-size) * 1.05);
+  top: calc(var(--piece-size) * 3.35);
+  left: calc(var(--piece-size) * 1.65);
+  background: #0a0a0f;
+  clip-path: polygon(22% 0, 100% 0, 78% 100%, 0 100%);
+  border-radius: 3px;
+  z-index: 3;
+}
+
+/* soft brand glow behind loader */
+.refcore-loader::before {
+  content: '';
+  position: absolute;
+  inset: 18%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 208, 255, 0.22),
+    rgba(183, 0, 255, 0.12),
+    transparent 70%
+  );
+  filter: blur(18px);
+  animation: refcore-glow 1.8s ease-in-out infinite;
+}
+
+@keyframes refcore-pulse {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: translateY(0) scale(0.96);
+  }
+
+  45% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1);
+    box-shadow:
+      0 0 12px rgba(0, 208, 255, 0.35),
+      inset 0 0 8px rgba(255, 255, 255, 0.16);
+  }
+}
+
+@keyframes refcore-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.95);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: scale(1.08);
+  }
+}
