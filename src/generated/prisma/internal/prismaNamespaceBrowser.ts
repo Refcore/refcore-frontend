@@ -51,6 +51,10 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  contest_participants: 'contest_participants',
+  participants: 'participants',
+  referral_attempts: 'referral_attempts',
+  referrals: 'referrals',
   channels: 'channels',
   contests: 'contests',
   public_users: 'public_users',
@@ -93,6 +97,70 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const Contest_participantsScalarFieldEnum = {
+  id: 'id',
+  channel_id: 'channel_id',
+  contest_id: 'contest_id',
+  participant_id: 'participant_id',
+  referral_count: 'referral_count',
+  rank_cache: 'rank_cache',
+  joined_at: 'joined_at',
+  status: 'status',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Contest_participantsScalarFieldEnum = (typeof Contest_participantsScalarFieldEnum)[keyof typeof Contest_participantsScalarFieldEnum]
+
+
+export const ParticipantsScalarFieldEnum = {
+  id: 'id',
+  channel_id: 'channel_id',
+  phone_number: 'phone_number',
+  display_name: 'display_name',
+  referral_code: 'referral_code',
+  total_referrals: 'total_referrals',
+  total_contests_joined: 'total_contests_joined',
+  first_joined_at: 'first_joined_at',
+  last_joined_at: 'last_joined_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type ParticipantsScalarFieldEnum = (typeof ParticipantsScalarFieldEnum)[keyof typeof ParticipantsScalarFieldEnum]
+
+
+export const Referral_attemptsScalarFieldEnum = {
+  id: 'id',
+  channel_id: 'channel_id',
+  contest_id: 'contest_id',
+  referrer_participant_id: 'referrer_participant_id',
+  referee_phone_number: 'referee_phone_number',
+  referee_participant_id: 'referee_participant_id',
+  referral_code_used: 'referral_code_used',
+  status: 'status',
+  first_seen_at: 'first_seen_at',
+  converted_at: 'converted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Referral_attemptsScalarFieldEnum = (typeof Referral_attemptsScalarFieldEnum)[keyof typeof Referral_attemptsScalarFieldEnum]
+
+
+export const ReferralsScalarFieldEnum = {
+  id: 'id',
+  channel_id: 'channel_id',
+  contest_id: 'contest_id',
+  referrer_participant_id: 'referrer_participant_id',
+  referee_participant_id: 'referee_participant_id',
+  referral_attempt_id: 'referral_attempt_id',
+  created_at: 'created_at'
+} as const
+
+export type ReferralsScalarFieldEnum = (typeof ReferralsScalarFieldEnum)[keyof typeof ReferralsScalarFieldEnum]
 
 
 export const ChannelsScalarFieldEnum = {
@@ -567,6 +635,14 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -574,12 +650,4 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

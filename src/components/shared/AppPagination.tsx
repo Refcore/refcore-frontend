@@ -32,13 +32,13 @@ const AppPagination = ({
   const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
 
   return (
-    <div className="flex items-center justify-between gap-4 border-t border-border/50 px-4 py-4">
+    <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-t border-border/50 px-1 md:px-4 py-4">
       <p className="text-sm text-muted-foreground">
         Page {currentPage} of {totalPages}
       </p>
 
       <Pagination className="mx-0 w-auto justify-end">
-        <PaginationContent>
+        <PaginationContent className='flex-wrap'>
           <PaginationItem>
             <PaginationPrevious
               href="#"

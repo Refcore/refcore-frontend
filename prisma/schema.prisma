@@ -9,58 +9,186 @@ datasource db {
   schemas  = ["auth", "public"]
 }
 
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model contest_participants {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  channel_id     String   @db.Uuid
+  contest_id     String   @db.Uuid
+  participant_id String   @db.Uuid
+  referral_count Int      @default(0)
+  rank_cache     Int?
+  joined_at      DateTime @default(now()) @db.Timestamptz(6)
+  status         String   @default("active")
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime @default(now()) @db.Timestamptz(6)
+
+  channels     channels     @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  contests     contests     @relation(fields: [contest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  participants participants @relation(fields: [participant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([contest_id, participant_id], map: "contest_participants_contest_participant_unique")
+  @@index([channel_id, contest_id], map: "contest_participants_channel_contest_idx")
+  @@index([channel_id])
+  @@index([contest_id])
+  @@index([contest_id, referral_count(sort: Desc)], map: "contest_participants_leaderboard_idx")
+  @@index([participant_id])
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model participants {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  channel_id            String    @db.Uuid
+  phone_number          String
+  display_name          String?
+  referral_code         String
+  total_referrals       Int       @default(0)
+  total_contests_joined Int       @default(0)
+  first_joined_at       DateTime  @default(now()) @db.Timestamptz(6)
+  last_joined_at        DateTime? @db.Timestamptz(6)
+  created_at            DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime  @default(now()) @db.Timestamptz(6)
+
+  channels             channels               @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  contest_participants contest_participants[]
+
+  referral_attempts_as_referrer referral_attempts[] @relation("referral_attempts_referrer")
+  referral_attempts_as_referee  referral_attempts[] @relation("referral_attempts_referee")
+
+  referrals_as_referrer referrals[] @relation("referrals_referrer")
+  referrals_as_referee  referrals[] @relation("referrals_referee")
+
+  @@unique([channel_id, phone_number], map: "participants_channel_phone_unique")
+  @@unique([channel_id, referral_code], map: "participants_channel_referral_code_unique")
+  @@index([channel_id])
+  @@index([phone_number])
+  @@index([referral_code])
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model referral_attempts {
+  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  channel_id              String    @db.Uuid
+  contest_id              String    @db.Uuid
+  referrer_participant_id String    @db.Uuid
+  referee_phone_number    String
+  referee_participant_id  String?   @db.Uuid
+  referral_code_used      String
+  status                  String    @default("pending")
+  first_seen_at           DateTime  @default(now()) @db.Timestamptz(6)
+  converted_at            DateTime? @db.Timestamptz(6)
+  created_at              DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime  @default(now()) @db.Timestamptz(6)
+
+  channels channels @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  contests contests @relation(fields: [contest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  referrer_participant participants  @relation("referral_attempts_referrer", fields: [referrer_participant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  referee_participant  participants? @relation("referral_attempts_referee", fields: [referee_participant_id], references: [id], onUpdate: NoAction)
+
+  referrals referrals[]
+
+  @@unique([contest_id, referee_phone_number], map: "referral_attempts_unique_phone_per_contest")
+  @@index([channel_id])
+  @@index([contest_id])
+  @@index([created_at])
+  @@index([referee_participant_id])
+  @@index([referee_phone_number])
+  @@index([referral_code_used])
+  @@index([referrer_participant_id])
+  @@index([status])
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model referrals {
+  id                      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  channel_id              String   @db.Uuid
+  contest_id              String   @db.Uuid
+  referrer_participant_id String   @db.Uuid
+  referee_participant_id  String   @db.Uuid
+  referral_attempt_id     String?  @db.Uuid
+  created_at              DateTime @default(now()) @db.Timestamptz(6)
+
+  channels channels @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  contests contests @relation(fields: [contest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  referrer_participant participants @relation("referrals_referrer", fields: [referrer_participant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  referee_participant  participants @relation("referrals_referee", fields: [referee_participant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  referral_attempt referral_attempts? @relation(fields: [referral_attempt_id], references: [id], onUpdate: NoAction)
+
+  @@unique([contest_id, referee_participant_id], map: "referrals_one_referee_per_contest")
+  @@index([channel_id])
+  @@index([contest_id])
+  @@index([created_at])
+  @@index([referee_participant_id])
+  @@index([referral_attempt_id])
+  @@index([referrer_participant_id])
+  @@schema("public")
+}
+
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model channels {
-  id                    String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  owner_id              String       @db.Uuid
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  owner_id              String                 @db.Uuid
   tv_name               String
-  slug                  String       @unique
-  whatsapp_number       String       @unique
-  whatsapp_verified     Boolean      @default(false)
-  whatsapp_verified_at  DateTime?    @db.Timestamptz(6)
-  status                String       @default("pending_verification")
+  slug                  String                 @unique
+  whatsapp_number       String                 @unique
+  whatsapp_verified     Boolean                @default(false)
+  whatsapp_verified_at  DateTime?              @db.Timestamptz(6)
+  status                String                 @default("pending_verification")
   channel_members_limit Int?
-  created_at            DateTime     @default(now()) @db.Timestamptz(6)
-  updated_at            DateTime     @default(now()) @db.Timestamptz(6)
-  channel_banner        String?      @unique
-  contest_defaults      Json         @default("{\"visibility\": \"public\", \"max_winners\": 3, \"reward_description\": \"\", \"contest_timing_mode\": \"manual\", \"referral_code_prefix\": \"\"}")
-  referral_rules        Json         @default("{\"allow_self_referral\": false, \"max_referrals_per_user\": null, \"allow_duplicate_phone_numbers\": false, \"rate_limit_per_phone_per_hour\": null, \"require_whatsapp_join_message\": true, \"count_referral_only_after_join\": true, \"auto_block_suspicious_referrals\": false, \"minimum_referral_interval_seconds\": null, \"manual_review_suspicious_referrals\": true}")
-  notification_settings Json         @default("{\"admin_notifications\": {\"contest_ended\": {\"in_app\": true, \"whatsapp\": true}, \"contest_started\": {\"in_app\": true, \"whatsapp\": false}, \"new_top_performer\": {\"in_app\": true, \"whatsapp\": true}, \"referral_recorded\": {\"in_app\": true, \"whatsapp\": false}, \"new_participant_joined\": {\"in_app\": true, \"whatsapp\": false}, \"leaderboard_position_changed\": {\"in_app\": true, \"whatsapp\": false}, \"suspicious_referral_detected\": {\"in_app\": true, \"whatsapp\": true}}, \"participant_notifications\": {\"contest_ended\": {\"in_app\": true, \"whatsapp\": true}, \"join_confirmed\": {\"in_app\": true, \"whatsapp\": true}, \"reward_qualified\": {\"in_app\": true, \"whatsapp\": true}, \"contest_ending_soon\": {\"in_app\": true, \"whatsapp\": true}, \"referral_successful\": {\"in_app\": true, \"whatsapp\": true}, \"became_top_performer\": {\"in_app\": true, \"whatsapp\": true}, \"leaderboard_position_changed\": {\"in_app\": true, \"whatsapp\": false}}}")
-  users                 public_users @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  created_at            DateTime               @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime               @default(now()) @db.Timestamptz(6)
+  channel_banner        String?                @unique
+  contest_defaults      Json                   @default("{\"visibility\": \"public\", \"max_winners\": 3, \"reward_description\": \"\", \"contest_timing_mode\": \"manual\", \"referral_code_prefix\": \"\"}")
+  referral_rules        Json                   @default("{\"allow_self_referral\": false, \"max_referrals_per_user\": null, \"allow_duplicate_phone_numbers\": false, \"rate_limit_per_phone_per_hour\": null, \"require_whatsapp_join_message\": true, \"count_referral_only_after_join\": true, \"auto_block_suspicious_referrals\": false, \"minimum_referral_interval_seconds\": null, \"manual_review_suspicious_referrals\": true}")
+  notification_settings Json                   @default("{\"admin_notifications\": {\"contest_ended\": {\"in_app\": true, \"whatsapp\": true}, \"contest_started\": {\"in_app\": true, \"whatsapp\": false}, \"new_top_performer\": {\"in_app\": true, \"whatsapp\": true}, \"referral_recorded\": {\"in_app\": true, \"whatsapp\": false}, \"new_participant_joined\": {\"in_app\": true, \"whatsapp\": false}, \"leaderboard_position_changed\": {\"in_app\": true, \"whatsapp\": false}, \"suspicious_referral_detected\": {\"in_app\": true, \"whatsapp\": true}}, \"participant_notifications\": {\"contest_ended\": {\"in_app\": true, \"whatsapp\": true}, \"join_confirmed\": {\"in_app\": true, \"whatsapp\": true}, \"reward_qualified\": {\"in_app\": true, \"whatsapp\": true}, \"contest_ending_soon\": {\"in_app\": true, \"whatsapp\": true}, \"referral_successful\": {\"in_app\": true, \"whatsapp\": true}, \"became_top_performer\": {\"in_app\": true, \"whatsapp\": true}, \"leaderboard_position_changed\": {\"in_app\": true, \"whatsapp\": false}}}")
+  users                 public_users           @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  contest_participants  contest_participants[]
   contests              contests[]
+  participants          participants[]
+  referral_attempts     referral_attempts[]
+  referrals             referrals[]
 
   @@schema("public")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model contests {
-  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  channel_id              String    @db.Uuid
+  id                      String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  channel_id              String                 @db.Uuid
   title                   String
   slug                    String
   description             String
-  status                  String    @default("draft")
-  visibility              String    @default("public")
+  status                  String                 @default("draft")
+  visibility              String                 @default("public")
   referral_code_prefix    String
-  start_date              DateTime? @db.Timestamptz(6)
-  end_date                DateTime? @db.Timestamptz(6)
-  reward_type             String    @default("custom")
-  reward_value            String    @default("")
+  start_date              DateTime?              @db.Timestamptz(6)
+  end_date                DateTime?              @db.Timestamptz(6)
+  reward_type             String                 @default("custom")
+  reward_value            String                 @default("")
   reward_description      String
-  winner_selection        String    @default("highestReferrals")
-  max_winners             Int       @default(1)
-  participants_count      Int       @default(0)
-  referrals_count         Int       @default(0)
-  views_count             Int       @default(0)
+  winner_selection        String                 @default("highestReferrals")
+  max_winners             Int                    @default(1)
+  participants_count      Int                    @default(0)
+  referrals_count         Int                    @default(0)
+  views_count             Int                    @default(0)
   top_performer_name      String?
   top_performer_phone     String?
-  top_performer_referrals Int       @default(0)
-  is_published            Boolean   @default(false)
-  is_archived             Boolean   @default(false)
-  created_at              DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at              DateTime  @default(now()) @db.Timestamptz(6)
-  channels                channels  @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  top_performer_referrals Int                    @default(0)
+  is_published            Boolean                @default(false)
+  is_archived             Boolean                @default(false)
+  created_at              DateTime               @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime               @default(now()) @db.Timestamptz(6)
+  contest_participants    contest_participants[]
+  channels                channels               @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  referral_attempts       referral_attempts[]
+  referrals               referrals[]
 
   @@unique([channel_id, slug])
   @@index([channel_id])

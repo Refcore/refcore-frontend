@@ -1,11 +1,11 @@
-import { Trophy, UserRound } from 'lucide-react';
+import { CalendarDays, Clock, Trophy, UserRound } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/utils';
 import type {
   ParticipantModel,
   ParticipantBadge,
-} from '@/model/participant.model';
+} from '@/types/participant.type';
 import ParticipantActions from './ParticipantActions';
 
 export type ParticipantsColumn = {
@@ -18,9 +18,32 @@ export type ParticipantsColumn = {
 
 const maskPhone = (phone?: string) => {
   if (!phone) return 'No phone';
+
   const digits = phone.replace(/\s+/g, '');
+
   if (digits.length < 7) return phone;
+
   return `${digits.slice(0, 4)}****${digits.slice(-4)}`;
+};
+
+const getParticipantBadge = (participant: ParticipantModel): ParticipantBadge => {
+  const totalReferrals = participant.total_referrals;
+
+  if (totalReferrals >= 50) return 'champion';
+
+  if (totalReferrals >= 25) return 'elite';
+
+  if (totalReferrals >= 5) return 'active';
+
+  return 'rising';
+};
+
+const getBadgeLabel = (badge: ParticipantBadge) => {
+  if (badge === 'champion') return 'Champion';
+  if (badge === 'elite') return 'Elite';
+  if (badge === 'active') return 'Active';
+
+  return 'Rising';
 };
 
 const getBadgeClass = (badge: ParticipantBadge) => {
@@ -45,52 +68,72 @@ const getStatusClass = (status: ParticipantModel['status']) => {
     : 'bg-white/30';
 };
 
-const formatAveragePosition = (value: number | null) => {
-  if (value === null) return '—';
-  return Number.isInteger(value) ? value.toString() : value.toFixed(1);
+const formatDate = (value?: string | null) => {
+  if (!value) return '—';
+
+  return new Intl.DateTimeFormat('en', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(value));
+};
+
+const formatDateTime = (value?: string | null) => {
+  if (!value) return '—';
+
+  return new Intl.DateTimeFormat('en', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(new Date(value));
 };
 
 export const participantsColumns: ParticipantsColumn[] = [
   {
     id: 'user',
     header: 'User',
-    render: (participant) => (
-      <div className="flex items-center gap-3">
-        <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 md:flex">
-          <UserRound className="size-5 text-white/80" />
-        </div>
+    render: (participant) => {
+      const badge = getParticipantBadge(participant);
 
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <p className="truncate text-sm font-semibold text-white">
-              {participant.user_name}
-            </p>
-
-            <span
-              className={cn(
-                'inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize',
-                getBadgeClass(participant.current_badge),
-              )}
-            >
-              {participant.current_badge}
-            </span>
+      return (
+        <div className="flex items-center gap-3">
+          <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 md:flex">
+            <UserRound className="size-5 text-white/80" />
           </div>
 
-          <div className="mt-1 flex items-center gap-2">
-            <span
-              className={cn(
-                'inline-block h-2 w-2 rounded-full',
-                getStatusClass(participant.status),
-              )}
-            />
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="truncate text-sm font-semibold text-white">
+                {participant.user_name}
+              </p>
 
-            <p className="truncate text-xs text-gray-500">
-              {maskPhone(participant.phone)}
-            </p>
+              <span
+                className={cn(
+                  'inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium',
+                  getBadgeClass(badge),
+                )}
+              >
+                {getBadgeLabel(badge)}
+              </span>
+            </div>
+
+            <div className="mt-1 flex items-center gap-2">
+              <span
+                className={cn(
+                  'inline-block h-2 w-2 rounded-full',
+                  getStatusClass(participant.status),
+                )}
+              />
+
+              <p className="truncate text-xs text-gray-500">
+                {maskPhone(participant.phone_number)} 
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    ),
+      );
+    },
   },
   {
     id: 'totalReferrals',
@@ -122,47 +165,53 @@ export const participantsColumns: ParticipantsColumn[] = [
     ),
   },
   {
-    id: 'averagePosition',
-    header: 'Avg Pos.',
+    id: 'badge',
+    header: 'Level',
     className: 'text-center',
     mobileHidden: true,
-    render: (participant) => (
-      <div className="text-center">
-        <div className="text-sm font-semibold text-white">
-          {formatAveragePosition(participant.average_position)}
+    render: (participant) => {
+      const badge = getParticipantBadge(participant);
+
+      return (
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center gap-1 text-sm font-semibold text-white">
+            {badge === 'champion' ? (
+              <Trophy className="size-3.5 text-yellow-400" />
+            ) : null}
+            {getBadgeLabel(badge)}
+          </div>
+          <div className="mt-1 text-[11px] text-gray-500">based on referrals</div>
         </div>
-        <div className="mt-1 text-[11px] text-gray-500">average</div>
-      </div>
-    ),
+      );
+    },
   },
   {
-    id: 'bestPosition',
-    header: 'Best',
+    id: 'firstJoined',
+    header: 'First Joined',
     className: 'text-center',
     mobileHidden: true,
     render: (participant) => (
       <div className="text-center">
         <div className="inline-flex items-center justify-center gap-1 text-sm font-semibold text-white">
-          {participant.best_position === 1 ? (
-            <Trophy className="size-3.5 text-yellow-400" />
-          ) : null}
-          {participant.best_position ?? '—'}
+          <CalendarDays className="size-3.5 text-[#00d0ff]" />
+          {formatDate(participant.first_joined_at)}
         </div>
-        <div className="mt-1 text-[11px] text-gray-500">position</div>
+        <div className="mt-1 text-[11px] text-gray-500">created</div>
       </div>
     ),
   },
   {
-    id: 'wins',
-    header: 'Wins',
+    id: 'lastActive',
+    header: 'Last Active',
     className: 'text-center',
     mobileHidden: true,
     render: (participant) => (
       <div className="text-center">
-        <div className="text-sm font-semibold text-white">
-          {participant.total_contests_won}
+        <div className="inline-flex items-center justify-center gap-1 text-sm font-semibold text-white">
+          <Clock className="size-3.5 text-[#00ff9d]" />
+          {formatDateTime(participant.last_active_at)}
         </div>
-        <div className="mt-1 text-[11px] text-gray-500">won</div>
+        <div className="mt-1 text-[11px] text-gray-500">activity</div>
       </div>
     ),
   },
@@ -176,7 +225,7 @@ export const participantsColumns: ParticipantsColumn[] = [
           participantId={participant.id}
           userName={participant.user_name}
           referralCode={participant.referral_code}
-          phone={participant.phone}
+          phone={participant.phone_number}
         />
       </div>
     ),

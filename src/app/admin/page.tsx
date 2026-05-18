@@ -1,3 +1,5 @@
+'use client';
+
 import Graph from '@/components/admin/dashboard/Graph';
 import JoinsPerDayGraph from '@/components/admin/dashboard/JoinsPerDayGraph';
 import QuickActions from '@/components/admin/dashboard/QuickActions';
@@ -6,16 +8,25 @@ import TopPerformers from '@/components/admin/dashboard/TopPerformers';
 import Stats from '@/components/admin/Stats';
 import PageHeader from '@/components/shared/PageHeader';
 import { mockLeaderboards } from '@/demo/leaderboarddata';
+import { useAdminLoading } from '@/hooks/admin/useAdminLoading';
 import React from 'react';
 
 const AdminDashboardPage = () => {
+  const { data } = useAdminLoading();
+
+  const totalParticipants = data.total_participants;
+  const totalReferrals = data.total_referrals;
+
   return (
     <div className="m-3 mb-10 lg:m-6 relative space-y-6">
       <PageHeader
         title="Dashboard"
         description="Overview of what youve been upto"
       />
-      <Stats />
+      <Stats
+        totalParticipants={totalParticipants}
+        totalReferrals={totalReferrals}
+      />
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 space-y-6">
           <Graph />

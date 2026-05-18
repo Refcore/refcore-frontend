@@ -1,7 +1,7 @@
-import { ParticipantModel } from "@/model/participant.model";
 
 
-export const participantsDemoData: ParticipantModel[] = [
+
+export const participantsDemoData = [
   {
     id: 'participant_001',
     user_name: 'sarah_j',
