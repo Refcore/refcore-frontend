@@ -311,11 +311,10 @@
 
 .refcore-loader {
   --piece-size: clamp(18px, 5vw, 30px);
-  --slant: calc(var(--piece-size) * 0.42);
 
   position: relative;
-  width: calc(var(--piece-size) * 5.8);
-  height: calc(var(--piece-size) * 6.4);
+  width: calc(var(--piece-size) * 4.4);
+  height: calc(var(--piece-size) * 5.2);
   display: inline-block;
   filter:
     drop-shadow(0 0 10px rgba(0, 208, 255, 0.25))
@@ -324,99 +323,72 @@
 
 .refcore-piece {
   position: absolute;
-  height: calc(var(--piece-size) * 1.05);
-  border-radius: 2px;
-  clip-path: polygon(
-    var(--slant) 0,
-    100% 0,
-    calc(100% - var(--slant)) 100%,
-    0 100%
-  );
+  width: calc(var(--piece-size) * 1.35);
+  height: var(--piece-size);
+  border-radius: 4px;
+  clip-path: polygon(22% 0, 100% 0, 78% 100%, 0 100%);
   opacity: 0.25;
   animation: refcore-pulse 1.4s ease-in-out infinite;
 }
 
 /* top floating blade */
 .refcore-piece.p1 {
-  width: calc(var(--piece-size) * 1.8);
-  top: calc(var(--piece-size) * 0.15);
-  left: calc(var(--piece-size) * 3.2);
+  top: 0;
+  left: calc(var(--piece-size) * 2);
   background: linear-gradient(135deg, #00ff9d, #00d0ff);
   animation-delay: 0ms;
 }
 
-/* upper left blade */
+/* center upper blade */
 .refcore-piece.p2 {
-  width: calc(var(--piece-size) * 1.65);
-  top: calc(var(--piece-size) * 1.55);
-  left: calc(var(--piece-size) * 2.05);
+  top: calc(var(--piece-size) * 1.05);
+  left: calc(var(--piece-size) * 1.25);
   background: linear-gradient(135deg, #00d0ff, #00ff9d);
   animation-delay: 120ms;
 }
 
-/* center vertical blade */
+/* center connector */
 .refcore-piece.p3 {
-  width: calc(var(--piece-size) * 2.05);
-  height: calc(var(--piece-size) * 1.15);
-  top: calc(var(--piece-size) * 2.15);
-  left: calc(var(--piece-size) * 3.05);
-  transform: rotate(90deg);
-  transform-origin: left top;
+  top: calc(var(--piece-size) * 2.05);
+  left: calc(var(--piece-size) * 1.95);
   background: linear-gradient(135deg, #00ff9d, #00d0ff);
   animation-delay: 240ms;
 }
 
-/* right middle blade */
+/* right lower blade */
 .refcore-piece.p4 {
-  width: calc(var(--piece-size) * 2.65);
-  top: calc(var(--piece-size) * 3.15);
-  left: calc(var(--piece-size) * 3.15);
+  top: calc(var(--piece-size) * 2.95);
+  left: calc(var(--piece-size) * 2.45);
   background: linear-gradient(135deg, #00d0ff, #006cff);
   animation-delay: 360ms;
 }
 
-/* bottom right blade */
+/* bottom blade */
 .refcore-piece.p5 {
-  width: calc(var(--piece-size) * 2.35);
-  top: calc(var(--piece-size) * 4.75);
-  left: calc(var(--piece-size) * 2.35);
+  top: calc(var(--piece-size) * 4);
+  left: calc(var(--piece-size) * 1.45);
   background: linear-gradient(135deg, #006cff, #8a00ff);
   animation-delay: 480ms;
 }
 
-/* bottom left blade */
+/* left lower blade */
 .refcore-piece.p6 {
-  width: calc(var(--piece-size) * 2.65);
-  top: calc(var(--piece-size) * 4.55);
-  left: calc(var(--piece-size) * 0.75);
+  top: calc(var(--piece-size) * 2.95);
+  left: calc(var(--piece-size) * 0.25);
   background: linear-gradient(135deg, #b700ff, #8a00ff);
   animation-delay: 600ms;
-}
-
-/* left middle blade */
-.refcore-piece.p7 {
-  width: calc(var(--piece-size) * 2.75);
-  top: calc(var(--piece-size) * 3.15);
-  left: calc(var(--piece-size) * 0.25);
-  background: linear-gradient(135deg, #b700ff, #00d0ff);
-  animation-delay: 720ms;
 }
 
 /* inner dark cut to create the logo-gap feel */
 .refcore-loader::after {
   content: '';
   position: absolute;
-  width: calc(var(--piece-size) * 1.65);
-  height: calc(var(--piece-size) * 1.25);
-  top: calc(var(--piece-size) * 3.85);
-  left: calc(var(--piece-size) * 2.1);
+  width: calc(var(--piece-size) * 1.15);
+  height: calc(var(--piece-size) * 1.05);
+  top: calc(var(--piece-size) * 3.35);
+  left: calc(var(--piece-size) * 1.65);
   background: #0a0a0f;
-  clip-path: polygon(
-    var(--slant) 0,
-    100% 0,
-    calc(100% - var(--slant)) 100%,
-    0 100%
-  );
+  clip-path: polygon(22% 0, 100% 0, 78% 100%, 0 100%);
   border-radius: 3px;
   z-index: 3;
 }
