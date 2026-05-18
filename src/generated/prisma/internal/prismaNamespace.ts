@@ -384,6 +384,10 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
+  contest_participants: 'contest_participants',
+  participants: 'participants',
+  referral_attempts: 'referral_attempts',
+  referrals: 'referrals',
   channels: 'channels',
   contests: 'contests',
   public_users: 'public_users',
@@ -425,10 +429,306 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "channels" | "contests" | "public_users" | "audit_log_entries" | "custom_oauth_providers" | "flow_state" | "identities" | "instances" | "mfa_amr_claims" | "mfa_challenges" | "mfa_factors" | "oauth_authorizations" | "oauth_client_states" | "oauth_clients" | "oauth_consents" | "one_time_tokens" | "refresh_tokens" | "saml_providers" | "saml_relay_states" | "schema_migrations" | "sessions" | "sso_domains" | "sso_providers" | "auth_users" | "webauthn_challenges" | "webauthn_credentials"
+    modelProps: "contest_participants" | "participants" | "referral_attempts" | "referrals" | "channels" | "contests" | "public_users" | "audit_log_entries" | "custom_oauth_providers" | "flow_state" | "identities" | "instances" | "mfa_amr_claims" | "mfa_challenges" | "mfa_factors" | "oauth_authorizations" | "oauth_client_states" | "oauth_clients" | "oauth_consents" | "one_time_tokens" | "refresh_tokens" | "saml_providers" | "saml_relay_states" | "schema_migrations" | "sessions" | "sso_domains" | "sso_providers" | "auth_users" | "webauthn_challenges" | "webauthn_credentials"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
+    contest_participants: {
+      payload: Prisma.$contest_participantsPayload<ExtArgs>
+      fields: Prisma.contest_participantsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.contest_participantsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$contest_participantsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.contest_participantsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$contest_participantsPayload>
+        }
+        findFirst: {
+          args: Prisma.contest_participantsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$contest_participantsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.contest_participantsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$contest_participantsPayload>
+        }
+        findMany: {
+          args: Prisma.contest_participantsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$contest_participantsPayload>[]
+        }
+        create: {
+          args: Prisma.contest_participantsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$contest_participantsPayload>
+        }
+        createMany: {
+          args: Prisma.contest_participantsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.contest_participantsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$contest_participantsPayload>[]
+        }
+        delete: {
+          args: Prisma.contest_participantsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$contest_participantsPayload>
+        }
+        update: {
+          args: Prisma.contest_participantsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$contest_participantsPayload>
+        }
+        deleteMany: {
+          args: Prisma.contest_participantsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.contest_participantsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.contest_participantsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$contest_participantsPayload>[]
+        }
+        upsert: {
+          args: Prisma.contest_participantsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$contest_participantsPayload>
+        }
+        aggregate: {
+          args: Prisma.Contest_participantsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateContest_participants>
+        }
+        groupBy: {
+          args: Prisma.contest_participantsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Contest_participantsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.contest_participantsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Contest_participantsCountAggregateOutputType> | number
+        }
+      }
+    }
+    participants: {
+      payload: Prisma.$participantsPayload<ExtArgs>
+      fields: Prisma.participantsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.participantsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$participantsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.participantsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$participantsPayload>
+        }
+        findFirst: {
+          args: Prisma.participantsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$participantsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.participantsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$participantsPayload>
+        }
+        findMany: {
+          args: Prisma.participantsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$participantsPayload>[]
+        }
+        create: {
+          args: Prisma.participantsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$participantsPayload>
+        }
+        createMany: {
+          args: Prisma.participantsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.participantsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$participantsPayload>[]
+        }
+        delete: {
+          args: Prisma.participantsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$participantsPayload>
+        }
+        update: {
+          args: Prisma.participantsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$participantsPayload>
+        }
+        deleteMany: {
+          args: Prisma.participantsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.participantsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.participantsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$participantsPayload>[]
+        }
+        upsert: {
+          args: Prisma.participantsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$participantsPayload>
+        }
+        aggregate: {
+          args: Prisma.ParticipantsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateParticipants>
+        }
+        groupBy: {
+          args: Prisma.participantsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParticipantsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.participantsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ParticipantsCountAggregateOutputType> | number
+        }
+      }
+    }
+    referral_attempts: {
+      payload: Prisma.$referral_attemptsPayload<ExtArgs>
+      fields: Prisma.referral_attemptsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.referral_attemptsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.referral_attemptsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
+        }
+        findFirst: {
+          args: Prisma.referral_attemptsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.referral_attemptsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
+        }
+        findMany: {
+          args: Prisma.referral_attemptsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>[]
+        }
+        create: {
+          args: Prisma.referral_attemptsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
+        }
+        createMany: {
+          args: Prisma.referral_attemptsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.referral_attemptsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>[]
+        }
+        delete: {
+          args: Prisma.referral_attemptsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
+        }
+        update: {
+          args: Prisma.referral_attemptsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
+        }
+        deleteMany: {
+          args: Prisma.referral_attemptsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.referral_attemptsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.referral_attemptsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>[]
+        }
+        upsert: {
+          args: Prisma.referral_attemptsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
+        }
+        aggregate: {
+          args: Prisma.Referral_attemptsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReferral_attempts>
+        }
+        groupBy: {
+          args: Prisma.referral_attemptsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Referral_attemptsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.referral_attemptsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Referral_attemptsCountAggregateOutputType> | number
+        }
+      }
+    }
+    referrals: {
+      payload: Prisma.$referralsPayload<ExtArgs>
+      fields: Prisma.referralsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.referralsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referralsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.referralsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referralsPayload>
+        }
+        findFirst: {
+          args: Prisma.referralsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referralsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.referralsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referralsPayload>
+        }
+        findMany: {
+          args: Prisma.referralsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referralsPayload>[]
+        }
+        create: {
+          args: Prisma.referralsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referralsPayload>
+        }
+        createMany: {
+          args: Prisma.referralsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.referralsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referralsPayload>[]
+        }
+        delete: {
+          args: Prisma.referralsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referralsPayload>
+        }
+        update: {
+          args: Prisma.referralsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referralsPayload>
+        }
+        deleteMany: {
+          args: Prisma.referralsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.referralsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.referralsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referralsPayload>[]
+        }
+        upsert: {
+          args: Prisma.referralsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$referralsPayload>
+        }
+        aggregate: {
+          args: Prisma.ReferralsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReferrals>
+        }
+        groupBy: {
+          args: Prisma.referralsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReferralsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.referralsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReferralsCountAggregateOutputType> | number
+        }
+      }
+    }
     channels: {
       payload: Prisma.$channelsPayload<ExtArgs>
       fields: Prisma.channelsFieldRefs
@@ -2392,6 +2692,70 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const Contest_participantsScalarFieldEnum = {
+  id: 'id',
+  channel_id: 'channel_id',
+  contest_id: 'contest_id',
+  participant_id: 'participant_id',
+  referral_count: 'referral_count',
+  rank_cache: 'rank_cache',
+  joined_at: 'joined_at',
+  status: 'status',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Contest_participantsScalarFieldEnum = (typeof Contest_participantsScalarFieldEnum)[keyof typeof Contest_participantsScalarFieldEnum]
+
+
+export const ParticipantsScalarFieldEnum = {
+  id: 'id',
+  channel_id: 'channel_id',
+  phone_number: 'phone_number',
+  display_name: 'display_name',
+  referral_code: 'referral_code',
+  total_referrals: 'total_referrals',
+  total_contests_joined: 'total_contests_joined',
+  first_joined_at: 'first_joined_at',
+  last_joined_at: 'last_joined_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type ParticipantsScalarFieldEnum = (typeof ParticipantsScalarFieldEnum)[keyof typeof ParticipantsScalarFieldEnum]
+
+
+export const Referral_attemptsScalarFieldEnum = {
+  id: 'id',
+  channel_id: 'channel_id',
+  contest_id: 'contest_id',
+  referrer_participant_id: 'referrer_participant_id',
+  referee_phone_number: 'referee_phone_number',
+  referee_participant_id: 'referee_participant_id',
+  referral_code_used: 'referral_code_used',
+  status: 'status',
+  first_seen_at: 'first_seen_at',
+  converted_at: 'converted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type Referral_attemptsScalarFieldEnum = (typeof Referral_attemptsScalarFieldEnum)[keyof typeof Referral_attemptsScalarFieldEnum]
+
+
+export const ReferralsScalarFieldEnum = {
+  id: 'id',
+  channel_id: 'channel_id',
+  contest_id: 'contest_id',
+  referrer_participant_id: 'referrer_participant_id',
+  referee_participant_id: 'referee_participant_id',
+  referral_attempt_id: 'referral_attempt_id',
+  created_at: 'created_at'
+} as const
+
+export type ReferralsScalarFieldEnum = (typeof ReferralsScalarFieldEnum)[keyof typeof ReferralsScalarFieldEnum]
+
+
 export const ChannelsScalarFieldEnum = {
   id: 'id',
   owner_id: 'owner_id',
@@ -2864,6 +3228,14 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -2871,14 +3243,6 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 
@@ -2902,9 +3266,16 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
- * Reference to a field of type 'Boolean'
+ * Reference to a field of type 'Int'
  */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -2923,16 +3294,9 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
- * Reference to a field of type 'Int'
+ * Reference to a field of type 'Boolean'
  */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -3227,6 +3591,10 @@ export type PrismaClientOptions = ({
   queryPlanCacheMaxSize?: number
 }
 export type GlobalOmitConfig = {
+  contest_participants?: Prisma.contest_participantsOmit
+  participants?: Prisma.participantsOmit
+  referral_attempts?: Prisma.referral_attemptsOmit
+  referrals?: Prisma.referralsOmit
   channels?: Prisma.channelsOmit
   contests?: Prisma.contestsOmit
   public_users?: Prisma.public_usersOmit

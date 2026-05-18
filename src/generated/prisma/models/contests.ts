@@ -392,7 +392,10 @@ export type contestsWhereInput = {
   is_archived?: Prisma.BoolFilter<"contests"> | boolean
   created_at?: Prisma.DateTimeFilter<"contests"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"contests"> | Date | string
+  contest_participants?: Prisma.Contest_participantsListRelationFilter
   channels?: Prisma.XOR<Prisma.ChannelsScalarRelationFilter, Prisma.channelsWhereInput>
+  referral_attempts?: Prisma.Referral_attemptsListRelationFilter
+  referrals?: Prisma.ReferralsListRelationFilter
 }
 
 export type contestsOrderByWithRelationInput = {
@@ -421,7 +424,10 @@ export type contestsOrderByWithRelationInput = {
   is_archived?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+  contest_participants?: Prisma.contest_participantsOrderByRelationAggregateInput
   channels?: Prisma.channelsOrderByWithRelationInput
+  referral_attempts?: Prisma.referral_attemptsOrderByRelationAggregateInput
+  referrals?: Prisma.referralsOrderByRelationAggregateInput
 }
 
 export type contestsWhereUniqueInput = Prisma.AtLeast<{
@@ -454,7 +460,10 @@ export type contestsWhereUniqueInput = Prisma.AtLeast<{
   is_archived?: Prisma.BoolFilter<"contests"> | boolean
   created_at?: Prisma.DateTimeFilter<"contests"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"contests"> | Date | string
+  contest_participants?: Prisma.Contest_participantsListRelationFilter
   channels?: Prisma.XOR<Prisma.ChannelsScalarRelationFilter, Prisma.channelsWhereInput>
+  referral_attempts?: Prisma.Referral_attemptsListRelationFilter
+  referrals?: Prisma.ReferralsListRelationFilter
 }, "id" | "channel_id_slug">
 
 export type contestsOrderByWithAggregationInput = {
@@ -546,7 +555,10 @@ export type contestsCreateInput = {
   is_archived?: boolean
   created_at?: Date | string
   updated_at?: Date | string
+  contest_participants?: Prisma.contest_participantsCreateNestedManyWithoutContestsInput
   channels: Prisma.channelsCreateNestedOneWithoutContestsInput
+  referral_attempts?: Prisma.referral_attemptsCreateNestedManyWithoutContestsInput
+  referrals?: Prisma.referralsCreateNestedManyWithoutContestsInput
 }
 
 export type contestsUncheckedCreateInput = {
@@ -575,6 +587,9 @@ export type contestsUncheckedCreateInput = {
   is_archived?: boolean
   created_at?: Date | string
   updated_at?: Date | string
+  contest_participants?: Prisma.contest_participantsUncheckedCreateNestedManyWithoutContestsInput
+  referral_attempts?: Prisma.referral_attemptsUncheckedCreateNestedManyWithoutContestsInput
+  referrals?: Prisma.referralsUncheckedCreateNestedManyWithoutContestsInput
 }
 
 export type contestsUpdateInput = {
@@ -602,7 +617,10 @@ export type contestsUpdateInput = {
   is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contest_participants?: Prisma.contest_participantsUpdateManyWithoutContestsNestedInput
   channels?: Prisma.channelsUpdateOneRequiredWithoutContestsNestedInput
+  referral_attempts?: Prisma.referral_attemptsUpdateManyWithoutContestsNestedInput
+  referrals?: Prisma.referralsUpdateManyWithoutContestsNestedInput
 }
 
 export type contestsUncheckedUpdateInput = {
@@ -631,6 +649,9 @@ export type contestsUncheckedUpdateInput = {
   is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contest_participants?: Prisma.contest_participantsUncheckedUpdateManyWithoutContestsNestedInput
+  referral_attempts?: Prisma.referral_attemptsUncheckedUpdateManyWithoutContestsNestedInput
+  referrals?: Prisma.referralsUncheckedUpdateManyWithoutContestsNestedInput
 }
 
 export type contestsCreateManyInput = {
@@ -714,6 +735,11 @@ export type contestsUncheckedUpdateManyInput = {
   is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ContestsScalarRelationFilter = {
+  is?: Prisma.contestsWhereInput
+  isNot?: Prisma.contestsWhereInput
 }
 
 export type ContestsListRelationFilter = {
@@ -831,6 +857,48 @@ export type contestsSumOrderByAggregateInput = {
   top_performer_referrals?: Prisma.SortOrder
 }
 
+export type contestsCreateNestedOneWithoutContest_participantsInput = {
+  create?: Prisma.XOR<Prisma.contestsCreateWithoutContest_participantsInput, Prisma.contestsUncheckedCreateWithoutContest_participantsInput>
+  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutContest_participantsInput
+  connect?: Prisma.contestsWhereUniqueInput
+}
+
+export type contestsUpdateOneRequiredWithoutContest_participantsNestedInput = {
+  create?: Prisma.XOR<Prisma.contestsCreateWithoutContest_participantsInput, Prisma.contestsUncheckedCreateWithoutContest_participantsInput>
+  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutContest_participantsInput
+  upsert?: Prisma.contestsUpsertWithoutContest_participantsInput
+  connect?: Prisma.contestsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.contestsUpdateToOneWithWhereWithoutContest_participantsInput, Prisma.contestsUpdateWithoutContest_participantsInput>, Prisma.contestsUncheckedUpdateWithoutContest_participantsInput>
+}
+
+export type contestsCreateNestedOneWithoutReferral_attemptsInput = {
+  create?: Prisma.XOR<Prisma.contestsCreateWithoutReferral_attemptsInput, Prisma.contestsUncheckedCreateWithoutReferral_attemptsInput>
+  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutReferral_attemptsInput
+  connect?: Prisma.contestsWhereUniqueInput
+}
+
+export type contestsUpdateOneRequiredWithoutReferral_attemptsNestedInput = {
+  create?: Prisma.XOR<Prisma.contestsCreateWithoutReferral_attemptsInput, Prisma.contestsUncheckedCreateWithoutReferral_attemptsInput>
+  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutReferral_attemptsInput
+  upsert?: Prisma.contestsUpsertWithoutReferral_attemptsInput
+  connect?: Prisma.contestsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.contestsUpdateToOneWithWhereWithoutReferral_attemptsInput, Prisma.contestsUpdateWithoutReferral_attemptsInput>, Prisma.contestsUncheckedUpdateWithoutReferral_attemptsInput>
+}
+
+export type contestsCreateNestedOneWithoutReferralsInput = {
+  create?: Prisma.XOR<Prisma.contestsCreateWithoutReferralsInput, Prisma.contestsUncheckedCreateWithoutReferralsInput>
+  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutReferralsInput
+  connect?: Prisma.contestsWhereUniqueInput
+}
+
+export type contestsUpdateOneRequiredWithoutReferralsNestedInput = {
+  create?: Prisma.XOR<Prisma.contestsCreateWithoutReferralsInput, Prisma.contestsUncheckedCreateWithoutReferralsInput>
+  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutReferralsInput
+  upsert?: Prisma.contestsUpsertWithoutReferralsInput
+  connect?: Prisma.contestsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.contestsUpdateToOneWithWhereWithoutReferralsInput, Prisma.contestsUpdateWithoutReferralsInput>, Prisma.contestsUncheckedUpdateWithoutReferralsInput>
+}
+
 export type contestsCreateNestedManyWithoutChannelsInput = {
   create?: Prisma.XOR<Prisma.contestsCreateWithoutChannelsInput, Prisma.contestsUncheckedCreateWithoutChannelsInput> | Prisma.contestsCreateWithoutChannelsInput[] | Prisma.contestsUncheckedCreateWithoutChannelsInput[]
   connectOrCreate?: Prisma.contestsCreateOrConnectWithoutChannelsInput | Prisma.contestsCreateOrConnectWithoutChannelsInput[]
@@ -873,12 +941,412 @@ export type contestsUncheckedUpdateManyWithoutChannelsNestedInput = {
   deleteMany?: Prisma.contestsScalarWhereInput | Prisma.contestsScalarWhereInput[]
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type contestsCreateWithoutContest_participantsInput = {
+  id?: string
+  title: string
+  slug: string
+  description: string
+  status?: string
+  visibility?: string
+  referral_code_prefix: string
+  start_date?: Date | string | null
+  end_date?: Date | string | null
+  reward_type?: string
+  reward_value?: string
+  reward_description: string
+  winner_selection?: string
+  max_winners?: number
+  participants_count?: number
+  referrals_count?: number
+  views_count?: number
+  top_performer_name?: string | null
+  top_performer_phone?: string | null
+  top_performer_referrals?: number
+  is_published?: boolean
+  is_archived?: boolean
+  created_at?: Date | string
+  updated_at?: Date | string
+  channels: Prisma.channelsCreateNestedOneWithoutContestsInput
+  referral_attempts?: Prisma.referral_attemptsCreateNestedManyWithoutContestsInput
+  referrals?: Prisma.referralsCreateNestedManyWithoutContestsInput
+}
+
+export type contestsUncheckedCreateWithoutContest_participantsInput = {
+  id?: string
+  channel_id: string
+  title: string
+  slug: string
+  description: string
+  status?: string
+  visibility?: string
+  referral_code_prefix: string
+  start_date?: Date | string | null
+  end_date?: Date | string | null
+  reward_type?: string
+  reward_value?: string
+  reward_description: string
+  winner_selection?: string
+  max_winners?: number
+  participants_count?: number
+  referrals_count?: number
+  views_count?: number
+  top_performer_name?: string | null
+  top_performer_phone?: string | null
+  top_performer_referrals?: number
+  is_published?: boolean
+  is_archived?: boolean
+  created_at?: Date | string
+  updated_at?: Date | string
+  referral_attempts?: Prisma.referral_attemptsUncheckedCreateNestedManyWithoutContestsInput
+  referrals?: Prisma.referralsUncheckedCreateNestedManyWithoutContestsInput
+}
+
+export type contestsCreateOrConnectWithoutContest_participantsInput = {
+  where: Prisma.contestsWhereUniqueInput
+  create: Prisma.XOR<Prisma.contestsCreateWithoutContest_participantsInput, Prisma.contestsUncheckedCreateWithoutContest_participantsInput>
+}
+
+export type contestsUpsertWithoutContest_participantsInput = {
+  update: Prisma.XOR<Prisma.contestsUpdateWithoutContest_participantsInput, Prisma.contestsUncheckedUpdateWithoutContest_participantsInput>
+  create: Prisma.XOR<Prisma.contestsCreateWithoutContest_participantsInput, Prisma.contestsUncheckedCreateWithoutContest_participantsInput>
+  where?: Prisma.contestsWhereInput
+}
+
+export type contestsUpdateToOneWithWhereWithoutContest_participantsInput = {
+  where?: Prisma.contestsWhereInput
+  data: Prisma.XOR<Prisma.contestsUpdateWithoutContest_participantsInput, Prisma.contestsUncheckedUpdateWithoutContest_participantsInput>
+}
+
+export type contestsUpdateWithoutContest_participantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  referral_code_prefix?: Prisma.StringFieldUpdateOperationsInput | string
+  start_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  end_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reward_type?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_value?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_description?: Prisma.StringFieldUpdateOperationsInput | string
+  winner_selection?: Prisma.StringFieldUpdateOperationsInput | string
+  max_winners?: Prisma.IntFieldUpdateOperationsInput | number
+  participants_count?: Prisma.IntFieldUpdateOperationsInput | number
+  referrals_count?: Prisma.IntFieldUpdateOperationsInput | number
+  views_count?: Prisma.IntFieldUpdateOperationsInput | number
+  top_performer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_referrals?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  channels?: Prisma.channelsUpdateOneRequiredWithoutContestsNestedInput
+  referral_attempts?: Prisma.referral_attemptsUpdateManyWithoutContestsNestedInput
+  referrals?: Prisma.referralsUpdateManyWithoutContestsNestedInput
+}
+
+export type contestsUncheckedUpdateWithoutContest_participantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  channel_id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  referral_code_prefix?: Prisma.StringFieldUpdateOperationsInput | string
+  start_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  end_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reward_type?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_value?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_description?: Prisma.StringFieldUpdateOperationsInput | string
+  winner_selection?: Prisma.StringFieldUpdateOperationsInput | string
+  max_winners?: Prisma.IntFieldUpdateOperationsInput | number
+  participants_count?: Prisma.IntFieldUpdateOperationsInput | number
+  referrals_count?: Prisma.IntFieldUpdateOperationsInput | number
+  views_count?: Prisma.IntFieldUpdateOperationsInput | number
+  top_performer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_referrals?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  referral_attempts?: Prisma.referral_attemptsUncheckedUpdateManyWithoutContestsNestedInput
+  referrals?: Prisma.referralsUncheckedUpdateManyWithoutContestsNestedInput
+}
+
+export type contestsCreateWithoutReferral_attemptsInput = {
+  id?: string
+  title: string
+  slug: string
+  description: string
+  status?: string
+  visibility?: string
+  referral_code_prefix: string
+  start_date?: Date | string | null
+  end_date?: Date | string | null
+  reward_type?: string
+  reward_value?: string
+  reward_description: string
+  winner_selection?: string
+  max_winners?: number
+  participants_count?: number
+  referrals_count?: number
+  views_count?: number
+  top_performer_name?: string | null
+  top_performer_phone?: string | null
+  top_performer_referrals?: number
+  is_published?: boolean
+  is_archived?: boolean
+  created_at?: Date | string
+  updated_at?: Date | string
+  contest_participants?: Prisma.contest_participantsCreateNestedManyWithoutContestsInput
+  channels: Prisma.channelsCreateNestedOneWithoutContestsInput
+  referrals?: Prisma.referralsCreateNestedManyWithoutContestsInput
+}
+
+export type contestsUncheckedCreateWithoutReferral_attemptsInput = {
+  id?: string
+  channel_id: string
+  title: string
+  slug: string
+  description: string
+  status?: string
+  visibility?: string
+  referral_code_prefix: string
+  start_date?: Date | string | null
+  end_date?: Date | string | null
+  reward_type?: string
+  reward_value?: string
+  reward_description: string
+  winner_selection?: string
+  max_winners?: number
+  participants_count?: number
+  referrals_count?: number
+  views_count?: number
+  top_performer_name?: string | null
+  top_performer_phone?: string | null
+  top_performer_referrals?: number
+  is_published?: boolean
+  is_archived?: boolean
+  created_at?: Date | string
+  updated_at?: Date | string
+  contest_participants?: Prisma.contest_participantsUncheckedCreateNestedManyWithoutContestsInput
+  referrals?: Prisma.referralsUncheckedCreateNestedManyWithoutContestsInput
+}
+
+export type contestsCreateOrConnectWithoutReferral_attemptsInput = {
+  where: Prisma.contestsWhereUniqueInput
+  create: Prisma.XOR<Prisma.contestsCreateWithoutReferral_attemptsInput, Prisma.contestsUncheckedCreateWithoutReferral_attemptsInput>
+}
+
+export type contestsUpsertWithoutReferral_attemptsInput = {
+  update: Prisma.XOR<Prisma.contestsUpdateWithoutReferral_attemptsInput, Prisma.contestsUncheckedUpdateWithoutReferral_attemptsInput>
+  create: Prisma.XOR<Prisma.contestsCreateWithoutReferral_attemptsInput, Prisma.contestsUncheckedCreateWithoutReferral_attemptsInput>
+  where?: Prisma.contestsWhereInput
+}
+
+export type contestsUpdateToOneWithWhereWithoutReferral_attemptsInput = {
+  where?: Prisma.contestsWhereInput
+  data: Prisma.XOR<Prisma.contestsUpdateWithoutReferral_attemptsInput, Prisma.contestsUncheckedUpdateWithoutReferral_attemptsInput>
+}
+
+export type contestsUpdateWithoutReferral_attemptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  referral_code_prefix?: Prisma.StringFieldUpdateOperationsInput | string
+  start_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  end_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reward_type?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_value?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_description?: Prisma.StringFieldUpdateOperationsInput | string
+  winner_selection?: Prisma.StringFieldUpdateOperationsInput | string
+  max_winners?: Prisma.IntFieldUpdateOperationsInput | number
+  participants_count?: Prisma.IntFieldUpdateOperationsInput | number
+  referrals_count?: Prisma.IntFieldUpdateOperationsInput | number
+  views_count?: Prisma.IntFieldUpdateOperationsInput | number
+  top_performer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_referrals?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contest_participants?: Prisma.contest_participantsUpdateManyWithoutContestsNestedInput
+  channels?: Prisma.channelsUpdateOneRequiredWithoutContestsNestedInput
+  referrals?: Prisma.referralsUpdateManyWithoutContestsNestedInput
+}
+
+export type contestsUncheckedUpdateWithoutReferral_attemptsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  channel_id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  referral_code_prefix?: Prisma.StringFieldUpdateOperationsInput | string
+  start_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  end_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reward_type?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_value?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_description?: Prisma.StringFieldUpdateOperationsInput | string
+  winner_selection?: Prisma.StringFieldUpdateOperationsInput | string
+  max_winners?: Prisma.IntFieldUpdateOperationsInput | number
+  participants_count?: Prisma.IntFieldUpdateOperationsInput | number
+  referrals_count?: Prisma.IntFieldUpdateOperationsInput | number
+  views_count?: Prisma.IntFieldUpdateOperationsInput | number
+  top_performer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_referrals?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contest_participants?: Prisma.contest_participantsUncheckedUpdateManyWithoutContestsNestedInput
+  referrals?: Prisma.referralsUncheckedUpdateManyWithoutContestsNestedInput
+}
+
+export type contestsCreateWithoutReferralsInput = {
+  id?: string
+  title: string
+  slug: string
+  description: string
+  status?: string
+  visibility?: string
+  referral_code_prefix: string
+  start_date?: Date | string | null
+  end_date?: Date | string | null
+  reward_type?: string
+  reward_value?: string
+  reward_description: string
+  winner_selection?: string
+  max_winners?: number
+  participants_count?: number
+  referrals_count?: number
+  views_count?: number
+  top_performer_name?: string | null
+  top_performer_phone?: string | null
+  top_performer_referrals?: number
+  is_published?: boolean
+  is_archived?: boolean
+  created_at?: Date | string
+  updated_at?: Date | string
+  contest_participants?: Prisma.contest_participantsCreateNestedManyWithoutContestsInput
+  channels: Prisma.channelsCreateNestedOneWithoutContestsInput
+  referral_attempts?: Prisma.referral_attemptsCreateNestedManyWithoutContestsInput
+}
+
+export type contestsUncheckedCreateWithoutReferralsInput = {
+  id?: string
+  channel_id: string
+  title: string
+  slug: string
+  description: string
+  status?: string
+  visibility?: string
+  referral_code_prefix: string
+  start_date?: Date | string | null
+  end_date?: Date | string | null
+  reward_type?: string
+  reward_value?: string
+  reward_description: string
+  winner_selection?: string
+  max_winners?: number
+  participants_count?: number
+  referrals_count?: number
+  views_count?: number
+  top_performer_name?: string | null
+  top_performer_phone?: string | null
+  top_performer_referrals?: number
+  is_published?: boolean
+  is_archived?: boolean
+  created_at?: Date | string
+  updated_at?: Date | string
+  contest_participants?: Prisma.contest_participantsUncheckedCreateNestedManyWithoutContestsInput
+  referral_attempts?: Prisma.referral_attemptsUncheckedCreateNestedManyWithoutContestsInput
+}
+
+export type contestsCreateOrConnectWithoutReferralsInput = {
+  where: Prisma.contestsWhereUniqueInput
+  create: Prisma.XOR<Prisma.contestsCreateWithoutReferralsInput, Prisma.contestsUncheckedCreateWithoutReferralsInput>
+}
+
+export type contestsUpsertWithoutReferralsInput = {
+  update: Prisma.XOR<Prisma.contestsUpdateWithoutReferralsInput, Prisma.contestsUncheckedUpdateWithoutReferralsInput>
+  create: Prisma.XOR<Prisma.contestsCreateWithoutReferralsInput, Prisma.contestsUncheckedCreateWithoutReferralsInput>
+  where?: Prisma.contestsWhereInput
+}
+
+export type contestsUpdateToOneWithWhereWithoutReferralsInput = {
+  where?: Prisma.contestsWhereInput
+  data: Prisma.XOR<Prisma.contestsUpdateWithoutReferralsInput, Prisma.contestsUncheckedUpdateWithoutReferralsInput>
+}
+
+export type contestsUpdateWithoutReferralsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  referral_code_prefix?: Prisma.StringFieldUpdateOperationsInput | string
+  start_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  end_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reward_type?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_value?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_description?: Prisma.StringFieldUpdateOperationsInput | string
+  winner_selection?: Prisma.StringFieldUpdateOperationsInput | string
+  max_winners?: Prisma.IntFieldUpdateOperationsInput | number
+  participants_count?: Prisma.IntFieldUpdateOperationsInput | number
+  referrals_count?: Prisma.IntFieldUpdateOperationsInput | number
+  views_count?: Prisma.IntFieldUpdateOperationsInput | number
+  top_performer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_referrals?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contest_participants?: Prisma.contest_participantsUpdateManyWithoutContestsNestedInput
+  channels?: Prisma.channelsUpdateOneRequiredWithoutContestsNestedInput
+  referral_attempts?: Prisma.referral_attemptsUpdateManyWithoutContestsNestedInput
+}
+
+export type contestsUncheckedUpdateWithoutReferralsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  channel_id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  referral_code_prefix?: Prisma.StringFieldUpdateOperationsInput | string
+  start_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  end_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reward_type?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_value?: Prisma.StringFieldUpdateOperationsInput | string
+  reward_description?: Prisma.StringFieldUpdateOperationsInput | string
+  winner_selection?: Prisma.StringFieldUpdateOperationsInput | string
+  max_winners?: Prisma.IntFieldUpdateOperationsInput | number
+  participants_count?: Prisma.IntFieldUpdateOperationsInput | number
+  referrals_count?: Prisma.IntFieldUpdateOperationsInput | number
+  views_count?: Prisma.IntFieldUpdateOperationsInput | number
+  top_performer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  top_performer_referrals?: Prisma.IntFieldUpdateOperationsInput | number
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contest_participants?: Prisma.contest_participantsUncheckedUpdateManyWithoutContestsNestedInput
+  referral_attempts?: Prisma.referral_attemptsUncheckedUpdateManyWithoutContestsNestedInput
 }
 
 export type contestsCreateWithoutChannelsInput = {
@@ -906,6 +1374,9 @@ export type contestsCreateWithoutChannelsInput = {
   is_archived?: boolean
   created_at?: Date | string
   updated_at?: Date | string
+  contest_participants?: Prisma.contest_participantsCreateNestedManyWithoutContestsInput
+  referral_attempts?: Prisma.referral_attemptsCreateNestedManyWithoutContestsInput
+  referrals?: Prisma.referralsCreateNestedManyWithoutContestsInput
 }
 
 export type contestsUncheckedCreateWithoutChannelsInput = {
@@ -933,6 +1404,9 @@ export type contestsUncheckedCreateWithoutChannelsInput = {
   is_archived?: boolean
   created_at?: Date | string
   updated_at?: Date | string
+  contest_participants?: Prisma.contest_participantsUncheckedCreateNestedManyWithoutContestsInput
+  referral_attempts?: Prisma.referral_attemptsUncheckedCreateNestedManyWithoutContestsInput
+  referrals?: Prisma.referralsUncheckedCreateNestedManyWithoutContestsInput
 }
 
 export type contestsCreateOrConnectWithoutChannelsInput = {
@@ -1044,6 +1518,9 @@ export type contestsUpdateWithoutChannelsInput = {
   is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contest_participants?: Prisma.contest_participantsUpdateManyWithoutContestsNestedInput
+  referral_attempts?: Prisma.referral_attemptsUpdateManyWithoutContestsNestedInput
+  referrals?: Prisma.referralsUpdateManyWithoutContestsNestedInput
 }
 
 export type contestsUncheckedUpdateWithoutChannelsInput = {
@@ -1071,6 +1548,9 @@ export type contestsUncheckedUpdateWithoutChannelsInput = {
   is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contest_participants?: Prisma.contest_participantsUncheckedUpdateManyWithoutContestsNestedInput
+  referral_attempts?: Prisma.referral_attemptsUncheckedUpdateManyWithoutContestsNestedInput
+  referrals?: Prisma.referralsUncheckedUpdateManyWithoutContestsNestedInput
 }
 
 export type contestsUncheckedUpdateManyWithoutChannelsInput = {
@@ -1101,6 +1581,53 @@ export type contestsUncheckedUpdateManyWithoutChannelsInput = {
 }
 
 
+/**
+ * Count Type ContestsCountOutputType
+ */
+
+export type ContestsCountOutputType = {
+  contest_participants: number
+  referral_attempts: number
+  referrals: number
+}
+
+export type ContestsCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  contest_participants?: boolean | ContestsCountOutputTypeCountContest_participantsArgs
+  referral_attempts?: boolean | ContestsCountOutputTypeCountReferral_attemptsArgs
+  referrals?: boolean | ContestsCountOutputTypeCountReferralsArgs
+}
+
+/**
+ * ContestsCountOutputType without action
+ */
+export type ContestsCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContestsCountOutputType
+   */
+  select?: Prisma.ContestsCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ContestsCountOutputType without action
+ */
+export type ContestsCountOutputTypeCountContest_participantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.contest_participantsWhereInput
+}
+
+/**
+ * ContestsCountOutputType without action
+ */
+export type ContestsCountOutputTypeCountReferral_attemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.referral_attemptsWhereInput
+}
+
+/**
+ * ContestsCountOutputType without action
+ */
+export type ContestsCountOutputTypeCountReferralsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.referralsWhereInput
+}
+
 
 export type contestsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1128,7 +1655,11 @@ export type contestsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   is_archived?: boolean
   created_at?: boolean
   updated_at?: boolean
+  contest_participants?: boolean | Prisma.contests$contest_participantsArgs<ExtArgs>
   channels?: boolean | Prisma.channelsDefaultArgs<ExtArgs>
+  referral_attempts?: boolean | Prisma.contests$referral_attemptsArgs<ExtArgs>
+  referrals?: boolean | Prisma.contests$referralsArgs<ExtArgs>
+  _count?: boolean | Prisma.ContestsCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contests"]>
 
 export type contestsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1219,7 +1750,11 @@ export type contestsSelectScalar = {
 
 export type contestsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "channel_id" | "title" | "slug" | "description" | "status" | "visibility" | "referral_code_prefix" | "start_date" | "end_date" | "reward_type" | "reward_value" | "reward_description" | "winner_selection" | "max_winners" | "participants_count" | "referrals_count" | "views_count" | "top_performer_name" | "top_performer_phone" | "top_performer_referrals" | "is_published" | "is_archived" | "created_at" | "updated_at", ExtArgs["result"]["contests"]>
 export type contestsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  contest_participants?: boolean | Prisma.contests$contest_participantsArgs<ExtArgs>
   channels?: boolean | Prisma.channelsDefaultArgs<ExtArgs>
+  referral_attempts?: boolean | Prisma.contests$referral_attemptsArgs<ExtArgs>
+  referrals?: boolean | Prisma.contests$referralsArgs<ExtArgs>
+  _count?: boolean | Prisma.ContestsCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type contestsIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   channels?: boolean | Prisma.channelsDefaultArgs<ExtArgs>
@@ -1231,7 +1766,10 @@ export type contestsIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
 export type $contestsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "contests"
   objects: {
+    contest_participants: Prisma.$contest_participantsPayload<ExtArgs>[]
     channels: Prisma.$channelsPayload<ExtArgs>
+    referral_attempts: Prisma.$referral_attemptsPayload<ExtArgs>[]
+    referrals: Prisma.$referralsPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1653,7 +2191,10 @@ readonly fields: contestsFieldRefs;
  */
 export interface Prisma__contestsClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  contest_participants<T extends Prisma.contests$contest_participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.contests$contest_participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$contest_participantsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   channels<T extends Prisma.channelsDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.channelsDefaultArgs<ExtArgs>>): Prisma.Prisma__channelsClient<runtime.Types.Result.GetResult<Prisma.$channelsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  referral_attempts<T extends Prisma.contests$referral_attemptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.contests$referral_attemptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$referral_attemptsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  referrals<T extends Prisma.contests$referralsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.contests$referralsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$referralsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2106,6 +2647,78 @@ export type contestsDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many contests to delete.
    */
   limit?: number
+}
+
+/**
+ * contests.contest_participants
+ */
+export type contests$contest_participantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the contest_participants
+   */
+  select?: Prisma.contest_participantsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the contest_participants
+   */
+  omit?: Prisma.contest_participantsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.contest_participantsInclude<ExtArgs> | null
+  where?: Prisma.contest_participantsWhereInput
+  orderBy?: Prisma.contest_participantsOrderByWithRelationInput | Prisma.contest_participantsOrderByWithRelationInput[]
+  cursor?: Prisma.contest_participantsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Contest_participantsScalarFieldEnum | Prisma.Contest_participantsScalarFieldEnum[]
+}
+
+/**
+ * contests.referral_attempts
+ */
+export type contests$referral_attemptsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the referral_attempts
+   */
+  select?: Prisma.referral_attemptsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the referral_attempts
+   */
+  omit?: Prisma.referral_attemptsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.referral_attemptsInclude<ExtArgs> | null
+  where?: Prisma.referral_attemptsWhereInput
+  orderBy?: Prisma.referral_attemptsOrderByWithRelationInput | Prisma.referral_attemptsOrderByWithRelationInput[]
+  cursor?: Prisma.referral_attemptsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Referral_attemptsScalarFieldEnum | Prisma.Referral_attemptsScalarFieldEnum[]
+}
+
+/**
+ * contests.referrals
+ */
+export type contests$referralsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the referrals
+   */
+  select?: Prisma.referralsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the referrals
+   */
+  omit?: Prisma.referralsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.referralsInclude<ExtArgs> | null
+  where?: Prisma.referralsWhereInput
+  orderBy?: Prisma.referralsOrderByWithRelationInput | Prisma.referralsOrderByWithRelationInput[]
+  cursor?: Prisma.referralsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReferralsScalarFieldEnum | Prisma.ReferralsScalarFieldEnum[]
 }
 
 /**

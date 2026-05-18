@@ -3,7 +3,7 @@
 import React from 'react';
 import { Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ParticipantModel } from '@/model/participant.model';
+import type { ParticipantModel } from '@/types/participant.type';
 import AppPagination from '@/components/shared/AppPagination';
 import { participantsColumns } from './ParticipantsColumns';
 
@@ -13,6 +13,8 @@ type ParticipantsTableProps = {
   totalPages: number;
   canPreviousPage: boolean;
   canNextPage: boolean;
+  limitOnPage: number;
+  total: number;
   onPreviousPage?: () => void;
   onNextPage?: () => void;
   onPageChange?: (page: number) => void;
@@ -27,11 +29,9 @@ const ParticipantsTable = ({
   onPreviousPage,
   onNextPage,
   onPageChange,
+  limitOnPage,
+  total,
 }: ParticipantsTableProps) => {
-  const sortedParticipants = [...participants].sort(
-    (a, b) => b.total_referrals - a.total_referrals,
-  );
-
   return (
     <section className="rounded-xl border border-white/10 bg-[rgba(28,28,38,0.55)] shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
       <div className="flex flex-col gap-4 border-b border-white/5 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
@@ -47,7 +47,7 @@ const ParticipantsTable = ({
           <Activity className="size-4 text-(--neon-green)" />
           <span className="text-gray-400">Showing</span>
           <span className="font-bold text-white">
-            {sortedParticipants.length} participants
+            {limitOnPage} of {total} participants
           </span>
         </div>
       </div>
@@ -72,7 +72,7 @@ const ParticipantsTable = ({
           </thead>
 
           <tbody className="divide-y divide-white/5">
-            {sortedParticipants.map((participant) => (
+            {participants.map((participant) => (
               <tr
                 key={participant.id}
                 className="transition-all duration-200 hover:bg-white/4"
@@ -97,7 +97,7 @@ const ParticipantsTable = ({
       <div className="border-t border-white/5 px-4 py-4 sm:px-6">
         <div className="flex flex-col gap-2 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
           <p>Participants are ranked here by all-time referral totals.</p>
-          <p>{sortedParticipants.length} participants listed</p>
+          <p>{participants.length} participants listed</p>
         </div>
       </div>
 

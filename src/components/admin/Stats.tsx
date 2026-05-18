@@ -1,16 +1,22 @@
-'use client'
+'use client';
 
 import React from 'react';
 import StatsCard from './StatsCard';
 import { ArrowUp, Users, Link2, Trophy } from 'lucide-react';
 
-const Stats = () => {
+const Stats = ({
+  totalParticipants,
+  totalReferrals,
+}: {
+  totalParticipants: number;
+  totalReferrals: number;
+}) => {
   return (
-    <div className='grid gap-3 grid-cols-1 md:grid-cols-2 xl:grid-cols-4'>
+    <div className="grid gap-3 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
       <StatsCard
         title="Participants"
         description="Total Participants"
-        value="2,847"
+        value={totalParticipants.toLocaleString()}
         color="#00ff9d"
         icon={Users}
         info={
@@ -24,7 +30,7 @@ const Stats = () => {
       <StatsCard
         title="Referrals"
         description="Total Referrals"
-        value="12,405"
+        value={totalReferrals.toLocaleString()}
         color="#00d0ff"
         icon={Link2}
         info={

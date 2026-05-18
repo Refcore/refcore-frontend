@@ -18,6 +18,27 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
+ * Model contest_participants
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type contest_participants = Prisma.contest_participantsModel
+/**
+ * Model participants
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type participants = Prisma.participantsModel
+/**
+ * Model referral_attempts
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type referral_attempts = Prisma.referral_attemptsModel
+/**
+ * Model referrals
+ * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type referrals = Prisma.referralsModel
+/**
  * Model channels
  * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
  * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
