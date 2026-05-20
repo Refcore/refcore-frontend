@@ -11,20 +11,19 @@ datasource db {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model contest_participants {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  channel_id     String   @db.Uuid
-  contest_id     String   @db.Uuid
-  participant_id String   @db.Uuid
-  referral_count Int      @default(0)
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  channel_id     String       @db.Uuid
+  contest_id     String       @db.Uuid
+  participant_id String       @db.Uuid
+  referral_count Int          @default(0)
   rank_cache     Int?
-  joined_at      DateTime @default(now()) @db.Timestamptz(6)
-  status         String   @default("active")
-  created_at     DateTime @default(now()) @db.Timestamptz(6)
-  updated_at     DateTime @default(now()) @db.Timestamptz(6)
-
-  channels     channels     @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  contests     contests     @relation(fields: [contest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  participants participants @relation(fields: [participant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  joined_at      DateTime     @default(now()) @db.Timestamptz(6)
+  status         String       @default("active")
+  created_at     DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime     @default(now()) @db.Timestamptz(6)
+  channels       channels     @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  contests       contests     @relation(fields: [contest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  participants   participants @relation(fields: [participant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([contest_id, participant_id], map: "contest_participants_contest_participant_unique")
   @@index([channel_id, contest_id], map: "contest_participants_channel_contest_idx")
@@ -37,26 +36,21 @@ model contest_participants {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model participants {
-  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  channel_id            String    @db.Uuid
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  channel_id            String                 @db.Uuid
   phone_number          String
   display_name          String?
   referral_code         String
-  total_referrals       Int       @default(0)
-  total_contests_joined Int       @default(0)
-  first_joined_at       DateTime  @default(now()) @db.Timestamptz(6)
-  last_joined_at        DateTime? @db.Timestamptz(6)
-  created_at            DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at            DateTime  @default(now()) @db.Timestamptz(6)
-
-  channels             channels               @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  contest_participants contest_participants[]
-
-  referral_attempts_as_referrer referral_attempts[] @relation("referral_attempts_referrer")
-  referral_attempts_as_referee  referral_attempts[] @relation("referral_attempts_referee")
-
-  referrals_as_referrer referrals[] @relation("referrals_referrer")
-  referrals_as_referee  referrals[] @relation("referrals_referee")
+  total_referrals       Int                    @default(0)
+  total_contests_joined Int                    @default(0)
+  first_joined_at       DateTime               @default(now()) @db.Timestamptz(6)
+  last_joined_at        DateTime?              @db.Timestamptz(6)
+  created_at            DateTime               @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime               @default(now()) @db.Timestamptz(6)
+  contest_participants  contest_participants[]
+  channels              channels               @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  referrals_as_referee  referrals[]            @relation("referrals_referee")
+  referrals_as_referrer referrals[]            @relation("referrals_referrer")
 
   @@unique([channel_id, phone_number], map: "participants_channel_phone_unique")
   @@unique([channel_id, referral_code], map: "participants_channel_referral_code_unique")
@@ -66,67 +60,37 @@ model participants {
   @@schema("public")
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model referral_attempts {
-  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  channel_id              String    @db.Uuid
-  contest_id              String    @db.Uuid
-  referrer_participant_id String    @db.Uuid
-  referee_phone_number    String
-  referee_participant_id  String?   @db.Uuid
-  referral_code_used      String
-  status                  String    @default("pending")
-  first_seen_at           DateTime  @default(now()) @db.Timestamptz(6)
-  converted_at            DateTime? @db.Timestamptz(6)
-  created_at              DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at              DateTime  @default(now()) @db.Timestamptz(6)
-
-  channels channels @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  contests contests @relation(fields: [contest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  referrer_participant participants  @relation("referral_attempts_referrer", fields: [referrer_participant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  referee_participant  participants? @relation("referral_attempts_referee", fields: [referee_participant_id], references: [id], onUpdate: NoAction)
-
-  referrals referrals[]
-
-  @@unique([contest_id, referee_phone_number], map: "referral_attempts_unique_phone_per_contest")
-  @@index([channel_id])
-  @@index([contest_id])
-  @@index([created_at])
-  @@index([referee_participant_id])
-  @@index([referee_phone_number])
-  @@index([referral_code_used])
-  @@index([referrer_participant_id])
-  @@index([status])
-  @@schema("public")
-}
-
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model referrals {
-  id                      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  channel_id              String   @db.Uuid
-  contest_id              String   @db.Uuid
-  referrer_participant_id String   @db.Uuid
-  referee_participant_id  String   @db.Uuid
-  referral_attempt_id     String?  @db.Uuid
-  created_at              DateTime @default(now()) @db.Timestamptz(6)
+  id                      String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  channel_id              String        @db.Uuid
+  contest_id              String        @db.Uuid
+  referrer_participant_id String        @db.Uuid
+  referee_phone_number    String
+  referee_participant_id  String?       @db.Uuid
+  referral_code_used      String
+  status                  String        @default("valid")
+  notes                   String?
+  first_seen_at           DateTime      @default(now()) @db.Timestamptz(6)
+  became_participant_at   DateTime?     @db.Timestamptz(6)
+  created_at              DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime      @default(now()) @db.Timestamptz(6)
+  channels                channels      @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  contests                contests      @relation(fields: [contest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  referee_participant     participants? @relation("referrals_referee", fields: [referee_participant_id], references: [id], onUpdate: NoAction)
+  referrer_participant    participants  @relation("referrals_referrer", fields: [referrer_participant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  channels channels @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  contests contests @relation(fields: [contest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  referrer_participant participants @relation("referrals_referrer", fields: [referrer_participant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  referee_participant  participants @relation("referrals_referee", fields: [referee_participant_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  referral_attempt referral_attempts? @relation(fields: [referral_attempt_id], references: [id], onUpdate: NoAction)
-
-  @@unique([contest_id, referee_participant_id], map: "referrals_one_referee_per_contest")
+  @@unique([channel_id, referee_phone_number], map: "referrals_one_referee_phone_per_channel")
   @@index([channel_id])
   @@index([contest_id])
   @@index([created_at])
   @@index([referee_participant_id])
-  @@index([referral_attempt_id])
   @@index([referrer_participant_id])
+  @@index([first_seen_at])
+  @@index([referee_phone_number])
+  @@index([referral_code_used])
+  @@index([status])
   @@schema("public")
 }
 
@@ -152,7 +116,6 @@ model channels {
   contest_participants  contest_participants[]
   contests              contests[]
   participants          participants[]
-  referral_attempts     referral_attempts[]
   referrals             referrals[]
 
   @@schema("public")
@@ -187,7 +150,6 @@ model contests {
   updated_at              DateTime               @default(now()) @db.Timestamptz(6)
   contest_participants    contest_participants[]
   channels                channels               @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  referral_attempts       referral_attempts[]
   referrals               referrals[]
 
   @@unique([channel_id, slug])

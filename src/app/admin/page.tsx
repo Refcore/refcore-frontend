@@ -12,7 +12,11 @@ import { useAdminLoading } from '@/hooks/admin/useAdminLoading';
 import React from 'react';
 
 const AdminDashboardPage = () => {
-  const { data } = useAdminLoading();
+  const { data, active_contest } = useAdminLoading();
+
+  console.log('Active Contest:', active_contest);
+  
+  const activeContest = active_contest?.[0] ?? null;
 
   const totalParticipants = data.total_participants;
   const totalReferrals = data.total_referrals;
@@ -26,6 +30,7 @@ const AdminDashboardPage = () => {
       <Stats
         totalParticipants={totalParticipants}
         totalReferrals={totalReferrals}
+        activeContest={activeContest}
       />
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 space-y-6">

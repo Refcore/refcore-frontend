@@ -3,14 +3,23 @@
 import React from 'react';
 import StatsCard from './StatsCard';
 import { ArrowUp, Users, Link2, Trophy } from 'lucide-react';
+import { getTimeLeft } from '@/utils';
+import { Contest } from '@/types/contest.type';
 
 const Stats = ({
   totalParticipants,
   totalReferrals,
+  activeContest,
 }: {
   totalParticipants: number;
   totalReferrals: number;
+  activeContest: Contest | null;
 }) => {
+  const timeLeft =
+    activeContest?.start_date && activeContest?.end_date
+      ? getTimeLeft(activeContest.start_date, activeContest.end_date)
+      : 'No active contest';
+
   return (
     <div className="grid gap-3 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
       <StatsCard
@@ -44,10 +53,10 @@ const Stats = ({
       <StatsCard
         title="Contest Status"
         description="Time Remaining"
-        value="4d 18h"
+        value={timeLeft}
         color="#facc15"
         icon={Trophy}
-        info="Active"
+        info={activeContest ? 'Active' : 'Inactive'}
       />
 
       <StatsCard

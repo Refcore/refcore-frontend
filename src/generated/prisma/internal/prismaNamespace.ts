@@ -386,7 +386,6 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   contest_participants: 'contest_participants',
   participants: 'participants',
-  referral_attempts: 'referral_attempts',
   referrals: 'referrals',
   channels: 'channels',
   contests: 'contests',
@@ -429,7 +428,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "contest_participants" | "participants" | "referral_attempts" | "referrals" | "channels" | "contests" | "public_users" | "audit_log_entries" | "custom_oauth_providers" | "flow_state" | "identities" | "instances" | "mfa_amr_claims" | "mfa_challenges" | "mfa_factors" | "oauth_authorizations" | "oauth_client_states" | "oauth_clients" | "oauth_consents" | "one_time_tokens" | "refresh_tokens" | "saml_providers" | "saml_relay_states" | "schema_migrations" | "sessions" | "sso_domains" | "sso_providers" | "auth_users" | "webauthn_challenges" | "webauthn_credentials"
+    modelProps: "contest_participants" | "participants" | "referrals" | "channels" | "contests" | "public_users" | "audit_log_entries" | "custom_oauth_providers" | "flow_state" | "identities" | "instances" | "mfa_amr_claims" | "mfa_challenges" | "mfa_factors" | "oauth_authorizations" | "oauth_client_states" | "oauth_clients" | "oauth_consents" | "one_time_tokens" | "refresh_tokens" | "saml_providers" | "saml_relay_states" | "schema_migrations" | "sessions" | "sso_domains" | "sso_providers" | "auth_users" | "webauthn_challenges" | "webauthn_credentials"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -578,80 +577,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.participantsCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ParticipantsCountAggregateOutputType> | number
-        }
-      }
-    }
-    referral_attempts: {
-      payload: Prisma.$referral_attemptsPayload<ExtArgs>
-      fields: Prisma.referral_attemptsFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.referral_attemptsFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.referral_attemptsFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
-        }
-        findFirst: {
-          args: Prisma.referral_attemptsFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.referral_attemptsFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
-        }
-        findMany: {
-          args: Prisma.referral_attemptsFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>[]
-        }
-        create: {
-          args: Prisma.referral_attemptsCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
-        }
-        createMany: {
-          args: Prisma.referral_attemptsCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.referral_attemptsCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>[]
-        }
-        delete: {
-          args: Prisma.referral_attemptsDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
-        }
-        update: {
-          args: Prisma.referral_attemptsUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
-        }
-        deleteMany: {
-          args: Prisma.referral_attemptsDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.referral_attemptsUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.referral_attemptsUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>[]
-        }
-        upsert: {
-          args: Prisma.referral_attemptsUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$referral_attemptsPayload>
-        }
-        aggregate: {
-          args: Prisma.Referral_attemptsAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateReferral_attempts>
-        }
-        groupBy: {
-          args: Prisma.referral_attemptsGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Referral_attemptsGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.referral_attemptsCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.Referral_attemptsCountAggregateOutputType> | number
         }
       }
     }
@@ -2725,7 +2650,7 @@ export const ParticipantsScalarFieldEnum = {
 export type ParticipantsScalarFieldEnum = (typeof ParticipantsScalarFieldEnum)[keyof typeof ParticipantsScalarFieldEnum]
 
 
-export const Referral_attemptsScalarFieldEnum = {
+export const ReferralsScalarFieldEnum = {
   id: 'id',
   channel_id: 'channel_id',
   contest_id: 'contest_id',
@@ -2734,23 +2659,11 @@ export const Referral_attemptsScalarFieldEnum = {
   referee_participant_id: 'referee_participant_id',
   referral_code_used: 'referral_code_used',
   status: 'status',
+  notes: 'notes',
   first_seen_at: 'first_seen_at',
-  converted_at: 'converted_at',
+  became_participant_at: 'became_participant_at',
   created_at: 'created_at',
   updated_at: 'updated_at'
-} as const
-
-export type Referral_attemptsScalarFieldEnum = (typeof Referral_attemptsScalarFieldEnum)[keyof typeof Referral_attemptsScalarFieldEnum]
-
-
-export const ReferralsScalarFieldEnum = {
-  id: 'id',
-  channel_id: 'channel_id',
-  contest_id: 'contest_id',
-  referrer_participant_id: 'referrer_participant_id',
-  referee_participant_id: 'referee_participant_id',
-  referral_attempt_id: 'referral_attempt_id',
-  created_at: 'created_at'
 } as const
 
 export type ReferralsScalarFieldEnum = (typeof ReferralsScalarFieldEnum)[keyof typeof ReferralsScalarFieldEnum]
@@ -3593,7 +3506,6 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   contest_participants?: Prisma.contest_participantsOmit
   participants?: Prisma.participantsOmit
-  referral_attempts?: Prisma.referral_attemptsOmit
   referrals?: Prisma.referralsOmit
   channels?: Prisma.channelsOmit
   contests?: Prisma.contestsOmit

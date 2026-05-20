@@ -52,11 +52,6 @@ export type contest_participants = Prisma.contest_participantsModel
  */
 export type participants = Prisma.participantsModel
 /**
- * Model referral_attempts
- * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
- */
-export type referral_attempts = Prisma.referral_attemptsModel
-/**
  * Model referrals
  * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
  * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

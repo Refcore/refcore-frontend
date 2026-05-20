@@ -19,8 +19,9 @@ const prisma = new PrismaClient({
       : ['error'],
 });
 
-const PARTICIPANT_COUNT = 200;
-const DEMO_CONTEST_SLUG = 'demo-participants-contest';
+const PARTICIPANT_COUNT = 351;
+const EXTRA_REFERRAL_CONTACT_COUNT = 137;
+const DEMO_CONTEST_SLUG = 'demo-refcore-contest';
 
 const firstNames = [
   'Ayo',
@@ -65,12 +66,72 @@ const getDisplayName = (index: number) => {
   return `${firstName} ${lastName} ${index + 1}`;
 };
 
-const getPhoneNumber = (index: number) => {
+const getParticipantPhoneNumber = (index: number) => {
   return `+234800555${String(index + 1).padStart(4, '0')}`;
+};
+
+const getReferralContactPhoneNumber = (index: number) => {
+  return `+234801777${String(index + 1).padStart(4, '0')}`;
 };
 
 const getReferralCode = (index: number) => {
   return `REF${String(index + 1).padStart(5, '0')}`;
+};
+
+const subtractMinutes = (minutes: number) => {
+  return new Date(Date.now() - minutes * 60 * 1000);
+};
+
+const subtractDays = (days: number) => {
+  return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+};
+
+const addDays = (days: number) => {
+  return new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+};
+
+const getReferrerIndex = (refereeIndex: number) => {
+  if (refereeIndex === 0) return null;
+
+  if (refereeIndex <= 55) return 0;
+  if (refereeIndex <= 98) return 1;
+  if (refereeIndex <= 135) return 2;
+  if (refereeIndex <= 165) return 3;
+  if (refereeIndex <= 190) return 4;
+  if (refereeIndex <= 212) return 5;
+  if (refereeIndex <= 230) return 6;
+  if (refereeIndex <= 245) return 7;
+
+  return Math.max(0, Math.floor(refereeIndex / 3) - 1);
+};
+
+const getExtraReferralReferrerIndex = (index: number) => {
+  if (index < 35) return 0;
+  if (index < 62) return 1;
+  if (index < 85) return 2;
+  if (index < 103) return 3;
+  if (index < 118) return 4;
+
+  return index % 40;
+};
+
+const getExtraReferralStatus = (index: number) => {
+  if (index % 17 === 0) return 'blocked';
+  if (index % 9 === 0) return 'flagged';
+
+  return 'valid';
+};
+
+const getReferralNote = (status: string) => {
+  if (status === 'blocked') {
+    return 'Referral blocked because the contact matched a duplicate or suspicious pattern.';
+  }
+
+  if (status === 'flagged') {
+    return 'Referral flagged for manual review because the contact activity looked unusual.';
+  }
+
+  return null;
 };
 
 const main = async () => {
@@ -97,41 +158,59 @@ const main = async () => {
       status: 'active',
       is_published: true,
       is_archived: false,
+      start_date: subtractDays(45),
+      end_date: addDays(14),
+      updated_at: new Date(),
     },
     create: {
       channel_id: channel.id,
-      title: 'Demo Participants Contest',
+      title: 'Demo REFCORE Contest',
       slug: DEMO_CONTEST_SLUG,
       description:
-        'Demo contest used for testing participants and leaderboard features.',
+        'Demo contest used for testing participants, referrals, leaderboard, and dashboard graph features.',
       status: 'active',
       visibility: 'public',
       referral_code_prefix: 'REF',
       reward_type: 'custom',
       reward_value: '',
-      reward_description: 'Demo reward for testing.',
+      reward_description: 'Demo reward for testing REFCORE.',
       winner_selection: 'highestReferrals',
       max_winners: 5,
       is_published: true,
       is_archived: false,
-      start_date: new Date(),
-      end_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      start_date: subtractDays(45),
+      end_date: addDays(14),
     },
   });
 
   console.log(`Using channel: ${channel.tv_name}`);
   console.log(`Using contest: ${contest.title}`);
 
-  const demoPhones = Array.from({ length: PARTICIPANT_COUNT }, (_, index) =>
-    getPhoneNumber(index),
+  const demoParticipantPhones = Array.from(
+    { length: PARTICIPANT_COUNT },
+    (_, index) => getParticipantPhoneNumber(index),
   );
+
+  // const demoReferralContactPhones = Array.from(
+  //   { length: EXTRA_REFERRAL_CONTACT_COUNT },
+  //   (_, index) => getReferralContactPhoneNumber(index),
+  // );
 
   const existingDemoParticipants = await prisma.participants.findMany({
     where: {
       channel_id: channel.id,
-      phone_number: {
-        in: demoPhones,
-      },
+      OR: [
+        {
+          phone_number: {
+            in: demoParticipantPhones,
+          },
+        },
+        {
+          referral_code: {
+            startsWith: 'REF',
+          },
+        },
+      ],
     },
     select: {
       id: true,
@@ -142,60 +221,21 @@ const main = async () => {
     (participant) => participant.id,
   );
 
+  await prisma.referrals.deleteMany({
+    where: {
+      channel_id: channel.id,
+      contest_id: contest.id,
+    },
+  });
+
+  await prisma.contest_participants.deleteMany({
+    where: {
+      channel_id: channel.id,
+      contest_id: contest.id,
+    },
+  });
+
   if (existingDemoParticipantIds.length > 0) {
-    await prisma.referrals.deleteMany({
-      where: {
-        channel_id: channel.id,
-        contest_id: contest.id,
-        OR: [
-          {
-            referrer_participant_id: {
-              in: existingDemoParticipantIds,
-            },
-          },
-          {
-            referee_participant_id: {
-              in: existingDemoParticipantIds,
-            },
-          },
-        ],
-      },
-    });
-
-    await prisma.referral_attempts.deleteMany({
-      where: {
-        channel_id: channel.id,
-        contest_id: contest.id,
-        OR: [
-          {
-            referrer_participant_id: {
-              in: existingDemoParticipantIds,
-            },
-          },
-          {
-            referee_participant_id: {
-              in: existingDemoParticipantIds,
-            },
-          },
-          {
-            referee_phone_number: {
-              in: demoPhones,
-            },
-          },
-        ],
-      },
-    });
-
-    await prisma.contest_participants.deleteMany({
-      where: {
-        channel_id: channel.id,
-        contest_id: contest.id,
-        participant_id: {
-          in: existingDemoParticipantIds,
-        },
-      },
-    });
-
     await prisma.participants.deleteMany({
       where: {
         id: {
@@ -207,16 +247,22 @@ const main = async () => {
 
   const participantsData = Array.from(
     { length: PARTICIPANT_COUNT },
-    (_, index) => ({
-      channel_id: channel.id,
-      phone_number: getPhoneNumber(index),
-      display_name: getDisplayName(index),
-      referral_code: getReferralCode(index),
-      total_referrals: 0,
-      total_contests_joined: 1,
-      first_joined_at: new Date(Date.now() - index * 60 * 60 * 1000),
-      last_joined_at: new Date(Date.now() - index * 30 * 60 * 1000),
-    }),
+    (_, index) => {
+      const joinedAt = subtractMinutes(index * 185 + (index % 11) * 27);
+
+      return {
+        channel_id: channel.id,
+        phone_number: getParticipantPhoneNumber(index),
+        display_name: getDisplayName(index),
+        referral_code: getReferralCode(index),
+        total_referrals: 0,
+        total_contests_joined: 1,
+        first_joined_at: joinedAt,
+        last_joined_at: subtractMinutes(index * 91 + (index % 7) * 13),
+        created_at: joinedAt,
+        updated_at: joinedAt,
+      };
+    },
   );
 
   await prisma.participants.createMany({
@@ -227,7 +273,7 @@ const main = async () => {
     where: {
       channel_id: channel.id,
       phone_number: {
-        in: demoPhones,
+        in: demoParticipantPhones,
       },
     },
     orderBy: {
@@ -236,20 +282,6 @@ const main = async () => {
   });
 
   const referralCounts = new Map<string, number>();
-
-  const getReferrerIndex = (refereeIndex: number) => {
-    if (refereeIndex === 0) return null;
-
-    if (refereeIndex <= 40) return 0;
-    if (refereeIndex <= 70) return 1;
-    if (refereeIndex <= 95) return 2;
-    if (refereeIndex <= 115) return 3;
-    if (refereeIndex <= 130) return 4;
-
-    return Math.floor(Math.random() * refereeIndex);
-  };
-
-  const referralAttemptsData = [];
   const referralsData = [];
 
   for (
@@ -264,56 +296,66 @@ const main = async () => {
     const referrer = participants[referrerIndex];
     const referee = participants[refereeIndex];
 
+    const firstSeenAt = subtractMinutes(
+      refereeIndex * 145 + (refereeIndex % 13) * 31,
+    );
+
+    const becameParticipantAt = new Date(
+      firstSeenAt.getTime() + 25 * 60 * 1000,
+    );
+
     referralCounts.set(referrer.id, (referralCounts.get(referrer.id) ?? 0) + 1);
 
-    referralAttemptsData.push({
+    referralsData.push({
       channel_id: channel.id,
       contest_id: contest.id,
       referrer_participant_id: referrer.id,
       referee_phone_number: referee.phone_number,
       referee_participant_id: referee.id,
       referral_code_used: referrer.referral_code,
-      status: 'converted',
-      first_seen_at: new Date(Date.now() - refereeIndex * 45 * 60 * 1000),
-      converted_at: new Date(Date.now() - refereeIndex * 40 * 60 * 1000),
+      status: 'became_participant',
+      notes: 'Referral contact later joined the contest as a participant.',
+      first_seen_at: firstSeenAt,
+      became_participant_at: becameParticipantAt,
+      created_at: firstSeenAt,
+      updated_at: becameParticipantAt,
     });
+  }
+
+  for (let index = 0; index < EXTRA_REFERRAL_CONTACT_COUNT; index += 1) {
+    const referrerIndex = getExtraReferralReferrerIndex(index);
+    const referrer = participants[referrerIndex];
+
+    const status = getExtraReferralStatus(index);
+    const firstSeenAt = subtractMinutes(index * 223 + (index % 19) * 37);
+
+    const shouldCountReferral = status === 'valid';
+
+    if (shouldCountReferral) {
+      referralCounts.set(
+        referrer.id,
+        (referralCounts.get(referrer.id) ?? 0) + 1,
+      );
+    }
 
     referralsData.push({
       channel_id: channel.id,
       contest_id: contest.id,
       referrer_participant_id: referrer.id,
-      referee_participant_id: referee.id,
+      referee_phone_number: getReferralContactPhoneNumber(index),
+      referee_participant_id: null,
+      referral_code_used: referrer.referral_code,
+      status,
+      notes: getReferralNote(status),
+      first_seen_at: firstSeenAt,
+      became_participant_at: null,
+      created_at: firstSeenAt,
+      updated_at: firstSeenAt,
     });
   }
 
-  await prisma.referral_attempts.createMany({
-    data: referralAttemptsData,
-  });
-
-  const referralAttempts = await prisma.referral_attempts.findMany({
-    where: {
-      channel_id: channel.id,
-      contest_id: contest.id,
-    },
-    select: {
-      id: true,
-      referee_participant_id: true,
-    },
-  });
-
-  const attemptByRefereeId = new Map(
-    referralAttempts
-      .filter((attempt) => attempt.referee_participant_id)
-      .map((attempt) => [attempt.referee_participant_id as string, attempt.id]),
-  );
-
   await prisma.referrals.createMany({
-    data: referralsData.map((referral) => ({
-      ...referral,
-      referral_attempt_id: attemptByRefereeId.get(
-        referral.referee_participant_id,
-      ),
-    })),
+    data: referralsData,
   });
 
   await prisma.contest_participants.createMany({
@@ -324,6 +366,8 @@ const main = async () => {
       referral_count: referralCounts.get(participant.id) ?? 0,
       status: 'active',
       joined_at: participant.first_joined_at,
+      created_at: participant.first_joined_at,
+      updated_at: participant.first_joined_at,
     })),
   });
 
@@ -342,6 +386,7 @@ const main = async () => {
         },
         data: {
           rank_cache: index + 1,
+          updated_at: new Date(),
         },
       }),
     ),
@@ -355,6 +400,7 @@ const main = async () => {
         },
         data: {
           total_referrals: referralCounts.get(participant.id) ?? 0,
+          updated_at: new Date(),
         },
       }),
     ),
@@ -363,23 +409,38 @@ const main = async () => {
   const topParticipant = sortedParticipants[0];
   const topParticipantReferrals = referralCounts.get(topParticipant.id) ?? 0;
 
+  const validReferralCount = referralsData.filter((referral) => {
+    return referral.status === 'valid' || referral.status === 'became_participant';
+  }).length;
+
   await prisma.contests.update({
     where: {
       id: contest.id,
     },
     data: {
       participants_count: PARTICIPANT_COUNT,
-      referrals_count: referralsData.length,
+      referrals_count: validReferralCount,
       top_performer_name: topParticipant.display_name,
       top_performer_phone: topParticipant.phone_number,
       top_performer_referrals: topParticipantReferrals,
+      updated_at: new Date(),
     },
   });
 
+  const statusSummary = referralsData.reduce<Record<string, number>>(
+    (summary, referral) => {
+      summary[referral.status] = (summary[referral.status] ?? 0) + 1;
+      return summary;
+    },
+    {},
+  );
+
   console.log('Demo seed completed.');
   console.log(`Participants created: ${PARTICIPANT_COUNT}`);
-  console.log(`Referral attempts created: ${referralAttemptsData.length}`);
-  console.log(`Successful referrals created: ${referralsData.length}`);
+  console.log(`Contest participants created: ${PARTICIPANT_COUNT}`);
+  console.log(`Referrals created: ${referralsData.length}`);
+  console.log(`Counted referrals: ${validReferralCount}`);
+  console.log('Referral status summary:', statusSummary);
 };
 
 main()
