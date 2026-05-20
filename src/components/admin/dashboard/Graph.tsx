@@ -1,19 +1,8 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from 'recharts';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import React, { useState } from 'react';
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   ChartContainer,
@@ -23,7 +12,7 @@ import {
 } from '@/components/ui/chart';
 
 import { cn } from '@/lib/utils';
-import { GraphRange, referralGraphData } from '@/demo/refferalGraphData';
+import { useGetReferralGraph } from '@/hooks/admin/referrals/useGetReferralGraph';
 
 const chartConfig = {
   referrals: {
@@ -32,18 +21,22 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+type GraphRange = '7days' | '30days' | 'allTime';
+
 const rangeOptions: { label: string; value: GraphRange }[] = [
   { label: '7 Days', value: '7days' },
   { label: '30 Days', value: '30days' },
   { label: 'All Time', value: 'allTime' },
 ];
 
+
+
 const Graph = () => {
   const [range, setRange] = useState<GraphRange>('7days');
 
-  const chartData = useMemo(() => {
-    return referralGraphData[range];
-  }, [range]);
+  const { data, isLoading } = useGetReferralGraph(range);
+
+  const chartData = data?.graph_data ?? [];
 
   return (
     <Card className="border-white/10 lg:max-w-151 2xl:max-w-none bg-[#111118] text-white shadow-none">
@@ -53,7 +46,9 @@ const Graph = () => {
             Referral Overview
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Track referral performance across different time ranges.
+            {isLoading
+              ? 'Loading referral performance...'
+              : `Showing ${range === 'allTime' ? 'all-time' : range === '7days' ? '7-day' : '30-day'} referral performance.`}
           </p>
         </div>
 

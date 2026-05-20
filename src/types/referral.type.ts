@@ -1,23 +1,29 @@
 export type ReferralParticipantPreview = {
-  id: string;
+  id: string | null;
   user_name: string;
   phone: string;
-  referral_code: string;
+  referral_code: string | null;
 };
 
 export type ReferralModel = {
   id: string;
   channel_id: string;
   contest_id: string;
-  referral_attempt_id: string | null;
 
   referrer_participant_id: string;
-  referee_participant_id: string;
+  referee_participant_id: string | null;
 
   referrer: ReferralParticipantPreview;
   referee: ReferralParticipantPreview;
 
   created_at: string;
+  referee_phone_number: string;
+  referral_code_used: string;
+  status: string;
+  notes: string | null;
+  first_seen_at: string;
+  became_participant_at: string | null;
+  updated_at: string;
 };
 
 export type ReferralsPagination = {
@@ -30,4 +36,16 @@ export type ReferralsPagination = {
 export type GetReferralsResponse = {
   referrals: ReferralModel[];
   pagination: ReferralsPagination;
+};
+
+export type ReferralGraphRange = '7days' | '30days' | 'allTime';
+
+export type ReferralGraphDataItem = {
+  label: string;
+  referrals: number;
+};
+
+export type GetReferralGraphResponse = {
+  range: ReferralGraphRange;
+  graph_data: ReferralGraphDataItem[];
 };

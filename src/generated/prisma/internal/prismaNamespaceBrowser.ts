@@ -53,7 +53,6 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   contest_participants: 'contest_participants',
   participants: 'participants',
-  referral_attempts: 'referral_attempts',
   referrals: 'referrals',
   channels: 'channels',
   contests: 'contests',
@@ -132,7 +131,7 @@ export const ParticipantsScalarFieldEnum = {
 export type ParticipantsScalarFieldEnum = (typeof ParticipantsScalarFieldEnum)[keyof typeof ParticipantsScalarFieldEnum]
 
 
-export const Referral_attemptsScalarFieldEnum = {
+export const ReferralsScalarFieldEnum = {
   id: 'id',
   channel_id: 'channel_id',
   contest_id: 'contest_id',
@@ -141,23 +140,11 @@ export const Referral_attemptsScalarFieldEnum = {
   referee_participant_id: 'referee_participant_id',
   referral_code_used: 'referral_code_used',
   status: 'status',
+  notes: 'notes',
   first_seen_at: 'first_seen_at',
-  converted_at: 'converted_at',
+  became_participant_at: 'became_participant_at',
   created_at: 'created_at',
   updated_at: 'updated_at'
-} as const
-
-export type Referral_attemptsScalarFieldEnum = (typeof Referral_attemptsScalarFieldEnum)[keyof typeof Referral_attemptsScalarFieldEnum]
-
-
-export const ReferralsScalarFieldEnum = {
-  id: 'id',
-  channel_id: 'channel_id',
-  contest_id: 'contest_id',
-  referrer_participant_id: 'referrer_participant_id',
-  referee_participant_id: 'referee_participant_id',
-  referral_attempt_id: 'referral_attempt_id',
-  created_at: 'created_at'
 } as const
 
 export type ReferralsScalarFieldEnum = (typeof ReferralsScalarFieldEnum)[keyof typeof ReferralsScalarFieldEnum]

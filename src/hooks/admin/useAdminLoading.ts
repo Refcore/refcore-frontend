@@ -1,8 +1,8 @@
 'use client';
 
-import { useGetParticipants } from "./participants/useGetParticipants";
-import { useGetReferrals } from "./referrals/useGetReferrals";
-
+import { useGetParticipants } from './participants/useGetParticipants';
+import { useGetReferrals } from './referrals/useGetReferrals';
+import { useGetMyContests } from './contests/useGetMyContests';
 
 type AdminLoadingData = {
   total_participants: number;
@@ -22,31 +22,44 @@ export const useAdminLoading = () => {
     limit: 20,
   });
 
+  const contestsQuery = useGetMyContests({
+    status: 'active',
+  });
+
+  const active_contest =  contestsQuery.data ?? contestsQuery.data?.[0] ?? null;
+
   const data: AdminLoadingData = {
     total_participants: participantsQuery.data?.pagination.total ?? 0,
     total_referrals: referralsQuery.data?.pagination.total ?? 0,
 
-    recent_participants_count:
-      participantsQuery.data?.participants.length ?? 0,
+    recent_participants_count: participantsQuery.data?.participants.length ?? 0,
 
     recent_referrals_count: referralsQuery.data?.referrals.length ?? 0,
   };
 
-  const isLoading = participantsQuery.isLoading || referralsQuery.isLoading;
+  const isLoading =
+    participantsQuery.isLoading ||
+    referralsQuery.isLoading ||
+    contestsQuery.isLoading;
 
-  const isError = participantsQuery.isError || referralsQuery.isError;
+  const isError =
+    participantsQuery.isError || referralsQuery.isError || contestsQuery.isError;
 
-  const error = participantsQuery.error ?? referralsQuery.error;
+  const error =
+    participantsQuery.error ?? referralsQuery.error ?? contestsQuery.error;
 
   const refetch = async () => {
     await Promise.all([
       participantsQuery.refetch(),
       referralsQuery.refetch(),
+      contestsQuery.refetch(),
     ]);
   };
 
   return {
     data,
+
+    active_contest,
 
     participants: participantsQuery.data?.participants ?? [],
     referrals: referralsQuery.data?.referrals ?? [],

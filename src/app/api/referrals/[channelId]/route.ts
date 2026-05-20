@@ -30,6 +30,30 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         ? {
             OR: [
               {
+                referral_code_used: {
+                  contains: search,
+                  mode: 'insensitive' as const,
+                },
+              },
+              {
+                referee_phone_number: {
+                  contains: search,
+                  mode: 'insensitive' as const,
+                },
+              },
+              {
+                status: {
+                  contains: search,
+                  mode: 'insensitive' as const,
+                },
+              },
+              {
+                notes: {
+                  contains: search,
+                  mode: 'insensitive' as const,
+                },
+              },
+              {
                 referrer_participant: {
                   is: {
                     display_name: {
@@ -106,10 +130,19 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           id: true,
           channel_id: true,
           contest_id: true,
-          referral_attempt_id: true,
+
           referrer_participant_id: true,
           referee_participant_id: true,
+
+          referee_phone_number: true,
+          referral_code_used: true,
+          status: true,
+          notes: true,
+
+          first_seen_at: true,
+          became_participant_at: true,
           created_at: true,
+          updated_at: true,
 
           referrer_participant: {
             select: {
@@ -140,10 +173,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       id: referral.id,
       channel_id: referral.channel_id,
       contest_id: referral.contest_id,
-      referral_attempt_id: referral.referral_attempt_id,
 
       referrer_participant_id: referral.referrer_participant_id,
       referee_participant_id: referral.referee_participant_id,
+
+      referee_phone_number: referral.referee_phone_number,
+      referral_code_used: referral.referral_code_used,
+      status: referral.status,
+      notes: referral.notes,
 
       referrer: {
         id: referral.referrer_participant.id,
@@ -153,15 +190,27 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         referral_code: referral.referrer_participant.referral_code,
       },
 
-      referee: {
-        id: referral.referee_participant.id,
-        user_name:
-          referral.referee_participant.display_name ?? 'Unknown Participant',
-        phone: referral.referee_participant.phone_number,
-        referral_code: referral.referee_participant.referral_code,
-      },
+      referee: referral.referee_participant
+        ? {
+            id: referral.referee_participant.id,
+            user_name:
+              referral.referee_participant.display_name ??
+              'Unknown Participant',
+            phone: referral.referee_participant.phone_number,
+            referral_code: referral.referee_participant.referral_code,
+          }
+        : {
+            id: null,
+            user_name: 'Not a participant yet',
+            phone: referral.referee_phone_number,
+            referral_code: null,
+          },
 
+      first_seen_at: referral.first_seen_at.toISOString(),
+      became_participant_at:
+        referral.became_participant_at?.toISOString() ?? null,
       created_at: referral.created_at.toISOString(),
+      updated_at: referral.updated_at.toISOString(),
     }));
 
     const data: GetReferralsResponse = {

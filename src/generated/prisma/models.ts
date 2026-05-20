@@ -10,7 +10,6 @@
  */
 export type * from './models/contest_participants'
 export type * from './models/participants'
-export type * from './models/referral_attempts'
 export type * from './models/referrals'
 export type * from './models/channels'
 export type * from './models/contests'
