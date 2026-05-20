@@ -34,13 +34,16 @@ const getStartDateByRange = (range: GraphRange) => {
 const formatLabel = (date: Date, range: GraphRange) => {
   if (range === '7days') {
     return date.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
       weekday: 'short',
     });
   }
 
   return date.toLocaleDateString('en-US', {
+    timeZone: 'UTC',
     month: 'short',
     day: 'numeric',
+    ...(range === 'allTime' ? { year: 'numeric' } : {}),
   });
 };
 
@@ -82,7 +85,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const groupedReferrals = referrals.reduce<Record<string, number>>(
       (acc, referral) => {
-        const key = referral.first_seen_at.toISOString().split('T')[0];
+       const key = referral.first_seen_at.toISOString().slice(0, 10);
 
         acc[key] = (acc[key] ?? 0) + 1;
 
@@ -109,7 +112,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         date.setDate(date.getDate() - (daysToShow - 1 - index));
         date.setHours(0, 0, 0, 0);
 
-        const key = date.toISOString().split('T')[0];
+        const key = date.toISOString().slice(0, 10);
 
         return {
           label: formatLabel(date, range),

@@ -16,7 +16,7 @@ const AdminDashboardPage = () => {
 
   console.log('Active Contest:', active_contest);
   
-  const activeContest = active_contest ? active_contest[0] : null;
+  const activeContest = active_contest?.[0] ?? null;
 
   const totalParticipants = data.total_participants;
   const totalReferrals = data.total_referrals;
