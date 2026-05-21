@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Bar,
   BarChart,
@@ -17,7 +17,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart';
-import { joinsPerDayData } from '@/demo/joinsPerDayData';
+import { useGetReferralGraph } from '@/hooks/admin/referrals/useGetReferralGraph';
 
 const chartConfig = {
   joins: {
@@ -37,6 +37,12 @@ const CustomBarShape = (props: RectangleProps) => {
 };
 
 const JoinsPerDayGraph = () => {
+  const { data, isLoading } = useGetReferralGraph('7days');
+
+  const joinsPerDayData = useMemo(() => {
+    return [...(data?.joins_per_day ?? [])].reverse();
+  }, [data?.joins_per_day]);
+
   return (
     <Card className="rounded-2xl border border-white/10 bg-[#1c1c26]/60 text-white shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-xl">
       <CardHeader className="pb-4">
@@ -61,13 +67,10 @@ const JoinsPerDayGraph = () => {
             margin={{ top: 8, right: 8, left: -16, bottom: 0 }}
             barCategoryGap="22%"
           >
-            <CartesianGrid
-              vertical={false}
-              stroke="rgba(255,255,255,0.05)"
-            />
+            <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.05)" />
 
             <XAxis
-              dataKey="day"
+              dataKey="label"
               axisLine={false}
               tickLine={false}
               tickMargin={10}
@@ -93,6 +96,7 @@ const JoinsPerDayGraph = () => {
               dataKey="joins"
               maxBarSize={42}
               shape={<CustomBarShape />}
+              opacity={isLoading ? 0.45 : 1}
             />
           </BarChart>
         </ChartContainer>

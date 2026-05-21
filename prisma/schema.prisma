@@ -114,7 +114,7 @@ model channels {
   notification_settings Json                   @default("{\"admin_notifications\": {\"contest_ended\": {\"in_app\": true, \"whatsapp\": true}, \"contest_started\": {\"in_app\": true, \"whatsapp\": false}, \"new_top_performer\": {\"in_app\": true, \"whatsapp\": true}, \"referral_recorded\": {\"in_app\": true, \"whatsapp\": false}, \"new_participant_joined\": {\"in_app\": true, \"whatsapp\": false}, \"leaderboard_position_changed\": {\"in_app\": true, \"whatsapp\": false}, \"suspicious_referral_detected\": {\"in_app\": true, \"whatsapp\": true}}, \"participant_notifications\": {\"contest_ended\": {\"in_app\": true, \"whatsapp\": true}, \"join_confirmed\": {\"in_app\": true, \"whatsapp\": true}, \"reward_qualified\": {\"in_app\": true, \"whatsapp\": true}, \"contest_ending_soon\": {\"in_app\": true, \"whatsapp\": true}, \"referral_successful\": {\"in_app\": true, \"whatsapp\": true}, \"became_top_performer\": {\"in_app\": true, \"whatsapp\": true}, \"leaderboard_position_changed\": {\"in_app\": true, \"whatsapp\": false}}}")
   users                 public_users           @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   contest_participants  contest_participants[]
-  contests              contests[]
+  contests              contests?
   participants          participants[]
   referrals             referrals[]
 
@@ -124,7 +124,7 @@ model channels {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model contests {
   id                      String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  channel_id              String                 @db.Uuid
+  channel_id              String                 @unique(map: "one_active_contest_per_channel", where: raw("(status = 'active'::text)")) @db.Uuid
   title                   String
   slug                    String
   description             String

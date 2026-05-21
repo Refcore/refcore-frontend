@@ -1,7 +1,7 @@
 import React, { type ReactNode } from 'react';
 import { ArrowUpRight, Medal, Trophy, UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { LeaderboardParticipant } from '@/demo/leaderboarddata';
+import type { LeaderboardItem } from '@/types/leaderboard.type';
 import LeaderboardActions from './AdminLeaderboardActions';
 
 type LeaderboardRenderContext = {
@@ -14,7 +14,7 @@ export type LeaderboardColumn = {
   className?: string;
   mobileHidden?: boolean;
   render: (
-    participant: LeaderboardParticipant,
+    participant: LeaderboardItem,
     context: LeaderboardRenderContext,
   ) => ReactNode;
 };
@@ -44,6 +44,7 @@ export const getProgressBarClass = (rank: number) => {
   if (rank === 3) return 'bg-gradient-to-r from-orange-400 to-orange-500';
   if (rank === 4) return 'bg-gradient-to-r from-[#b700ff] to-[#00d0ff]';
   if (rank === 5) return 'bg-gradient-to-r from-[#00ff9d] to-[#00d0ff]';
+
   return 'bg-white/30';
 };
 
@@ -67,7 +68,7 @@ export const leaderboardColumns: LeaderboardColumn[] = [
   {
     id: 'rank',
     header: 'Rank',
-    className: 'w-[3%]',
+    className: 'w-[72px]',
     render: (participant) => (
       <div
         className={cn(
@@ -82,7 +83,7 @@ export const leaderboardColumns: LeaderboardColumn[] = [
   {
     id: 'participant',
     header: 'Participant',
-    className: 'w-[4%] border',
+    className: 'min-w-[220px]',
     render: (participant) => (
       <div className="flex items-center gap-3">
         <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white md:flex">
@@ -92,7 +93,7 @@ export const leaderboardColumns: LeaderboardColumn[] = [
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <p className="truncate text-sm font-semibold text-white">
-              {participant.display_name}
+              {participant.user_name}
             </p>
 
             {participant.rank <= 3 ? (
@@ -114,7 +115,7 @@ export const leaderboardColumns: LeaderboardColumn[] = [
           </div>
 
           <p className="truncate text-xs text-gray-500">
-            {maskPhone(participant.phone)}
+            {maskPhone(participant.phone_number)}
           </p>
         </div>
       </div>
@@ -123,14 +124,15 @@ export const leaderboardColumns: LeaderboardColumn[] = [
   {
     id: 'referrals',
     header: 'Referrals',
-    className: 'w-[140px] text-right',
+    className: 'w-[150px] text-right',
     render: (participant) => (
       <div className="text-right">
         <div className="text-lg font-bold text-white">
           {participant.referrals}
         </div>
+
         <div className="mt-1 text-[11px] text-gray-500">
-          code: {participant.referral_code}
+          code: {participant.referral_code ?? 'N/A'}
         </div>
       </div>
     ),
@@ -144,6 +146,11 @@ export const leaderboardColumns: LeaderboardColumn[] = [
       const width = getProgressWidth(
         participant.referrals,
         context.topReferrals,
+      );
+
+      const referralsBehind = Math.max(
+        context.topReferrals - participant.referrals,
+        0,
       );
 
       return (
@@ -167,9 +174,7 @@ export const leaderboardColumns: LeaderboardColumn[] = [
                 Leading
               </span>
             ) : (
-              <span>
-                {context.topReferrals - participant.referrals} behind #1
-              </span>
+              <span>{referralsBehind} behind #1</span>
             )}
           </div>
         </div>
@@ -183,9 +188,9 @@ export const leaderboardColumns: LeaderboardColumn[] = [
     render: (participant) => (
       <div className="flex justify-end">
         <LeaderboardActions
-          participantId={participant.id}
-          referralCode={participant.referral_code}
-          phone={participant.phone}
+          participantId={participant.participant_id}
+          referralCode={participant.referral_code ?? ''}
+          phone={participant.phone_number}
         />
       </div>
     ),

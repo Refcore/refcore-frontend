@@ -2,7 +2,6 @@
 
 import ParticipantsTable from '@/components/admin/participants/ParticipantsTable';
 import PageHeader from '@/components/shared/PageHeader';
-import TableLoader from '@/components/shared/TableLoader';
 import { useGetParticipants } from '@/hooks/admin/participants/useGetParticipants';
 import React, { useState } from 'react';
 
@@ -13,10 +12,6 @@ const ParticipantsPage = () => {
     page,
     limit: 20,
   });
-
-  if (isLoading) {
-    return <TableLoader rowCount={10} columnCount={7} />;
-  }
 
   return (
     <div className="m-3 mb-10 lg:m-6 relative space-y-6">
@@ -39,6 +34,7 @@ const ParticipantsPage = () => {
           )
         }
         onPageChange={setPage}
+        isLoading={isLoading}
       />
     </div>
   );

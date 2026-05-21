@@ -56,13 +56,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         where,
         orderBy: [
           {
-            total_referrals: 'desc',
+            last_joined_at: 'desc',
           },
           {
-            first_joined_at: 'asc',
-          },
-          {
-            created_at: 'asc',
+            created_at: 'desc',
           },
         ],
         skip,
