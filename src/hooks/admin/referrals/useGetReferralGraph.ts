@@ -25,7 +25,8 @@ const getReferralGraph = async (
     },
   );
 
-  const result = (await response.json()) as AppResponse<GetReferralGraphResponse>;
+  const result =
+    (await response.json()) as AppResponse<GetReferralGraphResponse>;
 
   if (!response.ok || !result.success) {
     throw new Error(result.message || 'Failed to fetch referral graph data.');
@@ -35,6 +36,7 @@ const getReferralGraph = async (
     result.data ?? {
       range,
       graph_data: [],
+      joins_per_day: [],
     }
   );
 };
@@ -47,11 +49,7 @@ export const useGetReferralGraph = (range: ReferralGraphRange) => {
   } = useAuthContext();
 
   return useQuery({
-    queryKey: [
-      ...queryKeys.referrals.byChannel(myChannel?.id),
-      'graph',
-      range,
-    ],
+    queryKey: [...queryKeys.referrals.byChannel(myChannel?.id), 'graph', range],
     queryFn: async () => {
       const supabase = createClient();
 

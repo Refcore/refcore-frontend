@@ -45,7 +45,13 @@ export type ReferralGraphDataItem = {
   referrals: number;
 };
 
+export type JoinsPerDayGraphDataItem = {
+  label: string;
+  joins: number;
+};
+
 export type GetReferralGraphResponse = {
   range: ReferralGraphRange;
   graph_data: ReferralGraphDataItem[];
+  joins_per_day: JoinsPerDayGraphDataItem[];
 };

@@ -85,7 +85,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const groupedReferrals = referrals.reduce<Record<string, number>>(
       (acc, referral) => {
-       const key = referral.first_seen_at.toISOString().slice(0, 10);
+        const key = referral.first_seen_at.toISOString().slice(0, 10);
 
         acc[key] = (acc[key] ?? 0) + 1;
 
@@ -121,11 +121,75 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       });
     }
 
+    const joinedParticipants = await prisma.referrals.findMany({
+      where: {
+        channel_id: channelId,
+        status: 'became_participant',
+        became_participant_at: {
+          not: null,
+          ...(startDate
+            ? {
+                gte: startDate,
+              }
+            : {}),
+        },
+      },
+      select: {
+        became_participant_at: true,
+      },
+      orderBy: {
+        became_participant_at: 'asc',
+      },
+    });
+
+    const groupedJoins = joinedParticipants.reduce<Record<string, number>>(
+      (acc, referral) => {
+        if (!referral.became_participant_at) {
+          return acc;
+        }
+
+        const key = referral.became_participant_at.toISOString().slice(0, 10);
+
+        acc[key] = (acc[key] ?? 0) + 1;
+
+        return acc;
+      },
+      {},
+    );
+
+    let joins_per_day: { label: string; joins: number }[] = [];
+
+    if (range === 'allTime') {
+      joins_per_day = Object.entries(groupedJoins).map(([date, joins]) => {
+        return {
+          label: formatLabel(new Date(date), range),
+          joins,
+        };
+      });
+    } else {
+      const daysToShow = range === '7days' ? 7 : 30;
+
+      joins_per_day = Array.from({ length: daysToShow }, (_, index) => {
+        const date = new Date();
+
+        date.setDate(date.getDate() - (daysToShow - 1 - index));
+        date.setHours(0, 0, 0, 0);
+
+        const key = date.toISOString().slice(0, 10);
+
+        return {
+          label: formatLabel(date, range),
+          joins: groupedJoins[key] ?? 0,
+        };
+      });
+    }
+
     return NextResponse.json({
       success: true,
       data: {
         range,
         graph_data,
+        joins_per_day,
       },
     });
   } catch (error) {

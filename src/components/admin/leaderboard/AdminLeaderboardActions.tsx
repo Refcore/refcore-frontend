@@ -12,7 +12,7 @@ import {
 type LeaderboardActionsProps = {
   participantId: string;
   referralCode: string;
-  phone: string;
+  phone: string | null;
 };
 
 const LeaderboardActions = ({
@@ -25,7 +25,9 @@ const LeaderboardActions = ({
   };
 
   const handleCopyPhone = async () => {
-    await navigator.clipboard.writeText(phone);
+    if (phone) {
+      await navigator.clipboard.writeText(phone);
+    }
   };
 
   const handleViewParticipant = () => {

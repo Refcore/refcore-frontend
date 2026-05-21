@@ -430,11 +430,11 @@ export type contestsOrderByWithRelationInput = {
 
 export type contestsWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  channel_id?: string
   channel_id_slug?: Prisma.contestsChannel_idSlugCompoundUniqueInput
   AND?: Prisma.contestsWhereInput | Prisma.contestsWhereInput[]
   OR?: Prisma.contestsWhereInput[]
   NOT?: Prisma.contestsWhereInput | Prisma.contestsWhereInput[]
-  channel_id?: Prisma.UuidFilter<"contests"> | string
   title?: Prisma.StringFilter<"contests"> | string
   slug?: Prisma.StringFilter<"contests"> | string
   description?: Prisma.StringFilter<"contests"> | string
@@ -461,7 +461,7 @@ export type contestsWhereUniqueInput = Prisma.AtLeast<{
   contest_participants?: Prisma.Contest_participantsListRelationFilter
   channels?: Prisma.XOR<Prisma.ChannelsScalarRelationFilter, Prisma.channelsWhereInput>
   referrals?: Prisma.ReferralsListRelationFilter
-}, "id" | "channel_id_slug">
+}, "id" | "channel_id" | "channel_id_slug">
 
 export type contestsOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -735,14 +735,9 @@ export type ContestsScalarRelationFilter = {
   isNot?: Prisma.contestsWhereInput
 }
 
-export type ContestsListRelationFilter = {
-  every?: Prisma.contestsWhereInput
-  some?: Prisma.contestsWhereInput
-  none?: Prisma.contestsWhereInput
-}
-
-export type contestsOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
+export type ContestsNullableScalarRelationFilter = {
+  is?: Prisma.contestsWhereInput | null
+  isNot?: Prisma.contestsWhereInput | null
 }
 
 export type contestsChannel_idSlugCompoundUniqueInput = {
@@ -878,46 +873,36 @@ export type contestsUpdateOneRequiredWithoutReferralsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.contestsUpdateToOneWithWhereWithoutReferralsInput, Prisma.contestsUpdateWithoutReferralsInput>, Prisma.contestsUncheckedUpdateWithoutReferralsInput>
 }
 
-export type contestsCreateNestedManyWithoutChannelsInput = {
-  create?: Prisma.XOR<Prisma.contestsCreateWithoutChannelsInput, Prisma.contestsUncheckedCreateWithoutChannelsInput> | Prisma.contestsCreateWithoutChannelsInput[] | Prisma.contestsUncheckedCreateWithoutChannelsInput[]
-  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutChannelsInput | Prisma.contestsCreateOrConnectWithoutChannelsInput[]
-  createMany?: Prisma.contestsCreateManyChannelsInputEnvelope
-  connect?: Prisma.contestsWhereUniqueInput | Prisma.contestsWhereUniqueInput[]
+export type contestsCreateNestedOneWithoutChannelsInput = {
+  create?: Prisma.XOR<Prisma.contestsCreateWithoutChannelsInput, Prisma.contestsUncheckedCreateWithoutChannelsInput>
+  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutChannelsInput
+  connect?: Prisma.contestsWhereUniqueInput
 }
 
-export type contestsUncheckedCreateNestedManyWithoutChannelsInput = {
-  create?: Prisma.XOR<Prisma.contestsCreateWithoutChannelsInput, Prisma.contestsUncheckedCreateWithoutChannelsInput> | Prisma.contestsCreateWithoutChannelsInput[] | Prisma.contestsUncheckedCreateWithoutChannelsInput[]
-  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutChannelsInput | Prisma.contestsCreateOrConnectWithoutChannelsInput[]
-  createMany?: Prisma.contestsCreateManyChannelsInputEnvelope
-  connect?: Prisma.contestsWhereUniqueInput | Prisma.contestsWhereUniqueInput[]
+export type contestsUncheckedCreateNestedOneWithoutChannelsInput = {
+  create?: Prisma.XOR<Prisma.contestsCreateWithoutChannelsInput, Prisma.contestsUncheckedCreateWithoutChannelsInput>
+  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutChannelsInput
+  connect?: Prisma.contestsWhereUniqueInput
 }
 
-export type contestsUpdateManyWithoutChannelsNestedInput = {
-  create?: Prisma.XOR<Prisma.contestsCreateWithoutChannelsInput, Prisma.contestsUncheckedCreateWithoutChannelsInput> | Prisma.contestsCreateWithoutChannelsInput[] | Prisma.contestsUncheckedCreateWithoutChannelsInput[]
-  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutChannelsInput | Prisma.contestsCreateOrConnectWithoutChannelsInput[]
-  upsert?: Prisma.contestsUpsertWithWhereUniqueWithoutChannelsInput | Prisma.contestsUpsertWithWhereUniqueWithoutChannelsInput[]
-  createMany?: Prisma.contestsCreateManyChannelsInputEnvelope
-  set?: Prisma.contestsWhereUniqueInput | Prisma.contestsWhereUniqueInput[]
-  disconnect?: Prisma.contestsWhereUniqueInput | Prisma.contestsWhereUniqueInput[]
-  delete?: Prisma.contestsWhereUniqueInput | Prisma.contestsWhereUniqueInput[]
-  connect?: Prisma.contestsWhereUniqueInput | Prisma.contestsWhereUniqueInput[]
-  update?: Prisma.contestsUpdateWithWhereUniqueWithoutChannelsInput | Prisma.contestsUpdateWithWhereUniqueWithoutChannelsInput[]
-  updateMany?: Prisma.contestsUpdateManyWithWhereWithoutChannelsInput | Prisma.contestsUpdateManyWithWhereWithoutChannelsInput[]
-  deleteMany?: Prisma.contestsScalarWhereInput | Prisma.contestsScalarWhereInput[]
+export type contestsUpdateOneWithoutChannelsNestedInput = {
+  create?: Prisma.XOR<Prisma.contestsCreateWithoutChannelsInput, Prisma.contestsUncheckedCreateWithoutChannelsInput>
+  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutChannelsInput
+  upsert?: Prisma.contestsUpsertWithoutChannelsInput
+  disconnect?: Prisma.contestsWhereInput | boolean
+  delete?: Prisma.contestsWhereInput | boolean
+  connect?: Prisma.contestsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.contestsUpdateToOneWithWhereWithoutChannelsInput, Prisma.contestsUpdateWithoutChannelsInput>, Prisma.contestsUncheckedUpdateWithoutChannelsInput>
 }
 
-export type contestsUncheckedUpdateManyWithoutChannelsNestedInput = {
-  create?: Prisma.XOR<Prisma.contestsCreateWithoutChannelsInput, Prisma.contestsUncheckedCreateWithoutChannelsInput> | Prisma.contestsCreateWithoutChannelsInput[] | Prisma.contestsUncheckedCreateWithoutChannelsInput[]
-  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutChannelsInput | Prisma.contestsCreateOrConnectWithoutChannelsInput[]
-  upsert?: Prisma.contestsUpsertWithWhereUniqueWithoutChannelsInput | Prisma.contestsUpsertWithWhereUniqueWithoutChannelsInput[]
-  createMany?: Prisma.contestsCreateManyChannelsInputEnvelope
-  set?: Prisma.contestsWhereUniqueInput | Prisma.contestsWhereUniqueInput[]
-  disconnect?: Prisma.contestsWhereUniqueInput | Prisma.contestsWhereUniqueInput[]
-  delete?: Prisma.contestsWhereUniqueInput | Prisma.contestsWhereUniqueInput[]
-  connect?: Prisma.contestsWhereUniqueInput | Prisma.contestsWhereUniqueInput[]
-  update?: Prisma.contestsUpdateWithWhereUniqueWithoutChannelsInput | Prisma.contestsUpdateWithWhereUniqueWithoutChannelsInput[]
-  updateMany?: Prisma.contestsUpdateManyWithWhereWithoutChannelsInput | Prisma.contestsUpdateManyWithWhereWithoutChannelsInput[]
-  deleteMany?: Prisma.contestsScalarWhereInput | Prisma.contestsScalarWhereInput[]
+export type contestsUncheckedUpdateOneWithoutChannelsNestedInput = {
+  create?: Prisma.XOR<Prisma.contestsCreateWithoutChannelsInput, Prisma.contestsUncheckedCreateWithoutChannelsInput>
+  connectOrCreate?: Prisma.contestsCreateOrConnectWithoutChannelsInput
+  upsert?: Prisma.contestsUpsertWithoutChannelsInput
+  disconnect?: Prisma.contestsWhereInput | boolean
+  delete?: Prisma.contestsWhereInput | boolean
+  connect?: Prisma.contestsWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.contestsUpdateToOneWithWhereWithoutChannelsInput, Prisma.contestsUpdateWithoutChannelsInput>, Prisma.contestsUncheckedUpdateWithoutChannelsInput>
 }
 
 export type contestsCreateWithoutContest_participantsInput = {
@@ -1247,83 +1232,15 @@ export type contestsCreateOrConnectWithoutChannelsInput = {
   create: Prisma.XOR<Prisma.contestsCreateWithoutChannelsInput, Prisma.contestsUncheckedCreateWithoutChannelsInput>
 }
 
-export type contestsCreateManyChannelsInputEnvelope = {
-  data: Prisma.contestsCreateManyChannelsInput | Prisma.contestsCreateManyChannelsInput[]
-  skipDuplicates?: boolean
-}
-
-export type contestsUpsertWithWhereUniqueWithoutChannelsInput = {
-  where: Prisma.contestsWhereUniqueInput
+export type contestsUpsertWithoutChannelsInput = {
   update: Prisma.XOR<Prisma.contestsUpdateWithoutChannelsInput, Prisma.contestsUncheckedUpdateWithoutChannelsInput>
   create: Prisma.XOR<Prisma.contestsCreateWithoutChannelsInput, Prisma.contestsUncheckedCreateWithoutChannelsInput>
+  where?: Prisma.contestsWhereInput
 }
 
-export type contestsUpdateWithWhereUniqueWithoutChannelsInput = {
-  where: Prisma.contestsWhereUniqueInput
+export type contestsUpdateToOneWithWhereWithoutChannelsInput = {
+  where?: Prisma.contestsWhereInput
   data: Prisma.XOR<Prisma.contestsUpdateWithoutChannelsInput, Prisma.contestsUncheckedUpdateWithoutChannelsInput>
-}
-
-export type contestsUpdateManyWithWhereWithoutChannelsInput = {
-  where: Prisma.contestsScalarWhereInput
-  data: Prisma.XOR<Prisma.contestsUpdateManyMutationInput, Prisma.contestsUncheckedUpdateManyWithoutChannelsInput>
-}
-
-export type contestsScalarWhereInput = {
-  AND?: Prisma.contestsScalarWhereInput | Prisma.contestsScalarWhereInput[]
-  OR?: Prisma.contestsScalarWhereInput[]
-  NOT?: Prisma.contestsScalarWhereInput | Prisma.contestsScalarWhereInput[]
-  id?: Prisma.UuidFilter<"contests"> | string
-  channel_id?: Prisma.UuidFilter<"contests"> | string
-  title?: Prisma.StringFilter<"contests"> | string
-  slug?: Prisma.StringFilter<"contests"> | string
-  description?: Prisma.StringFilter<"contests"> | string
-  status?: Prisma.StringFilter<"contests"> | string
-  visibility?: Prisma.StringFilter<"contests"> | string
-  referral_code_prefix?: Prisma.StringFilter<"contests"> | string
-  start_date?: Prisma.DateTimeNullableFilter<"contests"> | Date | string | null
-  end_date?: Prisma.DateTimeNullableFilter<"contests"> | Date | string | null
-  reward_type?: Prisma.StringFilter<"contests"> | string
-  reward_value?: Prisma.StringFilter<"contests"> | string
-  reward_description?: Prisma.StringFilter<"contests"> | string
-  winner_selection?: Prisma.StringFilter<"contests"> | string
-  max_winners?: Prisma.IntFilter<"contests"> | number
-  participants_count?: Prisma.IntFilter<"contests"> | number
-  referrals_count?: Prisma.IntFilter<"contests"> | number
-  views_count?: Prisma.IntFilter<"contests"> | number
-  top_performer_name?: Prisma.StringNullableFilter<"contests"> | string | null
-  top_performer_phone?: Prisma.StringNullableFilter<"contests"> | string | null
-  top_performer_referrals?: Prisma.IntFilter<"contests"> | number
-  is_published?: Prisma.BoolFilter<"contests"> | boolean
-  is_archived?: Prisma.BoolFilter<"contests"> | boolean
-  created_at?: Prisma.DateTimeFilter<"contests"> | Date | string
-  updated_at?: Prisma.DateTimeFilter<"contests"> | Date | string
-}
-
-export type contestsCreateManyChannelsInput = {
-  id?: string
-  title: string
-  slug: string
-  description: string
-  status?: string
-  visibility?: string
-  referral_code_prefix: string
-  start_date?: Date | string | null
-  end_date?: Date | string | null
-  reward_type?: string
-  reward_value?: string
-  reward_description: string
-  winner_selection?: string
-  max_winners?: number
-  participants_count?: number
-  referrals_count?: number
-  views_count?: number
-  top_performer_name?: string | null
-  top_performer_phone?: string | null
-  top_performer_referrals?: number
-  is_published?: boolean
-  is_archived?: boolean
-  created_at?: Date | string
-  updated_at?: Date | string
 }
 
 export type contestsUpdateWithoutChannelsInput = {
@@ -1382,33 +1299,6 @@ export type contestsUncheckedUpdateWithoutChannelsInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contest_participants?: Prisma.contest_participantsUncheckedUpdateManyWithoutContestsNestedInput
   referrals?: Prisma.referralsUncheckedUpdateManyWithoutContestsNestedInput
-}
-
-export type contestsUncheckedUpdateManyWithoutChannelsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  visibility?: Prisma.StringFieldUpdateOperationsInput | string
-  referral_code_prefix?: Prisma.StringFieldUpdateOperationsInput | string
-  start_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  end_date?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  reward_type?: Prisma.StringFieldUpdateOperationsInput | string
-  reward_value?: Prisma.StringFieldUpdateOperationsInput | string
-  reward_description?: Prisma.StringFieldUpdateOperationsInput | string
-  winner_selection?: Prisma.StringFieldUpdateOperationsInput | string
-  max_winners?: Prisma.IntFieldUpdateOperationsInput | number
-  participants_count?: Prisma.IntFieldUpdateOperationsInput | number
-  referrals_count?: Prisma.IntFieldUpdateOperationsInput | number
-  views_count?: Prisma.IntFieldUpdateOperationsInput | number
-  top_performer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  top_performer_phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  top_performer_referrals?: Prisma.IntFieldUpdateOperationsInput | number
-  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 

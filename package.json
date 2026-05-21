@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:more": "tsx prisma/seed-more-demo-data.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

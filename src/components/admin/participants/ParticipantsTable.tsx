@@ -18,6 +18,7 @@ type ParticipantsTableProps = {
   onPreviousPage?: () => void;
   onNextPage?: () => void;
   onPageChange?: (page: number) => void;
+  isLoading?: boolean;
 };
 
 const ParticipantsTable = ({
@@ -31,6 +32,7 @@ const ParticipantsTable = ({
   onPageChange,
   limitOnPage,
   total,
+  isLoading = false,
 }: ParticipantsTableProps) => {
   return (
     <section className="rounded-xl border border-white/10 bg-[rgba(28,28,38,0.55)] shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
@@ -39,7 +41,9 @@ const ParticipantsTable = ({
           <h2 className="text-xl font-bold sm:text-2xl">All Participants</h2>
           <p className="mt-1 flex items-center gap-2 text-sm text-gray-400">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-(--neon-green)" />
-            Lifetime participant data
+            {isLoading
+              ? 'Loading participants...'
+              : 'Lifetime participant data'}
           </p>
         </div>
 
@@ -72,24 +76,48 @@ const ParticipantsTable = ({
           </thead>
 
           <tbody className="divide-y divide-white/5">
-            {participants.map((participant) => (
-              <tr
-                key={participant.id}
-                className="transition-all duration-200 hover:bg-white/4"
-              >
-                {participantsColumns.map((column) => (
+            {isLoading &&
+              Array.from({ length: 5 }, (_, index) => (
+                <tr key={index}>
                   <td
-                    key={column.id}
-                    className={cn(
-                      'px-2 pb-2 pt-4 align-middle md:px-4 md:py-4 sm:px-6',
-                      column.mobileHidden && 'hidden md:table-cell',
-                    )}
+                    colSpan={participantsColumns.length}
+                    className="px-4 py-4 sm:px-6"
                   >
-                    {column.render(participant)}
+                    <div className="h-12 animate-pulse rounded-xl bg-white/5" />
                   </td>
-                ))}
+                </tr>
+              ))}
+
+            {!isLoading && participants.length === 0 && (
+              <tr>
+                <td
+                  colSpan={participantsColumns.length}
+                  className="px-4 py-12 text-center text-sm text-gray-400 sm:px-6"
+                >
+                  No participants found.
+                </td>
               </tr>
-            ))}
+            )}
+
+            {!isLoading &&
+              participants.map((participant) => (
+                <tr
+                  key={participant.id}
+                  className="transition-all duration-200 hover:bg-white/4"
+                >
+                  {participantsColumns.map((column) => (
+                    <td
+                      key={column.id}
+                      className={cn(
+                        'px-2 pb-2 pt-4 align-middle sm:px-6 md:px-4 md:py-4',
+                        column.mobileHidden && 'hidden md:table-cell',
+                      )}
+                    >
+                      {column.render(participant)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
