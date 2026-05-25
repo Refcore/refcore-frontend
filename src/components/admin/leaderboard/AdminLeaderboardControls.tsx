@@ -1,15 +1,14 @@
 import React from 'react';
-import { Search, ArrowUpDown } from 'lucide-react';
+import { Check, ChevronDown, Search, ArrowUpDown } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import type {
   LeaderboardRange,
   LeaderboardSort,
@@ -28,6 +27,28 @@ type LeaderboardControlsProps = {
   onSortChange: (value: LeaderboardSort) => void;
 };
 
+const rangeOptions: {
+  label: string;
+  value: LeaderboardRange;
+}[] = [
+  {
+    label: 'Top 10',
+    value: 'top10',
+  },
+  {
+    label: 'Bottom 10',
+    value: 'bottom10',
+  },
+  {
+    label: 'Top 50',
+    value: 'top50',
+  },
+  {
+    label: 'All',
+    value: 'all',
+  },
+];
+
 const LeaderboardControls = ({
   activeTab,
   onTabChange,
@@ -41,6 +62,8 @@ const LeaderboardControls = ({
   const handleSortToggle = () => {
     onSortChange(sort === 'referrals_desc' ? 'referrals_asc' : 'referrals_desc');
   };
+
+  const selectedRange = rangeOptions.find((option) => option.value === range);
 
   return (
     <section className="flex flex-col gap-4 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm lg:flex-row lg:items-center lg:justify-between">
@@ -75,21 +98,37 @@ const LeaderboardControls = ({
           />
         </div>
 
-        <Select
-          value={range}
-          onValueChange={(value) => onRangeChange(value as LeaderboardRange)}
-        >
-          <SelectTrigger className="w-full rounded-xl border-white/10 bg-background/40 lg:w-40">
-            <SelectValue placeholder="Filter range" />
-          </SelectTrigger>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full justify-between rounded-xl border-white/10 bg-background/40 font-normal hover:bg-white/5 lg:w-40"
+            >
+              <span>{selectedRange?.label ?? 'Filter range'}</span>
+              <ChevronDown className="size-4 opacity-70" />
+            </Button>
+          </DropdownMenuTrigger>
 
-          <SelectContent className="rounded-xl border-white/10">
-            <SelectItem value="top10">Top 10</SelectItem>
-            <SelectItem value="bottom10">Bottom 10</SelectItem>
-            <SelectItem value="top50">Top 50</SelectItem>
-            <SelectItem value="all">All</SelectItem>
-          </SelectContent>
-        </Select>
+          <DropdownMenuContent
+            align="end"
+            className="w-(--radix-dropdown-menu-trigger-width) rounded-xl border-white/10 bg-[#13131a] text-white"
+          >
+            {rangeOptions.map((option) => (
+              <DropdownMenuItem
+                key={option.value}
+                onClick={() => onRangeChange(option.value)}
+                className="flex cursor-pointer items-center justify-between rounded-lg focus:bg-white/10 focus:text-white"
+              >
+                <span>{option.label}</span>
+
+                {range === option.value ? (
+                  <Check className="size-4 text-[#00d0ff]" />
+                ) : null}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Button
           type="button"

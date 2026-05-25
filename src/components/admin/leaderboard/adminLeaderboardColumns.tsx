@@ -117,6 +117,16 @@ export const leaderboardColumns: LeaderboardColumn[] = [
           <p className="truncate text-xs text-gray-500">
             {maskPhone(participant.phone_number)}
           </p>
+
+          <div className="mt-1 flex items-center gap-2 md:hidden">
+            <span className="rounded-full border border-[#00d0ff]/20 bg-[#00d0ff]/10 px-2 py-0.5 text-[11px] font-semibold text-[#00d0ff]">
+              {participant.referrals} refs
+            </span>
+
+            <span className="truncate text-[11px] text-gray-500">
+              code: {participant.referral_code ?? 'N/A'}
+            </span>
+          </div>
         </div>
       </div>
     ),
@@ -125,6 +135,7 @@ export const leaderboardColumns: LeaderboardColumn[] = [
     id: 'referrals',
     header: 'Referrals',
     className: 'w-[150px] text-right',
+    mobileHidden: true,
     render: (participant) => (
       <div className="text-right">
         <div className="text-lg font-bold text-white">

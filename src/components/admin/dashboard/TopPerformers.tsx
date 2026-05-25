@@ -1,19 +1,17 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ArrowRight, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
-  LeaderboardParticipant,
   RewardTier,
-  WhatsAppTVLeaderboard,
 } from '@/demo/leaderboarddata';
 import { ADMIN_ROUTES } from '@/routes';
+import { LeaderboardItem } from '@/types/leaderboard.type';
 
 type TopPerformersProps = {
-  leaderboard: WhatsAppTVLeaderboard;
+  leaderboard: LeaderboardItem[];
   viewAllHref?: string;
   className?: string;
 };
@@ -72,9 +70,9 @@ const maskPhone = (phone: string) => {
 const TopPerformerRow = ({
   participant,
 }: {
-  participant: LeaderboardParticipant;
+  participant: LeaderboardItem;
 }) => {
-  const styles = rewardTierStyles[participant.reward_tier];
+  const styles = rewardTierStyles[participant.rank <= 3 ? (['gold', 'silver', 'bronze'] as RewardTier[])[participant.rank - 1] : 'none'];
 
   return (
     <div
@@ -92,10 +90,10 @@ const TopPerformerRow = ({
         {participant.rank}
       </div>
 
-      <div className="relative h-10 w-10 shrink-0">
+      {/* <div className="relative h-10 w-10 shrink-0">
         <Image
-          src={participant.avatar}
-          alt={participant.display_name}
+          src={''}
+          alt={participant.user_name || 'User Avatar'}
           fill
           sizes="40px"
           className={cn(
@@ -103,15 +101,15 @@ const TopPerformerRow = ({
             styles.avatarClassName,
           )}
         />
-      </div>
+      </div> */}
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p className="truncate text-sm font-bold text-white">
-            {participant.display_name}
+            {participant.user_name}
           </p>
 
-          {participant.is_top_performer ? (
+          {participant.rank === 1 ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-white/70">
               <Crown className="size-3 text-yellow-400" />
               Top
@@ -120,7 +118,7 @@ const TopPerformerRow = ({
         </div>
 
         <p className="truncate text-xs text-muted-foreground">
-          {maskPhone(participant.phone)}
+          {maskPhone(participant.phone_number)}
         </p>
       </div>
 
@@ -139,11 +137,7 @@ const TopPerformers = ({
   viewAllHref = ADMIN_ROUTES.LEADERBOARD,
   className,
 }: TopPerformersProps) => {
-  const topFive = useMemo(() => {
-    return [...leaderboard.participants]
-      .sort((a, b) => a.rank - b.rank)
-      .slice(0, 5);
-  }, [leaderboard.participants]);
+
 
   return (
     <section
@@ -165,7 +159,7 @@ const TopPerformers = ({
       </div>
 
       <div className="space-y-3">
-        {topFive.map((participant) => (
+        {leaderboard.map((participant) => (
           <TopPerformerRow key={participant.id} participant={participant} />
         ))}
       </div>

@@ -13,6 +13,7 @@ import {
 
 import { cn } from '@/lib/utils';
 import { useGetReferralGraph } from '@/hooks/admin/referrals/useGetReferralGraph';
+import { LoaderCircleIcon } from 'lucide-react';
 
 const chartConfig = {
   referrals: {
@@ -28,8 +29,6 @@ const rangeOptions: { label: string; value: GraphRange }[] = [
   { label: '30 Days', value: '30days' },
   { label: 'All Time', value: 'allTime' },
 ];
-
-
 
 const Graph = () => {
   const [range, setRange] = useState<GraphRange>('7days');
@@ -77,78 +76,84 @@ const Graph = () => {
       </CardHeader>
 
       <CardContent>
-        <ChartContainer
-          config={chartConfig}
-          className="h-70 w-full sm:h-80 lg:h-90"
-        >
-          <AreaChart
-            accessibilityLayer
-            data={chartData}
-            margin={{ top: 10, right: 12, left: -10, bottom: 0 }}
+        {isLoading ? (
+          <div className="flex h-70 w-full items-center justify-center sm:h-80 lg:h-90">
+            <LoaderCircleIcon className="h-12 w-12 animate-spin text-neon" />
+          </div>
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className="h-70 w-full sm:h-80 lg:h-90"
           >
-            <defs>
-              <linearGradient id="fillReferrals" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-referrals)"
-                  stopOpacity={0.32}
-                />
-                <stop
-                  offset="45%"
-                  stopColor="var(--color-referrals)"
-                  stopOpacity={0.18}
-                />
-                <stop
-                  offset="100%"
-                  stopColor="var(--color-referrals)"
-                  stopOpacity={0.02}
-                />
-              </linearGradient>
-            </defs>
+            <AreaChart
+              accessibilityLayer
+              data={chartData}
+              margin={{ top: 10, right: 12, left: -10, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id="fillReferrals" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-referrals)"
+                    stopOpacity={0.32}
+                  />
+                  <stop
+                    offset="45%"
+                    stopColor="var(--color-referrals)"
+                    stopOpacity={0.18}
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor="var(--color-referrals)"
+                    stopOpacity={0.02}
+                  />
+                </linearGradient>
+              </defs>
 
-            <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.08)" />
+              <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.08)" />
 
-            <XAxis
-              dataKey="label"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={10}
-              stroke="rgba(255,255,255,0.55)"
-              tick={{ fontSize: 12 }}
-            />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                stroke="rgba(255,255,255,0.55)"
+                tick={{ fontSize: 12 }}
+              />
 
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={10}
-              stroke="rgba(255,255,255,0.55)"
-              tick={{ fontSize: 12 }}
-              allowDecimals={false}
-            />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={10}
+                stroke="rgba(255,255,255,0.55)"
+                tick={{ fontSize: 12 }}
+                allowDecimals={false}
+              />
 
-            <ChartTooltip
-              cursor={{ stroke: 'rgba(255,255,255,0.12)', strokeWidth: 1 }}
-              content={<ChartTooltipContent indicator="line" />}
-            />
+              <ChartTooltip
+                cursor={{ stroke: 'rgba(255,255,255,0.12)', strokeWidth: 1 }}
+                content={<ChartTooltipContent indicator="line" />}
+              />
 
-            <Area
-              type="monotone"
-              dataKey="referrals"
-              fill="url(#fillReferrals)"
-              stroke="var(--color-referrals)"
-              strokeWidth={1.2}
-              dot={{
-                r: 3,
-                fill: 'var(--color-referrals)',
-                strokeWidth: 0,
-              }}
-              activeDot={{
-                r: 5,
-                fill: 'var(--color-referrals)',
-              }}
-            />
-          </AreaChart>
-        </ChartContainer>
+              <Area
+                type="monotone"
+                dataKey="referrals"
+                fill="url(#fillReferrals)"
+                stroke="var(--color-referrals)"
+                strokeWidth={1.2}
+                dot={{
+                  r: 3,
+                  fill: 'var(--color-referrals)',
+                  strokeWidth: 0,
+                }}
+                activeDot={{
+                  r: 5,
+                  fill: 'var(--color-referrals)',
+                }}
+              />
+            </AreaChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   );
