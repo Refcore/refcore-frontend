@@ -7,6 +7,7 @@ import { AppResponse } from '@/types/response.type';
 import { NotificationSettings } from '@/types/notificationsettings.type';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query_keys';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 type UpdateNotificationSettingsPayload = {
   notification_settings: NotificationSettings;
@@ -44,27 +45,43 @@ export const useUpdateNotificationSettings = () => {
         error: sessionError,
       } = await supabase.auth.getSession();
 
-      if (sessionError || !session?.access_token) {
+      if (sessionError) {
+        await handleExpiredSession();
+
         return {
           success: false,
           status_code: 401,
-          message: 'You must be signed in to update notification settings.',
+          message: sessionError.message,
           data: null,
-          error_code: sessionError?.code,
+          error_code: sessionError.code,
         };
       }
 
-      const response = await fetch('/api/channels/notification-settings/update', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
+      if (!session?.access_token) {
+        await handleExpiredSession();
+
+        return {
+          success: false,
+          status_code: 401,
+          message: 'Your session has expired. Please sign in again.',
+          data: null,
+        };
+      }
+
+      const response = await authFetch(
+        '/api/channels/notification-settings/update',
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            channel_id: myChannel.id,
+            notification_settings: payload.notification_settings,
+          }),
         },
-        body: JSON.stringify({
-          channel_id: myChannel.id,
-          notification_settings: payload.notification_settings,
-        }),
-      });
+      );
 
       const result =
         (await response.json()) as AppResponse<UpdateNotificationSettingsResponseData>;

@@ -9,6 +9,7 @@ import { Contest } from '@/types/contest.type';
 import { CreateContestFormValues } from '@/schema/contest.schema';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query_keys';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 type CreateContestResponseData = Contest & {
   channel_id: string;
@@ -44,20 +45,34 @@ export const useCreateContest = () => {
         error: sessionError,
       } = await supabase.auth.getSession();
 
-      if (sessionError || !session?.access_token) {
+      if (sessionError) {
+        await handleExpiredSession();
+
         const errorResponse: AppResponse<CreateContestResponseData> = {
           success: false,
           status_code: 401,
-          message: 'You must be signed in to create a contest.',
+          message: sessionError.message,
           data: null,
-          error_code: sessionError?.code,
+          error_code: sessionError.code,
         };
 
-        toast.error(errorResponse.message);
         return errorResponse;
       }
 
-      const response = await fetch('/api/contests/create', {
+      if (!session?.access_token) {
+        await handleExpiredSession();
+
+        const errorResponse: AppResponse<CreateContestResponseData> = {
+          success: false,
+          status_code: 401,
+          message: 'Your session has expired. Please sign in again.',
+          data: null,
+        };
+
+        return errorResponse;
+      }
+
+      const response = await authFetch('/api/contests/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

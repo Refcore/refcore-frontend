@@ -5,6 +5,7 @@ import {
   BarChart3,
   Clock3,
   type LucideIcon,
+  LoaderCircleIcon,
 } from 'lucide-react';
 import type { LeaderboardSummary as LeaderboardSummaryType } from '@/types/leaderboard.type';
 
@@ -17,13 +18,17 @@ type SummaryItem = {
 
 type LeaderboardSummaryProps = {
   summary?: LeaderboardSummaryType;
+  isLoading?: boolean;
 };
 
 const formatNumber = (value?: number) => {
   return new Intl.NumberFormat('en-US').format(value ?? 0);
 };
 
-const LeaderboardSummary = ({ summary }: LeaderboardSummaryProps) => {
+const LeaderboardSummary = ({
+  summary,
+  isLoading = false,
+}: LeaderboardSummaryProps) => {
   const leaderboardSummary: SummaryItem[] = [
     {
       title: 'Current Leader',
@@ -64,14 +69,34 @@ const LeaderboardSummary = ({ summary }: LeaderboardSummaryProps) => {
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">{item.title}</p>
-                <h3 className="text-2xl font-semibold text-white">
-                  {item.value}
-                </h3>
-                <p className="text-xs text-muted-foreground">{item.subtext}</p>
+
+                {isLoading ? (
+                  <div className="flex h-8 items-center">
+                    <LoaderCircleIcon className="size-6 animate-spin text-[#6EE7B7]" />
+                  </div>
+                ) : (
+                  <h3 className="text-2xl font-semibold text-white">
+                    {item.value}
+                  </h3>
+                )}
+
+                {isLoading ? (
+                  <div className="flex h-4 items-center">
+                    <LoaderCircleIcon className="size-4 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    {item.subtext}
+                  </p>
+                )}
               </div>
 
               <div className="flex size-11 items-center justify-center rounded-xl border border-white/10 bg-white/8">
-                <Icon className="size-5 text-[#6EE7B7]" />
+                {isLoading ? (
+                  <LoaderCircleIcon className="size-5 animate-spin text-[#6EE7B7]" />
+                ) : (
+                  <Icon className="size-5 text-[#6EE7B7]" />
+                )}
               </div>
             </div>
           </div>

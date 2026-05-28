@@ -6,6 +6,7 @@ import { deleteStorageFile } from '@/utils/deleteStoredFile';
 import { AppResponse } from '@/types/response.type';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query_keys';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 type UpdateChannelPayload = {
   channel_id: string;
@@ -39,16 +40,30 @@ export const useUpdateChannel = () => {
         error: sessionError,
       } = await supabase.auth.getSession();
 
-      if (sessionError || !session?.access_token) {
+      if (sessionError) {
+        await handleExpiredSession();
+
         const errorResponse: AppResponse<UpdateChannelResponseData> = {
           success: false,
           status_code: 401,
-          message: 'You must be signed in to update your channel.',
+          message: sessionError.message,
           data: null,
-          error_code: sessionError?.code,
+          error_code: sessionError.code,
         };
 
-        toast.error(errorResponse.message);
+        return errorResponse;
+      }
+
+      if (!session?.access_token) {
+        await handleExpiredSession();
+
+        const errorResponse: AppResponse<UpdateChannelResponseData> = {
+          success: false,
+          status_code: 401,
+          message: 'Your session has expired. Please sign in again.',
+          data: null,
+        };
+
         return errorResponse;
       }
 
@@ -63,7 +78,7 @@ export const useUpdateChannel = () => {
         channel_banner = upload_result.file_path;
       }
 
-      const response = await fetch('/api/channels/update', {
+      const response = await authFetch('/api/channels/update', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

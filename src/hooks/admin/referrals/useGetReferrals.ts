@@ -6,6 +6,7 @@ import { useAuthContext } from '@/context/AuthContext';
 import { queryKeys } from '@/lib/query_keys';
 import { AppResponse } from '@/types/response.type';
 import { GetReferralsResponse } from '@/types/referral.type';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 type GetReferralsParams = {
   page?: number;
@@ -34,7 +35,7 @@ const getReferrals = async (
 
   const query_string = search_params.toString();
 
-  const response = await fetch(
+  const response = await authFetch(
     `/api/referrals/${channel_id}${query_string ? `?${query_string}` : ''}`,
     {
       method: 'GET',
@@ -86,11 +87,13 @@ export const useGetReferrals = (params?: GetReferralsParams) => {
       } = await supabase.auth.getSession();
 
       if (sessionError) {
+        await handleExpiredSession();
         throw new Error(sessionError.message);
       }
 
       if (!session?.access_token) {
-        throw new Error('You must be signed in to fetch referrals.');
+        await handleExpiredSession();
+        throw new Error('Your session has expired. Please sign in again.');
       }
 
       if (!myChannel?.id) {

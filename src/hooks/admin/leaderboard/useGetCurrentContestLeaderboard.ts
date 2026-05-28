@@ -10,6 +10,7 @@ import {
   LeaderboardQueryParams,
 } from '@/types/leaderboard.type';
 import { buildLeaderboardQueryString } from '@/utils/buildLeaderboardQuerryString';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 const getCurrentContestLeaderboard = async (
   access_token: string,
@@ -19,7 +20,7 @@ const getCurrentContestLeaderboard = async (
 ): Promise<GetLeaderboardResponse> => {
   const queryString = buildLeaderboardQueryString(queryParams);
 
-  const response = await fetch(
+  const response = await authFetch(
     `/api/leaderboard/${channel_id}/${contest_id}?${queryString}`,
     {
       method: 'GET',
@@ -86,11 +87,13 @@ export const useGetCurrentContestLeaderboard = (
       } = await supabase.auth.getSession();
 
       if (sessionError) {
+        await handleExpiredSession();
         throw new Error(sessionError.message);
       }
 
       if (!session?.access_token) {
-        throw new Error('You must be signed in to fetch leaderboard data.');
+        await handleExpiredSession();
+        throw new Error('Your session has expired. Please sign in again.');
       }
 
       if (!myChannel?.id) {

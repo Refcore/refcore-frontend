@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { createClient } from '@/utils/supabase/client';
 import type { RegisterChannelFormData } from '@/schema/register.schema';
 import { AppResponse } from '@/types/response.type';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 type CreateChannelResponseData = {
   channel_id: string;
@@ -27,20 +28,34 @@ export const useCreateChannel = () => {
         error: sessionError,
       } = await supabase.auth.getSession();
 
-      if (sessionError || !session?.access_token) {
+      if (sessionError) {
+        await handleExpiredSession();
+
         const errorResponse: AppResponse<CreateChannelResponseData> = {
           success: false,
           status_code: 401,
-          message: 'You must be signed in to create a channel.',
+          message: sessionError.message,
           data: null,
-          error_code: sessionError?.code,
+          error_code: sessionError.code,
         };
 
-        toast.error(errorResponse.message);
         return errorResponse;
       }
 
-      const response = await fetch('/api/channels/create', {
+      if (!session?.access_token) {
+        await handleExpiredSession();
+
+        const errorResponse: AppResponse<CreateChannelResponseData> = {
+          success: false,
+          status_code: 401,
+          message: 'Your session has expired. Please sign in again.',
+          data: null,
+        };
+
+        return errorResponse;
+      }
+
+      const response = await authFetch('/api/channels/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

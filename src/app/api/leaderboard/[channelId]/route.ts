@@ -1,5 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@/generated/prisma/client';
+
+type AllTimeLeaderboardRow = {
+  id: string;
+  phone_number: string;
+  display_name: string | null;
+  referral_code: string;
+  total_referrals: number;
+  total_contests_joined: number;
+  first_joined_at: Date | null;
+  rank: number | bigint;
+};
+
+type CountRow = {
+  total: number | bigint;
+};
+
+const getAllTimeFinalOrderSql = (
+  range: LeaderboardRange,
+  sort: LeaderboardSort,
+) => {
+  if (range === 'bottom10' || sort === 'referrals_asc') {
+    return Prisma.sql`total_referrals ASC, first_joined_at ASC`;
+  }
+
+  if (sort === 'newest') {
+    return Prisma.sql`last_joined_at DESC NULLS LAST, created_at DESC`;
+  }
+
+  if (sort === 'oldest') {
+    return Prisma.sql`first_joined_at ASC, created_at ASC`;
+  }
+
+  return Prisma.sql`rank ASC`;
+};
 
 type RouteParams = {
   params: Promise<{
@@ -26,61 +61,6 @@ const getSafeLimit = (range: LeaderboardRange, limit: number) => {
   if (Number.isNaN(limit) || limit < 1) return 20;
 
   return Math.min(limit, 100);
-};
-
-const getOrderBy = (range: LeaderboardRange, sort: LeaderboardSort) => {
-  if (range === 'bottom10') {
-    return [
-      {
-        total_referrals: 'asc' as const,
-      },
-      {
-        first_joined_at: 'asc' as const,
-      },
-    ];
-  }
-
-  if (sort === 'referrals_asc') {
-    return [
-      {
-        total_referrals: 'asc' as const,
-      },
-      {
-        first_joined_at: 'asc' as const,
-      },
-    ];
-  }
-
-  if (sort === 'newest') {
-    return [
-      {
-        last_joined_at: 'desc' as const,
-      },
-      {
-        created_at: 'desc' as const,
-      },
-    ];
-  }
-
-  if (sort === 'oldest') {
-    return [
-      {
-        first_joined_at: 'asc' as const,
-      },
-      {
-        created_at: 'asc' as const,
-      },
-    ];
-  }
-
-  return [
-    {
-      total_referrals: 'desc' as const,
-    },
-    {
-      first_joined_at: 'asc' as const,
-    },
-  ];
 };
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
@@ -112,87 +92,120 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const safeLimit = getSafeLimit(range, limit);
     const skip = range === 'all' ? (safePage - 1) * safeLimit : 0;
 
-    const where = {
+    const searchValue = `%${search}%`;
+
+const searchSql = search
+  ? Prisma.sql`
+      WHERE display_name ILIKE ${searchValue}
+        OR phone_number ILIKE ${searchValue}
+        OR referral_code ILIKE ${searchValue}
+    `
+  : Prisma.empty;
+
+const finalOrderSql = getAllTimeFinalOrderSql(range, sort);
+
+const [participants, countRows, totalReferrals, leader] = await Promise.all([
+  prisma.$queryRaw<AllTimeLeaderboardRow[]>`
+    WITH ranked_leaderboard AS (
+      SELECT
+        id,
+        phone_number,
+        display_name,
+        referral_code,
+        total_referrals,
+        total_contests_joined,
+        first_joined_at,
+        last_joined_at,
+        created_at,
+        ROW_NUMBER() OVER (
+          ORDER BY total_referrals DESC, first_joined_at ASC
+        ) AS rank
+      FROM participants
+      WHERE channel_id = ${channelId}::uuid
+    ),
+    filtered_leaderboard AS (
+      SELECT *
+      FROM ranked_leaderboard
+      ${searchSql}
+    )
+    SELECT
+      id,
+      phone_number,
+      display_name,
+      referral_code,
+      total_referrals,
+      total_contests_joined,
+      first_joined_at,
+      rank
+    FROM filtered_leaderboard
+    ORDER BY ${finalOrderSql}
+    OFFSET ${skip}
+    LIMIT ${safeLimit}
+  `,
+
+  prisma.$queryRaw<CountRow[]>`
+    WITH ranked_leaderboard AS (
+      SELECT
+        id,
+        phone_number,
+        display_name,
+        referral_code,
+        total_referrals,
+        total_contests_joined,
+        first_joined_at,
+        last_joined_at,
+        created_at,
+        ROW_NUMBER() OVER (
+          ORDER BY total_referrals DESC, first_joined_at ASC
+        ) AS rank
+      FROM participants
+      WHERE channel_id = ${channelId}::uuid
+    ),
+    filtered_leaderboard AS (
+      SELECT *
+      FROM ranked_leaderboard
+      ${searchSql}
+    )
+    SELECT COUNT(*)::int AS total
+    FROM filtered_leaderboard
+  `,
+
+  prisma.participants.aggregate({
+    where: {
       channel_id: channelId,
-      ...(search
-        ? {
-            OR: [
-              {
-                display_name: {
-                  contains: search,
-                  mode: 'insensitive' as const,
-                },
-              },
-              {
-                phone_number: {
-                  contains: search,
-                  mode: 'insensitive' as const,
-                },
-              },
-              {
-                referral_code: {
-                  contains: search,
-                  mode: 'insensitive' as const,
-                },
-              },
-            ],
-          }
-        : {}),
-    };
+    },
+    _sum: {
+      total_referrals: true,
+    },
+  }),
 
-    const [participants, total, totalReferrals, leader] = await Promise.all([
-      prisma.participants.findMany({
-        where,
-        orderBy: getOrderBy(range, sort),
-        skip,
-        take: safeLimit,
-        select: {
-          id: true,
-          phone_number: true,
-          display_name: true,
-          referral_code: true,
-          total_referrals: true,
-          total_contests_joined: true,
-          first_joined_at: true,
-          last_joined_at: true,
-          created_at: true,
-        },
-      }),
+  prisma.participants.findFirst({
+    where: {
+      channel_id: channelId,
+    },
+    orderBy: [
+      {
+        total_referrals: 'desc',
+      },
+      {
+        first_joined_at: 'asc',
+      },
+    ],
+    select: {
+      display_name: true,
+      phone_number: true,
+      total_referrals: true,
+    },
+  }),
+]);
 
-      prisma.participants.count({
-        where,
-      }),
+const total = Number(countRows[0]?.total ?? 0);
 
-      prisma.participants.aggregate({
-        where,
-        _sum: {
-          total_referrals: true,
-        },
-      }),
-
-      prisma.participants.findFirst({
-        where,
-        orderBy: [
-          {
-            total_referrals: 'desc',
-          },
-          {
-            first_joined_at: 'asc',
-          },
-        ],
-        select: {
-          display_name: true,
-          phone_number: true,
-          total_referrals: true,
-        },
-      }),
-    ]);
-
-    const leaderboard = participants.map((participant, index) => {
+    const leaderboard = participants.map((participant) => {
       return {
         id: participant.id,
         participant_id: participant.id,
-        rank: skip + index + 1,
+        rank: Number(participant.rank),
         user_name:
           participant.display_name || `User ${participant.phone_number.slice(-4)}`,
         phone_number: participant.phone_number,

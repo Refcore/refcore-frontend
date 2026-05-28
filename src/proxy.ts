@@ -1,7 +1,22 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import { updateSession } from '@/utils/supabase/middleware';
 
 const PUBLIC_API_ROUTES = new Set(['/api/auth/register']);
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
+
+const supabaseAuth = createClient(
+  supabaseUrl,
+  supabaseKey,
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  },
+);
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -13,7 +28,9 @@ export async function proxy(request: NextRequest) {
 
   if (isApiRoute && !isPublicApiRoute) {
     const authHeader = request.headers.get('authorization');
-    const token = authHeader?.replace('Bearer ', '');
+    const token = authHeader?.startsWith('Bearer ')
+      ? authHeader.replace('Bearer ', '')
+      : null;
 
     if (!token) {
       return NextResponse.json(
@@ -22,6 +39,25 @@ export async function proxy(request: NextRequest) {
           status_code: 401,
           message: 'You must be signed in to continue.',
           data: null,
+          error_code: 'AUTH_REQUIRED',
+        },
+        { status: 401 },
+      );
+    }
+
+    const {
+      data: { user },
+      error,
+    } = await supabaseAuth.auth.getUser(token);
+
+    if (error || !user) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 401,
+          message: 'Your session has expired. Please sign in again.',
+          data: null,
+          error_code: 'SESSION_EXPIRED',
         },
         { status: 401 },
       );
@@ -35,13 +71,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static
-     * - _next/image
-     * - favicon.ico
-     * - image / asset files
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

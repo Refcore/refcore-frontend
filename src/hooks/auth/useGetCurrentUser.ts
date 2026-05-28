@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/client';
 import { queryKeys } from '@/lib/query_keys';
 import { User } from '@/model/user.model';
 import { AppResponse } from '@/types/response.type';
+import { authFetch } from '@/lib/authFetch';
 
 type CurrentUserResponse = {
   auth_user: {
@@ -28,7 +29,7 @@ const getCurrentUser = async (): Promise<CurrentUserResponse | null> => {
     return null;
   }
 
-  const response = await fetch('/api/auth/current-user', {
+  const response = await authFetch('/api/auth/current-user', {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${session.access_token}`,

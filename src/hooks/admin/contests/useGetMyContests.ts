@@ -6,6 +6,7 @@ import { useAuthContext } from '@/context/AuthContext';
 import { queryKeys } from '@/lib/query_keys';
 import { AppResponse } from '@/types/response.type';
 import { Contest } from '@/types/contest.type';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 type GetMyContestsParams = {
   status?: string;
@@ -28,7 +29,7 @@ const getMyContests = async (
 
   const query_string = search_params.toString();
 
-  const response = await fetch(
+  const response = await authFetch(
     `/api/contests/my-contests${query_string ? `?${query_string}` : ''}`,
     {
       method: 'GET',
@@ -66,11 +67,13 @@ export const useGetMyContests = (params?: GetMyContestsParams) => {
       } = await supabase.auth.getSession();
 
       if (sessionError) {
+        await handleExpiredSession();
         throw new Error(sessionError.message);
       }
 
       if (!session?.access_token) {
-        throw new Error('You must be signed in to fetch contests.');
+        await handleExpiredSession();
+        throw new Error('Your session has expired. Please sign in again.');
       }
 
       return getMyContests(session.access_token, params);

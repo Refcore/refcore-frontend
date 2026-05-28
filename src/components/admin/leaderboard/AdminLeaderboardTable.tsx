@@ -9,10 +9,14 @@ import {
   leaderboardColumns,
 } from './adminLeaderboardColumns';
 import AppPagination from '@/components/shared/AppPagination';
-import type { LeaderboardItem } from '@/types/leaderboard.type';
+import type {
+  LeaderboardItem,
+  LeaderboardSummary,
+} from '@/types/leaderboard.type';
 
 type AdminLeaderboardTableProps = {
   leaderboard: LeaderboardItem[];
+  leaderboardInfo?: LeaderboardSummary;
   currentPage: number;
   totalPages: number;
   canPreviousPage: boolean;
@@ -26,6 +30,7 @@ type AdminLeaderboardTableProps = {
 
 const AdminLeaderboardTable = ({
   leaderboard,
+  leaderboardInfo,
   currentPage,
   totalPages,
   canPreviousPage,
@@ -38,7 +43,7 @@ const AdminLeaderboardTable = ({
 }: AdminLeaderboardTableProps) => {
   const participants = [...leaderboard].sort((a, b) => a.rank - b.rank);
 
-  const topReferrals = participants[0]?.referrals ?? 0;
+  const topReferrals = leaderboardInfo?.current_leader_referrals ?? 0;
 
   return (
     <section className="rounded-xl border border-white/10 bg-[rgba(28,28,38,0.55)] shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
