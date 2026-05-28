@@ -4,6 +4,9 @@ import { AUTH_ROUTES } from '@/routes';
 
 let isHandlingExpiredSession = false;
 
+const wait = (ms: number) =>
+  new Promise((resolve) => window.setTimeout(resolve, ms));
+
 export const handleExpiredSession = async () => {
   if (typeof window === 'undefined') return;
 
@@ -18,15 +21,19 @@ export const handleExpiredSession = async () => {
   });
 
   try {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-  } catch (error) {
-    console.error('[authFetch] Failed to sign out cleanly:', error);
-  }
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('[authFetch] Failed to sign out cleanly:', error);
+    }
 
-  window.setTimeout(() => {
+    await wait(1000);
+
     window.location.replace(AUTH_ROUTES.LOGIN);
-  }, 1000);
+  } finally {
+    isHandlingExpiredSession = false;
+  }
 };
 
 export const authFetch = async (
