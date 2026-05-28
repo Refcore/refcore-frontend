@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getApiAuthUser } from '@/lib/api-auth';
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 type RouteParams = {
   params: Promise<{
     contestId: string;
@@ -26,6 +29,18 @@ export async function PATCH(request: Request, { params }: RouteParams) {
           success: false,
           status_code: 400,
           message: 'Contest ID is required.',
+          data: null,
+        },
+        { status: 400 },
+      );
+    }
+
+    if (!UUID_REGEX.test(contestId)) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Invalid contest ID format.',
           data: null,
         },
         { status: 400 },
@@ -87,12 +102,32 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       );
     }
 
-    const ended_contest = await prisma.contests.update({
+    const update_result = await prisma.contests.updateMany({
       where: {
         id: contestId,
+        status: 'active',
       },
       data: {
         status: 'past',
+      },
+    });
+
+    if (update_result.count === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 409,
+          message: 'Only an active contest can be ended.',
+          data: null,
+          error_code: 'CONTEST_NOT_ACTIVE',
+        },
+        { status: 409 },
+      );
+    }
+
+    const ended_contest = await prisma.contests.findUnique({
+      where: {
+        id: contestId,
       },
       select: {
         id: true,

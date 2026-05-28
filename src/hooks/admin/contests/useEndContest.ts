@@ -66,6 +66,10 @@ export const useEndContest = () => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.leaderboard.allTime(),
       });
+
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.leaderboard.currentContest(),
+      });
     },
 
     onError: (error) => {

@@ -139,8 +139,7 @@ const QuickActionButton = ({
           />
         }
         title="Confirm End Contest"
-        contentClassName="border-[1.5px] w-[900px]"
-        
+        contentClassName="border-[1.5px] w-full max-w-[900px]"
       >
         <button
           type="button"

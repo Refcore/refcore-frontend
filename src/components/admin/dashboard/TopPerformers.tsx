@@ -4,9 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  RewardTier,
-} from '@/demo/leaderboarddata';
+import { RewardTier } from '@/demo/leaderboarddata';
 import { ADMIN_ROUTES } from '@/routes';
 import { LeaderboardItem } from '@/types/leaderboard.type';
 
@@ -67,12 +65,13 @@ const maskPhone = (phone: string) => {
   return `${firstPart}****${lastPart}`;
 };
 
-const TopPerformerRow = ({
-  participant,
-}: {
-  participant: LeaderboardItem;
-}) => {
-  const styles = rewardTierStyles[participant.rank <= 3 ? (['gold', 'silver', 'bronze'] as RewardTier[])[participant.rank - 1] : 'none'];
+const TopPerformerRow = ({ participant }: { participant: LeaderboardItem }) => {
+  const tier: RewardTier =
+    participant.rank >= 1 && participant.rank <= 3
+      ? (['gold', 'silver', 'bronze'] as const)[participant.rank - 1]
+      : 'none';
+
+  const styles = rewardTierStyles[tier];
 
   return (
     <div
@@ -137,8 +136,6 @@ const TopPerformers = ({
   viewAllHref = ADMIN_ROUTES.LEADERBOARD,
   className,
 }: TopPerformersProps) => {
-
-
   return (
     <section
       className={cn(
