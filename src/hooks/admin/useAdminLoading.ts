@@ -3,6 +3,7 @@
 import { useGetParticipants } from './participants/useGetParticipants';
 import { useGetReferrals } from './referrals/useGetReferrals';
 import { useGetMyContests } from './contests/useGetMyContests';
+import { useGetAllTimeLeaderboard } from './leaderboard/useGetAllTimeLeaderboard';
 
 type AdminLoadingData = {
   total_participants: number;
@@ -26,7 +27,11 @@ export const useAdminLoading = () => {
     status: 'active',
   });
 
-  const active_contest =  contestsQuery.data ?? contestsQuery.data?.[0] ?? null;
+  const allTimeLeaderboardQuery = useGetAllTimeLeaderboard({
+    page: 1,
+  });
+
+  const active_contest = contestsQuery.data ?? contestsQuery.data?.[0] ?? null;
 
   const data: AdminLoadingData = {
     total_participants: participantsQuery.data?.pagination.total ?? 0,
@@ -40,19 +45,27 @@ export const useAdminLoading = () => {
   const isLoading =
     participantsQuery.isLoading ||
     referralsQuery.isLoading ||
-    contestsQuery.isLoading;
+    contestsQuery.isLoading ||
+    allTimeLeaderboardQuery.isLoading;
 
   const isError =
-    participantsQuery.isError || referralsQuery.isError || contestsQuery.isError;
+    participantsQuery.isError ||
+    referralsQuery.isError ||
+    contestsQuery.isError ||
+    allTimeLeaderboardQuery.isError;
 
   const error =
-    participantsQuery.error ?? referralsQuery.error ?? contestsQuery.error;
+    participantsQuery.error ??
+    referralsQuery.error ??
+    contestsQuery.error ??
+    allTimeLeaderboardQuery.error;
 
   const refetch = async () => {
     await Promise.all([
       participantsQuery.refetch(),
       referralsQuery.refetch(),
       contestsQuery.refetch(),
+      allTimeLeaderboardQuery.refetch(),
     ]);
   };
 
@@ -66,6 +79,8 @@ export const useAdminLoading = () => {
 
     participants_pagination: participantsQuery.data?.pagination,
     referrals_pagination: referralsQuery.data?.pagination,
+
+    allTimeTopFive: allTimeLeaderboardQuery.data?.leaderboard ?? [],
 
     isLoading,
     isError,
