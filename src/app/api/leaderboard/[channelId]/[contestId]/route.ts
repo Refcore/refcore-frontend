@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 type RouteParams = {
@@ -10,6 +11,21 @@ type RouteParams = {
 
 type LeaderboardRange = 'top10' | 'bottom10' | 'top50' | 'all';
 type LeaderboardSort = 'referrals_desc' | 'referrals_asc' | 'newest' | 'oldest';
+
+type ContestLeaderboardRow = {
+  id: string;
+  participant_id: string;
+  phone_number: string;
+  display_name: string | null;
+  referral_code: string | null;
+  referral_count: number;
+  created_at: Date;
+  rank: number | bigint;
+};
+
+type CountRow = {
+  total: number | bigint;
+};
 
 const allowedRanges: LeaderboardRange[] = ['top10', 'bottom10', 'top50', 'all'];
 
@@ -29,53 +45,23 @@ const getSafeLimit = (range: LeaderboardRange, limit: number) => {
   return Math.min(limit, 100);
 };
 
-const getOrderBy = (range: LeaderboardRange, sort: LeaderboardSort) => {
-  if (range === 'bottom10') {
-    return [
-      {
-        referral_count: 'asc' as const,
-      },
-      {
-        created_at: 'asc' as const,
-      },
-    ];
-  }
-
-  if (sort === 'referrals_asc') {
-    return [
-      {
-        referral_count: 'asc' as const,
-      },
-      {
-        created_at: 'asc' as const,
-      },
-    ];
+const getContestFinalOrderSql = (
+  range: LeaderboardRange,
+  sort: LeaderboardSort,
+) => {
+  if (range === 'bottom10' || sort === 'referrals_asc') {
+    return Prisma.sql`referral_count ASC, created_at ASC`;
   }
 
   if (sort === 'newest') {
-    return [
-      {
-        created_at: 'desc' as const,
-      },
-    ];
+    return Prisma.sql`created_at DESC`;
   }
 
   if (sort === 'oldest') {
-    return [
-      {
-        created_at: 'asc' as const,
-      },
-    ];
+    return Prisma.sql`created_at ASC`;
   }
 
-  return [
-    {
-      referral_count: 'desc' as const,
-    },
-    {
-      created_at: 'asc' as const,
-    },
-  ];
+  return Prisma.sql`rank ASC`;
 };
 
 const getContestStatusSubtext = (endDate: Date | null) => {
@@ -142,164 +128,156 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const matchedParticipants = search
-      ? await prisma.participants.findMany({
+    const searchValue = `%${search}%`;
+
+    const searchSql = search
+      ? Prisma.sql`
+          WHERE display_name ILIKE ${searchValue}
+            OR phone_number ILIKE ${searchValue}
+            OR referral_code ILIKE ${searchValue}
+        `
+      : Prisma.empty;
+
+    const finalOrderSql = getContestFinalOrderSql(range, sort);
+
+    const [
+      contestParticipants,
+      filteredCountRows,
+      summaryCountRows,
+      totalReferrals,
+      leaderRow,
+    ] = await Promise.all([
+      prisma.$queryRaw<ContestLeaderboardRow[]>`
+        WITH ranked_leaderboard AS (
+          SELECT
+            cp.id,
+            cp.participant_id,
+            cp.referral_count,
+            cp.created_at,
+            p.phone_number,
+            p.display_name,
+            p.referral_code,
+            ROW_NUMBER() OVER (
+              ORDER BY cp.referral_count DESC, cp.created_at ASC
+            ) AS rank
+          FROM public.contest_participants cp
+          INNER JOIN public.participants p
+            ON p.id = cp.participant_id
+          WHERE cp.channel_id = ${channelId}::uuid
+            AND cp.contest_id = ${contestId}::uuid
+        ),
+        filtered_leaderboard AS (
+          SELECT *
+          FROM ranked_leaderboard
+          ${searchSql}
+        )
+        SELECT
+          id,
+          participant_id,
+          phone_number,
+          display_name,
+          referral_code,
+          referral_count,
+          created_at,
+          rank
+        FROM filtered_leaderboard
+        ORDER BY ${finalOrderSql}
+        OFFSET ${skip}
+        LIMIT ${safeLimit}
+      `,
+
+      prisma.$queryRaw<CountRow[]>`
+        WITH ranked_leaderboard AS (
+          SELECT
+            cp.id,
+            cp.participant_id,
+            cp.referral_count,
+            cp.created_at,
+            p.phone_number,
+            p.display_name,
+            p.referral_code,
+            ROW_NUMBER() OVER (
+              ORDER BY cp.referral_count DESC, cp.created_at ASC
+            ) AS rank
+          FROM public.contest_participants cp
+          INNER JOIN public.participants p
+            ON p.id = cp.participant_id
+          WHERE cp.channel_id = ${channelId}::uuid
+            AND cp.contest_id = ${contestId}::uuid
+        ),
+        filtered_leaderboard AS (
+          SELECT *
+          FROM ranked_leaderboard
+          ${searchSql}
+        )
+        SELECT COUNT(*)::int AS total
+        FROM filtered_leaderboard
+      `,
+
+      prisma.$queryRaw<CountRow[]>`
+        SELECT COUNT(*)::int AS total
+        FROM public.contest_participants
+        WHERE channel_id = ${channelId}::uuid
+          AND contest_id = ${contestId}::uuid
+      `,
+
+      prisma.contest_participants.aggregate({
+        where: {
+          channel_id: channelId,
+          contest_id: contestId,
+        },
+        _sum: {
+          referral_count: true,
+        },
+      }),
+
+      prisma.contest_participants.findFirst({
+        where: {
+          channel_id: channelId,
+          contest_id: contestId,
+        },
+        orderBy: [
+          {
+            referral_count: 'desc',
+          },
+          {
+            created_at: 'asc',
+          },
+        ],
+        select: {
+          participant_id: true,
+          referral_count: true,
+        },
+      }),
+    ]);
+
+    const filteredTotal = Number(filteredCountRows[0]?.total ?? 0);
+    const summaryParticipants = Number(summaryCountRows[0]?.total ?? 0);
+
+    const leader = leaderRow
+      ? await prisma.participants.findUnique({
           where: {
-            channel_id: channelId,
-            OR: [
-              {
-                display_name: {
-                  contains: search,
-                  mode: 'insensitive',
-                },
-              },
-              {
-                phone_number: {
-                  contains: search,
-                  mode: 'insensitive',
-                },
-              },
-              {
-                referral_code: {
-                  contains: search,
-                  mode: 'insensitive',
-                },
-              },
-            ],
+            id: leaderRow.participant_id,
           },
           select: {
-            id: true,
+            display_name: true,
+            phone_number: true,
           },
         })
-      : [];
-
-    const matchedParticipantIds = matchedParticipants.map(
-      (participant) => participant.id,
-    );
-
-    if (search && matchedParticipantIds.length === 0) {
-      return NextResponse.json({
-        success: true,
-        data: {
-          summary: {
-            current_leader: 'No leader yet',
-            current_leader_referrals: 0,
-            participants: 0,
-            total_referrals: 0,
-            contest_status: contest.status,
-            contest_status_subtext: getContestStatusSubtext(contest.end_date),
-          },
-          leaderboard: [],
-          pagination: {
-            page: safePage,
-            limit: safeLimit,
-            total: 0,
-            total_pages: 0,
-          },
-        },
-      });
-    }
-
-    const where = {
-      channel_id: channelId,
-      contest_id: contestId,
-      ...(search
-        ? {
-            participant_id: {
-              in: matchedParticipantIds,
-            },
-          }
-        : {}),
-    };
-
-    const [contestParticipants, total, totalReferrals, leaderRow] =
-      await Promise.all([
-        prisma.contest_participants.findMany({
-          where,
-          orderBy: getOrderBy(range, sort),
-          skip,
-          take: safeLimit,
-          select: {
-            id: true,
-            participant_id: true,
-            referral_count: true,
-            rank_cache: true,
-            created_at: true,
-          },
-        }),
-
-        prisma.contest_participants.count({
-          where,
-        }),
-
-        prisma.contest_participants.aggregate({
-          where,
-          _sum: {
-            referral_count: true,
-          },
-        }),
-
-        prisma.contest_participants.findFirst({
-          where,
-          orderBy: [
-            {
-              referral_count: 'desc',
-            },
-            {
-              created_at: 'asc',
-            },
-          ],
-          select: {
-            participant_id: true,
-            referral_count: true,
-          },
-        }),
-      ]);
-
-    const participantIds = contestParticipants.map(
-      (item) => item.participant_id,
-    );
-
-    const leaderParticipantId = leaderRow?.participant_id;
-
-    const participants = await prisma.participants.findMany({
-      where: {
-        id: {
-          in: leaderParticipantId
-            ? Array.from(new Set([...participantIds, leaderParticipantId]))
-            : participantIds,
-        },
-      },
-      select: {
-        id: true,
-        phone_number: true,
-        display_name: true,
-        referral_code: true,
-      },
-    });
-
-    const participantMap = new Map(
-      participants.map((participant) => [participant.id, participant]),
-    );
-
-    const leader = leaderParticipantId
-      ? participantMap.get(leaderParticipantId)
       : null;
 
-    const leaderboard = contestParticipants.map((item, index) => {
-      const participant = participantMap.get(item.participant_id);
-
-      const fallbackName = participant?.phone_number
-        ? `User ${participant.phone_number.slice(-4)}`
+    const leaderboard = contestParticipants.map((item) => {
+      const fallbackName = item.phone_number
+        ? `User ${item.phone_number.slice(-4)}`
         : 'Unknown participant';
 
       return {
         id: item.id,
         participant_id: item.participant_id,
-        rank: item.rank_cache ?? skip + index + 1,
-        user_name: participant?.display_name || fallbackName,
-        phone_number: participant?.phone_number ?? '',
-        referral_code: participant?.referral_code ?? null,
+        rank: Number(item.rank),
+        user_name: item.display_name || fallbackName,
+        phone_number: item.phone_number ?? '',
+        referral_code: item.referral_code ?? null,
         referrals: item.referral_count,
         joined_at: item.created_at.toISOString(),
       };
@@ -311,7 +289,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         summary: {
           current_leader: leader?.display_name ?? 'No leader yet',
           current_leader_referrals: leaderRow?.referral_count ?? 0,
-          participants: total,
+          participants: summaryParticipants,
           total_referrals: totalReferrals._sum.referral_count ?? 0,
           contest_status: contest.status,
           contest_status_subtext: getContestStatusSubtext(contest.end_date),
@@ -320,8 +298,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         pagination: {
           page: safePage,
           limit: safeLimit,
-          total,
-          total_pages: Math.ceil(total / safeLimit),
+          total: filteredTotal,
+          total_pages: Math.ceil(filteredTotal / safeLimit),
         },
       },
     });

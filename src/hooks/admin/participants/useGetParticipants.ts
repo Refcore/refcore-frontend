@@ -6,6 +6,7 @@ import { useAuthContext } from '@/context/AuthContext';
 import { queryKeys } from '@/lib/query_keys';
 import { AppResponse } from '@/types/response.type';
 import { ParticipantModel } from '@/types/participant.type';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 type GetParticipantsParams = {
   page?: number;
@@ -46,7 +47,7 @@ const getParticipants = async (
 
   const query_string = search_params.toString();
 
-  const response = await fetch(
+  const response = await authFetch(
     `/api/participants/${channel_id}${query_string ? `?${query_string}` : ''}`,
     {
       method: 'GET',
@@ -56,7 +57,8 @@ const getParticipants = async (
     },
   );
 
-  const result = (await response.json()) as AppResponse<GetParticipantsResponse>;
+  const result =
+    (await response.json()) as AppResponse<GetParticipantsResponse>;
 
   if (!response.ok || !result.success) {
     throw new Error(result.message || 'Failed to fetch participants.');
@@ -76,8 +78,11 @@ const getParticipants = async (
 };
 
 export const useGetParticipants = (params?: GetParticipantsParams) => {
-  const { myChannel, isAuthenticated, isLoading: isAuthLoading } =
-    useAuthContext();
+  const {
+    myChannel,
+    isAuthenticated,
+    isLoading: isAuthLoading,
+  } = useAuthContext();
 
   return useQuery({
     queryKey: [
@@ -95,11 +100,13 @@ export const useGetParticipants = (params?: GetParticipantsParams) => {
       } = await supabase.auth.getSession();
 
       if (sessionError) {
+        await handleExpiredSession();
         throw new Error(sessionError.message);
       }
 
       if (!session?.access_token) {
-        throw new Error('You must be signed in to fetch participants.');
+        await handleExpiredSession();
+        throw new Error('Your session has expired. Please sign in again.');
       }
 
       if (!myChannel?.id) {

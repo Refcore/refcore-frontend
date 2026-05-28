@@ -4,6 +4,7 @@ import { queryKeys } from '@/lib/query_keys';
 import { useAuthContext } from '@/context/AuthContext';
 import { MyChannel } from '@/types/channel.type';
 import { AppResponse } from '@/types/response.type';
+import { authFetch } from '@/lib/authFetch';
 
 const getMyChannel = async (): Promise<MyChannel | null> => {
   const supabase = createClient();
@@ -21,7 +22,7 @@ const getMyChannel = async (): Promise<MyChannel | null> => {
     return null;
   }
 
-  const response = await fetch('/api/channels/my-channel', {
+  const response = await authFetch('/api/channels/my-channel', {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${session.access_token}`,

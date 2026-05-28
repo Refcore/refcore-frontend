@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { createClient } from '@/utils/supabase/client';
 import type { Contest } from '@/types/contest.type';
 import { queryKeys } from '@/lib/query_keys';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 type EndContestResponse = {
   success: boolean;
@@ -29,13 +30,20 @@ export const useEndContest = () => {
 
       const {
         data: { session },
+        error: sessionError,
       } = await supabase.auth.getSession();
 
-      if (!session?.access_token) {
-        throw new Error('You must be logged in to end this contest.');
+      if (sessionError) {
+        await handleExpiredSession();
+        throw new Error(sessionError.message);
       }
 
-      const response = await fetch(`/api/contests/${contest_id}`, {
+      if (!session?.access_token) {
+        await handleExpiredSession();
+        throw new Error('Your session has expired. Please sign in again.');
+      }
+
+      const response = await authFetch(`/api/contests/${contest_id}`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${session.access_token}`,

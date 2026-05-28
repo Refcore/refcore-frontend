@@ -51,7 +51,7 @@ const handleEndContest = () => {
       <div className="pointer-events-none absolute left-1/2 top-0 h-40 w-40 -translate-x-1/2 rounded-full bg-red-500/20 blur-3xl" />
 
       <div className="relative flex flex-col items-center pt-10 text-center">
-        <div className="relative mb-4 flex size-20 items-center justify-center rounded-full border border-red-500/30 bg-red-500/10 shadow-[0_0_30px_rgba(239,68,68,0.25)]">
+        <div className="relative hidden mb-4 md:flex size-20 items-center justify-center rounded-full border border-red-500/30 bg-red-500/10 shadow-[0_0_30px_rgba(239,68,68,0.25)]">
           <span className="absolute size-20 animate-ping rounded-full bg-red-500/10" />
           <span className="absolute size-14 rounded-full bg-red-500/10" />
           <OctagonX className="relative z-10 size-9 text-red-400" />
@@ -79,7 +79,7 @@ const handleEndContest = () => {
           {activeContest?.title ?? 'Untitled contest'}
         </h4>
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 gap-3 sm:grid-cols-2 hidden md:grid">
           <div className="rounded-xl border border-white/10 bg-[#13131a]/70 p-3">
             <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
               <CalendarDays className="size-4 text-[#00d0ff]" />
@@ -93,6 +93,30 @@ const handleEndContest = () => {
 
           <div className="rounded-xl border border-white/10 bg-[#13131a]/70 p-3">
             <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
+              <CalendarDays className="size-4 text-red-400" />
+              Supposed to end
+            </div>
+
+            <p className="text-sm font-semibold text-white">
+              {formatContestDate(activeContest?.end_date)}
+            </p>
+          </div>
+        </div>
+
+          <div className="mt-4 gap-3 grid grid-cols-2 md:hidden">
+          <div className="">
+            <div className="flex items-center gap-2 text-xs text-gray-400">
+              <CalendarDays className="size-4 text-[#00d0ff]" />
+              Started
+            </div>
+
+            <p className="text-sm font-semibold text-white">
+              {formatContestDate(activeContest?.start_date)}
+            </p>
+          </div>
+
+          <div className="">
+            <div className="flex items-center gap-2 text-xs text-gray-400">
               <CalendarDays className="size-4 text-red-400" />
               Supposed to end
             </div>

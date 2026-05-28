@@ -6,6 +6,7 @@ import { deleteStorageFile } from '@/utils/deleteStoredFile';
 import { AppResponse } from '@/types/response.type';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query_keys';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 type UpdateProfilePayload = {
   user_id: string;
@@ -35,16 +36,30 @@ export const useUpdateProfile = () => {
         error: sessionError,
       } = await supabase.auth.getSession();
 
-      if (sessionError || !session?.access_token || !session.user?.id) {
+      if (sessionError) {
+        await handleExpiredSession();
+
         const errorResponse: AppResponse<UpdateProfileResponseData> = {
           success: false,
           status_code: 401,
-          message: 'You must be signed in to update your profile.',
+          message: sessionError.message,
           data: null,
-          error_code: sessionError?.code,
+          error_code: sessionError.code,
         };
 
-        toast.error(errorResponse.message);
+        return errorResponse;
+      }
+
+      if (!session?.access_token || !session.user?.id) {
+        await handleExpiredSession();
+
+        const errorResponse: AppResponse<UpdateProfileResponseData> = {
+          success: false,
+          status_code: 401,
+          message: 'Your session has expired. Please sign in again.',
+          data: null,
+        };
+
         return errorResponse;
       }
 
@@ -59,7 +74,7 @@ export const useUpdateProfile = () => {
         profile_picture = upload_result.file_path;
       }
 
-      const response = await fetch('/api/profile/update', {
+      const response = await authFetch('/api/profile/update', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

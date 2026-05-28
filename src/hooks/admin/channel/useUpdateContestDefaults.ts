@@ -8,6 +8,7 @@ import { AppResponse } from '@/types/response.type';
 import { ContestDefaults } from '@/types/contest.type';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query_keys';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 type UpdateContestDefaultsResponseData = {
   channel_id: string;
@@ -44,30 +45,47 @@ export const useUpdateContestDefaults = () => {
         error: sessionError,
       } = await supabase.auth.getSession();
 
-      if (sessionError || !session?.access_token) {
+      if (sessionError) {
+        await handleExpiredSession();
+
         const errorResponse: AppResponse<UpdateContestDefaultsResponseData> = {
           success: false,
           status_code: 401,
-          message: 'You must be signed in to update contest defaults.',
+          message: sessionError.message,
           data: null,
-          error_code: sessionError?.code,
+          error_code: sessionError.code,
         };
 
-        toast.error(errorResponse.message);
         return errorResponse;
       }
 
-      const response = await fetch('/api/channels/contest-defaults/update', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
+      if (!session?.access_token) {
+        await handleExpiredSession();
+
+        const errorResponse: AppResponse<UpdateContestDefaultsResponseData> = {
+          success: false,
+          status_code: 401,
+          message: 'Your session has expired. Please sign in again.',
+          data: null,
+        };
+
+        return errorResponse;
+      }
+
+      const response = await authFetch(
+        '/api/channels/contest-defaults/update',
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            channel_id: myChannel.id,
+            contest_defaults,
+          }),
         },
-        body: JSON.stringify({
-          channel_id: myChannel.id,
-          contest_defaults,
-        }),
-      });
+      );
 
       const result =
         (await response.json()) as AppResponse<UpdateContestDefaultsResponseData>;

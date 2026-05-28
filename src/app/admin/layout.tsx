@@ -3,20 +3,29 @@
 // import RequireWhatsappVerified from '@/components/auth/RequireWhatsappVerified';
 import MobileNav from '@/components/admin/MobileNav';
 import Sidebar from '@/components/admin/Sidebar';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useAuthContext } from '@/context/AuthContext';
 import Loadingscreen from '@/components/ui/Loadingscreen';
 import { useAdminLoading } from '@/hooks/admin/useAdminLoading';
+import { AUTH_ROUTES } from '@/routes';
+import { useRouter } from 'next/navigation';
 
 type DashboardLayoutProps = {
   children: ReactNode;
 };
 
 export default function AdminLayout({ children }: DashboardLayoutProps) {
-  const { isLoading } = useAuthContext();
+  const { isLoading, authUser } = useAuthContext();
   const { isLoading: adminloading } = useAdminLoading();
+  const router = useRouter();
 
-  if (isLoading || adminloading) {
+  useEffect(() => {
+    if (!isLoading && !authUser) {
+      router.replace(AUTH_ROUTES.LOGIN);
+    }
+  }, [isLoading, authUser, router]);
+
+  if (isLoading || adminloading || !authUser) {
     return <Loadingscreen />;
   }
 

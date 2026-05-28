@@ -2,7 +2,6 @@
 
 import { AUTH_ROUTES } from '@/routes';
 import { createClient } from '@/utils/supabase/client';
-import { queryKeys } from '@/lib/query_keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -25,13 +24,7 @@ export const useLogout = () => {
         return;
       }
 
-      queryClient.removeQueries({
-        queryKey: queryKeys.auth.currentUser,
-      });
-
-      queryClient.removeQueries({
-        queryKey: queryKeys.channels.all,
-      });
+      queryClient.clear();
 
       toast.success('Logged out successfully');
 

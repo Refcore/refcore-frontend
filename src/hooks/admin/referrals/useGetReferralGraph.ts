@@ -9,13 +9,14 @@ import {
   GetReferralGraphResponse,
   ReferralGraphRange,
 } from '@/types/referral.type';
+import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 
 const getReferralGraph = async (
   access_token: string,
   channel_id: string,
   range: ReferralGraphRange,
 ): Promise<GetReferralGraphResponse> => {
-  const response = await fetch(
+  const response = await authFetch(
     `/api/referrals/${channel_id}/graph?range=${range}`,
     {
       method: 'GET',
@@ -59,11 +60,13 @@ export const useGetReferralGraph = (range: ReferralGraphRange) => {
       } = await supabase.auth.getSession();
 
       if (sessionError) {
+        await handleExpiredSession();
         throw new Error(sessionError.message);
       }
 
       if (!session?.access_token) {
-        throw new Error('You must be signed in to fetch referral graph data.');
+        await handleExpiredSession();
+        throw new Error('Your session has expired. Please sign in again.');
       }
 
       if (!myChannel?.id) {

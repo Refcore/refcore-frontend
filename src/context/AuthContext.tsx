@@ -129,8 +129,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     queryKey: queryKeys.auth.currentUser,
     queryFn: getCurrentUser,
     enabled: isMounted,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    const supabase = createClient();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      void refetchCurrentUser();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [isMounted, refetchCurrentUser]);
 
   const authUser = currentUserData?.auth_user ?? null;
   const currentUser = currentUserData?.profile ?? null;
@@ -145,7 +163,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     queryKey: queryKeys.channels.myChannel(authUser?.id),
     queryFn: () => getMyChannel(authUser!.id),
     enabled: isMounted && !!authUser?.id,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   const value = useMemo<AuthContextType>(() => {
@@ -180,6 +200,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       isError: isUserError || isChannelError,
       refetchAuthState: () => {
         void refetchCurrentUser();
+
         if (authUser?.id) {
           void refetchMyChannel();
         }
