@@ -13,6 +13,7 @@ export const queryKeys = {
     all: ['contests'] as const,
     byChannel: (channel_id?: string) =>
       ['contests', 'by_channel', channel_id] as const,
+    single: (contest_id: string) => ['contests', 'single', contest_id] as const,
   },
 
   participants: {
@@ -25,6 +26,16 @@ export const queryKeys = {
     all: ['referrals'] as const,
     byChannel: (channel_id?: string) =>
       [...queryKeys.referrals.all, 'channel', channel_id] as const,
+  },
+
+  notifications: {
+    all: ['notifications'] as const,
+    byChannel: (channel_id?: string | null) =>
+      [
+        ...queryKeys.notifications.all,
+        'channel',
+        channel_id ?? 'no-channel',
+      ] as const,
   },
 
   leaderboard: {

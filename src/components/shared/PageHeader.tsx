@@ -1,5 +1,6 @@
 import React from 'react';
 import ChannelAvatar from '../admin/ChannelAvatar';
+import NotificationTool from './NotificationTool';
 
 const PageHeader = ({
   title,
@@ -17,8 +18,11 @@ const PageHeader = ({
           {description}
         </p>
       </div>
+      <div className="flex items-center gap-4">
+        <NotificationTool />
 
-      <ChannelAvatar />
+        <ChannelAvatar />
+      </div>
     </div>
   );
 };

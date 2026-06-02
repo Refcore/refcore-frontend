@@ -18,6 +18,7 @@ import { usePathname } from 'next/navigation';
 import CompanyLogo from '../shared/CompanyLogo';
 import { ADMIN_ROUTES } from '@/routes';
 import ChannelAvatarMobile from './ChannelAvatarMobile';
+import NotificationToolMobile from '../shared/NotificationToolMobile';
 
 const MobileNav = () => {
   const pathname = usePathname();
@@ -41,8 +42,10 @@ const MobileNav = () => {
             <MenuSquareIcon className="size-7 " />
           </Button>
         </DrawerTrigger>
-
-        <ChannelAvatarMobile />
+        <div className="flex items-center gap-3">
+          <NotificationToolMobile />
+          <ChannelAvatarMobile />
+        </div>
       </div>
 
       <DrawerContent className="h-full max-h-screen w-[85%] max-w-75 border-r-2 border-white/10 bg-[#0a0a0f] px-3 text-white">

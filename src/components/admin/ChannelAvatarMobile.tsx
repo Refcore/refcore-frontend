@@ -26,13 +26,13 @@ const ChannelAvatarMobile = () => {
   const channel_initial = getChannelInitial(myChannel?.tv_name);
 
   return (
-    <div className="lg:hidden flex flex-row-reverse gap-2 items-end">
+    <div className="lg:hidden flex flex-col  items-end">
       <div
         className={cn(
           'relative flex size-11 items-center justify-center overflow-hidden rounded-2xl',
           'border border-white/10 bg-white/5 shadow-[0_0_20px_rgba(183,0,255,0.12)]',
           'transition-all duration-200',
-          'hover:border-(--neon-purple)/40 hover:shadow-[0_0_24px_rgba(183,0,255,0.2)]',
+          'hover:border-(--neon-purple)/40 hover:shadow-[0_0_24px_rgba(183,0,255,0.2)] h-7 w-7',
         )}
       >
         {channel_banner_url ? (
@@ -59,7 +59,7 @@ const ChannelAvatarMobile = () => {
         )}
       </div>
 
-      <p className='font-bold text-gradient-success'>{myChannel?.tv_name ?? 'Channel'}</p>
+      <p className='font-bold text-sm text-gradient-success'>{myChannel?.tv_name ?? 'Channel'}</p>
     </div>
   );
 };

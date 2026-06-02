@@ -86,3 +86,29 @@ export const one_time_token_type = {
 } as const
 
 export type one_time_token_type = (typeof one_time_token_type)[keyof typeof one_time_token_type]
+
+
+export const notification_type = {
+  new_join: 'new_join',
+  new_referral: 'new_referral',
+  contest_started: 'contest_started',
+  contest_ended: 'contest_ended',
+  leaderboard_change: 'leaderboard_change',
+  reward_unlocked: 'reward_unlocked',
+  reward_claimed: 'reward_claimed',
+  milestone_reached: 'milestone_reached',
+  channel_verified: 'channel_verified',
+  otp_verified: 'otp_verified',
+  participant_disqualified: 'participant_disqualified',
+  referral_rejected: 'referral_rejected',
+  referral_approved: 'referral_approved',
+  export_completed: 'export_completed',
+  settings_updated: 'settings_updated',
+  profile_updated: 'profile_updated',
+  bonus_awarded: 'bonus_awarded',
+  rank_lost: 'rank_lost',
+  rank_gained: 'rank_gained',
+  system_alert: 'system_alert'
+} as const
+
+export type notification_type = (typeof notification_type)[keyof typeof notification_type]

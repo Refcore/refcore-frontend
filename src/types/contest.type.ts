@@ -16,7 +16,7 @@ export type Contest = {
 
   referral_code_prefix: string;
 
-  start_date: string;
+  start_date: string | null;
   end_date: string | null;
 
   reward_type: ContestRewardType;
@@ -47,4 +47,17 @@ export type ContestDefaults = {
   referral_code_prefix: string;
   reward_description: string;
   max_winners: number;
+};
+
+export type UpdateContestPayload = {
+  title?: string;
+  slug?: string;
+  description?: string;
+  visibility?: Contest['visibility'];
+  contest_timing_mode?: 'manual' | 'automatic';
+  start_date?: string | null;
+  end_date?: string | null;
+  referral_code_prefix?: string;
+  max_winners?: number;
+  reward_description?: string;
 };
