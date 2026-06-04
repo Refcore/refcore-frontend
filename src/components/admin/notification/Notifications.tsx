@@ -41,40 +41,17 @@ const Notifications = () => {
   }, [notifications]);
 
   const handleMarkAllAsRead = () => {
-    // Later:
-    // markAllNotificationsAsReadMutation.mutate();
-
-    setNotifications((prev) =>
-      prev.map((item) => ({
-        ...item,
-        is_read: true,
-      })),
-    );
+    // TODO: Connect to mark all notifications as read mutation.
   };
 
   const handleMarkAsRead = (notificationId: string) => {
-    // Later:
-    // markNotificationAsReadMutation.mutate(notificationId);
-
-    setNotifications((prev) =>
-      prev.map((item) =>
-        item.id === notificationId
-          ? {
-              ...item,
-              is_read: true,
-            }
-          : item,
-      ),
-    );
+    // TODO: Connect to mark notification as read mutation.
+    console.log('Mark notification as read:', notificationId);
   };
 
   const handleDeleteNotification = (notificationId: string) => {
-    // Later:
-    // deleteNotificationMutation.mutate(notificationId);
-
-    setNotifications((prev) =>
-      prev.filter((item) => item.id !== notificationId),
-    );
+    // TODO: Connect to delete notification mutation.
+    console.log('Delete notification:', notificationId);
   };
 
   const handlePreviousPage = () => {
@@ -169,7 +146,8 @@ const Notifications = () => {
             variant="ghost"
             className="rounded-xl border border-white/10 bg-white/5 hover:bg-white/10"
             onClick={handleMarkAllAsRead}
-            disabled={unreadCount === 0}
+            // disabled={unreadCount === 0}
+            disabled
           >
             <CheckCheck className="size-4" />
             Mark all as read

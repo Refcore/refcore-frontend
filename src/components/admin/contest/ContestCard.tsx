@@ -3,8 +3,6 @@ import { CalendarDays, Eye, Pencil, Users, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { Contest } from '@/types/contest.type';
 import { cn } from '@/lib/utils';
-import { ADMIN_ROUTES } from '@/routes';
-import { useRouter } from 'next/navigation';
 
 type ContestCardProps = {
   contest: Contest;
@@ -23,14 +21,11 @@ const statusStyles: Record<Contest['status'], string> = {
 };
 
 const ContestCard = ({ contest, onView, onEdit }: ContestCardProps) => {
-  const router = useRouter();
-
   const handleEditContest = () => {
-    console.log('Editing contest id:', contest.id);
-    console.log('Full contest:', contest);
-
-    onEdit?.(contest);
-    router.push(ADMIN_ROUTES.CONTESTS_EDIT(contest.id));
+    if (onEdit) {
+      onEdit(contest);
+      return;
+    }
   };
 
   return (

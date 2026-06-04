@@ -24,7 +24,7 @@ import {
 
 import { cn } from '@/lib/utils';
 import { useAuthContext } from '@/context/AuthContext';
-import { useGetContestById } from '@/hooks/admin/contests/useGetContestId';
+import { useGetContestById } from '@/hooks/admin/contests/useGetContestById';
 
 type ContestForEdit = Partial<CreateContestFormValues> & {
   id: string;
@@ -275,7 +275,9 @@ const EditContestPage = () => {
   const {
     contest,
     is_getting_contest,
+    is_refetching_contest,
     is_getting_contest_error,
+    is_contest_not_found,
     get_contest_error,
     refetchContest,
   } = useGetContestById(contestId);
@@ -375,7 +377,7 @@ const EditContestPage = () => {
     );
   }
 
-  if (!contest) {
+  if (is_contest_not_found || !contest) {
     return (
       <div className="space-y-6">
         <div className="space-y-1">
@@ -426,6 +428,12 @@ const EditContestPage = () => {
           Contest: <span className="text-white/70">{contest?.title}</span>
         </p>
       </div>
+
+      {is_refetching_contest ? (
+        <p className="text-xs text-muted-foreground">
+          Refreshing contest data...
+        </p>
+      ) : null}
 
       <FormShell
         defaultValues={initialEditContestFormValues}

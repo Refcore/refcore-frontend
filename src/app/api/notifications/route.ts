@@ -3,6 +3,9 @@ import { notification_type, Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 import { getApiAuthUser } from '@/lib/api-auth';
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 const notificationTypeValues = Object.values(notification_type);
 
 type NotificationScope = 'user' | 'channel' | 'all';
@@ -41,6 +44,32 @@ export async function GET(request: Request) {
       Number.isFinite(limit) && limit > 0 && limit <= 100 ? limit : 20;
 
     const skip = (safePage - 1) * safeLimit;
+
+    if (channelId && !UUID_REGEX.test(channelId)) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Invalid channel_id format.',
+          data: null,
+          error_code: 'INVALID_CHANNEL_ID',
+        },
+        { status: 400 },
+      );
+    }
+
+    if (contestId && !UUID_REGEX.test(contestId)) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Invalid contest_id format.',
+          data: null,
+          error_code: 'INVALID_CONTEST_ID',
+        },
+        { status: 400 },
+      );
+    }
 
     const notificationType =
       type &&
@@ -81,6 +110,51 @@ export async function GET(request: Request) {
       resolvedChannelId = channel?.id ?? null;
     }
 
+    let resolvedContestId: string | null = null;
+
+    if (contestId) {
+      const contest = await prisma.contests.findFirst({
+        where: {
+          id: contestId,
+          channels: {
+            owner_id: user.id,
+          },
+        },
+        select: {
+          id: true,
+          channel_id: true,
+        },
+      });
+
+      if (!contest) {
+        return NextResponse.json(
+          {
+            success: false,
+            status_code: 404,
+            message: 'Contest not found.',
+            data: null,
+            error_code: 'CONTEST_NOT_FOUND',
+          },
+          { status: 404 },
+        );
+      }
+
+      if (resolvedChannelId && contest.channel_id !== resolvedChannelId) {
+        return NextResponse.json(
+          {
+            success: false,
+            status_code: 400,
+            message: 'Contest does not belong to the selected channel.',
+            data: null,
+            error_code: 'CONTEST_CHANNEL_MISMATCH',
+          },
+          { status: 400 },
+        );
+      }
+
+      resolvedContestId = contest.id;
+    }
+
     const where: Prisma.notificationsWhereInput = {
       ...(scope === 'user'
         ? {
@@ -111,9 +185,10 @@ export async function GET(request: Request) {
           }
         : {}),
 
-      ...(contestId
+      ...(resolvedContestId
+        
         ? {
-            contest_id: contestId,
+            contest_id: resolvedContestId,
           }
         : {}),
 

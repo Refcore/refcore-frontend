@@ -14,8 +14,6 @@ const AdminDashboardPage = () => {
   const { data, active_contest, allTimeTopFive, notifications } =
     useAdminLoading();
 
-  console.log('Active Contest:', active_contest);
-
   const activeContest = active_contest ?? null;
 
   const totalParticipants = data.total_participants;

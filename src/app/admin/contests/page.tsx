@@ -5,9 +5,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { contestTabs } from '@/components/admin/contest/contestTabs';
 import ContestCard from '@/components/admin/contest/ContestCard';
 import { useGetMyContests } from '@/hooks/admin/contests/useGetMyContests';
+import { useRouter } from 'next/navigation';
+import { ADMIN_ROUTES } from '@/routes';
 
 const ContestPage = () => {
   const [activeTab, setActiveTab] = useState(contestTabs[0].value);
+
+  const router = useRouter();
 
   const {
     data: contests = [],
@@ -61,9 +65,11 @@ const ContestPage = () => {
                     onView={(selectedContest) =>
                       console.log('view', selectedContest)
                     }
-                    onEdit={(selectedContest) =>
-                      console.log('edit', selectedContest)
-                    }
+                    onEdit={(selectedContest) => {
+                      router.push(
+                        ADMIN_ROUTES.CONTESTS_EDIT(selectedContest.id),
+                      );
+                    }}
                   />
                 ))
               ) : (

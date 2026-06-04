@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getApiAuthUser } from '@/lib/api-auth';
-import { Contest, UpdateContestPayload } from '@/types/contest.type';
+import { Contest } from '@/types/contest.type';
+import { updateContestApiSchema } from '@/schema/contest.schema';
 
 type ApiResponse<T> = {
   success: boolean;
@@ -384,7 +385,41 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const body = (await request.json()) as UpdateContestPayload;
+    let rawBody: unknown;
+
+    try {
+      rawBody = await request.json();
+    } catch {
+      return NextResponse.json<ApiResponse<Contest>>(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Invalid JSON request body.',
+          data: null,
+          error_code: 'INVALID_PAYLOAD',
+        },
+        { status: 400 },
+      );
+    }
+
+    const parsedBody = updateContestApiSchema.safeParse(rawBody);
+
+    if (!parsedBody.success) {
+      return NextResponse.json<ApiResponse<Contest>>(
+        {
+          success: false,
+          status_code: 400,
+          message:
+            parsedBody.error.issues[0]?.message ??
+            'Invalid contest update payload.',
+          data: null,
+          error_code: 'INVALID_PAYLOAD',
+        },
+        { status: 400 },
+      );
+    }
+
+    const body = parsedBody.data;
 
     const existingContest = await prisma.contests.findUnique({
       where: {
@@ -427,158 +462,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    if (!body.title?.trim()) {
-      return NextResponse.json<ApiResponse<Contest>>(
-        {
-          success: false,
-          status_code: 400,
-          message: 'Contest title is required.',
-          data: null,
-          error_code: 'MISSING_TITLE',
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!body.slug?.trim()) {
-      return NextResponse.json<ApiResponse<Contest>>(
-        {
-          success: false,
-          status_code: 400,
-          message: 'Contest slug is required.',
-          data: null,
-          error_code: 'MISSING_SLUG',
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!body.description?.trim()) {
-      return NextResponse.json<ApiResponse<Contest>>(
-        {
-          success: false,
-          status_code: 400,
-          message: 'Contest description is required.',
-          data: null,
-          error_code: 'MISSING_DESCRIPTION',
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!body.referral_code_prefix?.trim()) {
-      return NextResponse.json<ApiResponse<Contest>>(
-        {
-          success: false,
-          status_code: 400,
-          message: 'Referral code prefix is required.',
-          data: null,
-          error_code: 'MISSING_REFERRAL_CODE_PREFIX',
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!body.reward_description?.trim()) {
-      return NextResponse.json<ApiResponse<Contest>>(
-        {
-          success: false,
-          status_code: 400,
-          message: 'Reward description is required.',
-          data: null,
-          error_code: 'MISSING_REWARD_DESCRIPTION',
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!body.max_winners || body.max_winners < 1) {
-      return NextResponse.json<ApiResponse<Contest>>(
-        {
-          success: false,
-          status_code: 400,
-          message: 'Maximum winners must be at least 1.',
-          data: null,
-          error_code: 'INVALID_MAX_WINNERS',
-        },
-        { status: 400 },
-      );
-    }
-
     const isAutomaticContest = body.contest_timing_mode === 'automatic';
 
-    if (isAutomaticContest && !body.start_date) {
-      return NextResponse.json<ApiResponse<Contest>>(
-        {
-          success: false,
-          status_code: 400,
-          message: 'Start date is required for automatic contests.',
-          data: null,
-          error_code: 'MISSING_START_DATE',
-        },
-        { status: 400 },
-      );
-    }
+    const startDate =
+      isAutomaticContest && body.start_date ? new Date(body.start_date) : null;
 
-    if (isAutomaticContest && !body.end_date) {
-      return NextResponse.json<ApiResponse<Contest>>(
-        {
-          success: false,
-          status_code: 400,
-          message: 'End date is required for automatic contests.',
-          data: null,
-          error_code: 'MISSING_END_DATE',
-        },
-        { status: 400 },
-      );
-    }
-
-    const startDate = isAutomaticContest && body.start_date
-      ? new Date(body.start_date)
-      : null;
-
-    const endDate = isAutomaticContest && body.end_date
-      ? new Date(body.end_date)
-      : null;
-
-    if (isAutomaticContest && startDate && Number.isNaN(startDate.getTime())) {
-      return NextResponse.json<ApiResponse<Contest>>(
-        {
-          success: false,
-          status_code: 400,
-          message: 'Start date is invalid.',
-          data: null,
-          error_code: 'INVALID_START_DATE',
-        },
-        { status: 400 },
-      );
-    }
-
-    if (isAutomaticContest && endDate && Number.isNaN(endDate.getTime())) {
-      return NextResponse.json<ApiResponse<Contest>>(
-        {
-          success: false,
-          status_code: 400,
-          message: 'End date is invalid.',
-          data: null,
-          error_code: 'INVALID_END_DATE',
-        },
-        { status: 400 },
-      );
-    }
-
-    if (startDate && endDate && endDate <= startDate) {
-      return NextResponse.json<ApiResponse<Contest>>(
-        {
-          success: false,
-          status_code: 400,
-          message: 'End date must be later than start date.',
-          data: null,
-          error_code: 'INVALID_DATE_RANGE',
-        },
-        { status: 400 },
-      );
-    }
+    const endDate =
+      isAutomaticContest && body.end_date ? new Date(body.end_date) : null;
 
     const duplicateSlugContest = await prisma.contests.findFirst({
       where: {
@@ -611,14 +501,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         id: contestId,
       },
       data: {
-        title: body.title.trim(),
-        slug: body.slug.trim(),
-        description: body.description.trim(),
+        title: body.title,
+        slug: body.slug,
+        description: body.description,
         visibility: body.visibility,
-        referral_code_prefix: body.referral_code_prefix.trim().toUpperCase(),
+        referral_code_prefix: body.referral_code_prefix.toUpperCase(),
         start_date: startDate,
         end_date: endDate,
-        reward_description: body.reward_description.trim(),
+        reward_description: body.reward_description,
         max_winners: body.max_winners,
         updated_at: new Date(),
       },
@@ -664,7 +554,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       reward_type: updatedContest.reward_type as Contest['reward_type'],
       reward_value: updatedContest.reward_value,
       reward_description: updatedContest.reward_description,
-      winner_selection: updatedContest.winner_selection as Contest['winner_selection'],
+      winner_selection:
+        updatedContest.winner_selection as Contest['winner_selection'],
       max_winners: updatedContest.max_winners,
       participants_count: updatedContest.participants_count,
       referrals_count: updatedContest.referrals_count,

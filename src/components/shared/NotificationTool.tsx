@@ -8,7 +8,7 @@ import { ADMIN_ROUTES } from '@/routes';
 
 type NotificationToolProps = {
   className?: string;
-  onClick?: () => void;
+  // onClick?: () => void;
 };
 
 const NotificationTool = ({ className }: NotificationToolProps) => {

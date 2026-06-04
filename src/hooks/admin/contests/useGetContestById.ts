@@ -12,6 +12,7 @@ type GetContestByIdResponse = {
   message: string;
   data: Contest | null;
   error_code?: string;
+  not_found?: boolean;
 };
 
 export const useGetContestById = (contestId?: string) => {
@@ -53,6 +54,17 @@ export const useGetContestById = (contestId?: string) => {
 
       const result = (await response.json()) as GetContestByIdResponse;
 
+      if (response.status === 404) {
+        return {
+          success: false,
+          status_code: 404,
+          message: result.message || 'Contest not found.',
+          data: null,
+          error_code: result.error_code ?? 'CONTEST_NOT_FOUND',
+          not_found: true,
+        };
+      }
+
       if (!response.ok || !result.success) {
         throw new Error(result.message || 'Failed to fetch contest.');
       }
@@ -63,7 +75,9 @@ export const useGetContestById = (contestId?: string) => {
 
   return {
     contest: data?.data ?? null,
-    is_getting_contest: isLoading || isFetching,
+    is_contest_not_found: data?.not_found ?? false,
+    is_getting_contest: isLoading,
+    is_refetching_contest: isFetching && !isLoading,
     is_getting_contest_error: isError,
     get_contest_error: error,
     refetchContest: refetch,

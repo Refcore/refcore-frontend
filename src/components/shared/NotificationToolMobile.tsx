@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 
 type NotificationToolProps = {
   className?: string;
-  onClick?: () => void;
+  // onClick?: () => void;
 };
 
 const NotificationToolMobile = ({ className }: NotificationToolProps) => {
