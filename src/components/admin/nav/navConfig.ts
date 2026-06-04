@@ -66,7 +66,6 @@ export const nav_config: NavConfigItem[] = [
     label: 'Notifications',
     href: ADMIN_ROUTES.NOTIFICATIONS,
     icon: Bell,
-    badge: 3,
   },
   {
     label: 'Export',

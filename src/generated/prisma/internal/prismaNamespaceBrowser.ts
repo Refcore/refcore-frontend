@@ -79,7 +79,8 @@ export const ModelName = {
   sso_providers: 'sso_providers',
   auth_users: 'auth_users',
   webauthn_challenges: 'webauthn_challenges',
-  webauthn_credentials: 'webauthn_credentials'
+  webauthn_credentials: 'webauthn_credentials',
+  notifications: 'notifications'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -589,6 +590,25 @@ export const Webauthn_credentialsScalarFieldEnum = {
 } as const
 
 export type Webauthn_credentialsScalarFieldEnum = (typeof Webauthn_credentialsScalarFieldEnum)[keyof typeof Webauthn_credentialsScalarFieldEnum]
+
+
+export const NotificationsScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  channel_id: 'channel_id',
+  contest_id: 'contest_id',
+  type: 'type',
+  title: 'title',
+  description: 'description',
+  actor: 'actor',
+  meta: 'meta',
+  is_read: 'is_read',
+  read_at: 'read_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type NotificationsScalarFieldEnum = (typeof NotificationsScalarFieldEnum)[keyof typeof NotificationsScalarFieldEnum]
 
 
 export const SortOrder = {

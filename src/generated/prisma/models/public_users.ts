@@ -191,6 +191,7 @@ export type public_usersWhereInput = {
   updated_at?: Prisma.DateTimeFilter<"public_users"> | Date | string
   profile_picture?: Prisma.StringNullableFilter<"public_users"> | string | null
   channels?: Prisma.ChannelsListRelationFilter
+  notifications?: Prisma.NotificationsListRelationFilter
   users?: Prisma.XOR<Prisma.Auth_usersScalarRelationFilter, Prisma.auth_usersWhereInput>
 }
 
@@ -202,6 +203,7 @@ export type public_usersOrderByWithRelationInput = {
   updated_at?: Prisma.SortOrder
   profile_picture?: Prisma.SortOrderInput | Prisma.SortOrder
   channels?: Prisma.channelsOrderByRelationAggregateInput
+  notifications?: Prisma.notificationsOrderByRelationAggregateInput
   users?: Prisma.auth_usersOrderByWithRelationInput
 }
 
@@ -216,6 +218,7 @@ export type public_usersWhereUniqueInput = Prisma.AtLeast<{
   created_at?: Prisma.DateTimeFilter<"public_users"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"public_users"> | Date | string
   channels?: Prisma.ChannelsListRelationFilter
+  notifications?: Prisma.NotificationsListRelationFilter
   users?: Prisma.XOR<Prisma.Auth_usersScalarRelationFilter, Prisma.auth_usersWhereInput>
 }, "id" | "email" | "profile_picture">
 
@@ -250,6 +253,7 @@ export type public_usersCreateInput = {
   updated_at?: Date | string
   profile_picture?: string | null
   channels?: Prisma.channelsCreateNestedManyWithoutUsersInput
+  notifications?: Prisma.notificationsCreateNestedManyWithoutUsersInput
   users: Prisma.auth_usersCreateNestedOneWithoutUsersInput
 }
 
@@ -261,6 +265,7 @@ export type public_usersUncheckedCreateInput = {
   updated_at?: Date | string
   profile_picture?: string | null
   channels?: Prisma.channelsUncheckedCreateNestedManyWithoutUsersInput
+  notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type public_usersUpdateInput = {
@@ -270,6 +275,7 @@ export type public_usersUpdateInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profile_picture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channels?: Prisma.channelsUpdateManyWithoutUsersNestedInput
+  notifications?: Prisma.notificationsUpdateManyWithoutUsersNestedInput
   users?: Prisma.auth_usersUpdateOneRequiredWithoutUsersNestedInput
 }
 
@@ -281,6 +287,7 @@ export type public_usersUncheckedUpdateInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profile_picture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channels?: Prisma.channelsUncheckedUpdateManyWithoutUsersNestedInput
+  notifications?: Prisma.notificationsUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type public_usersCreateManyInput = {
@@ -392,12 +399,29 @@ export type public_usersUncheckedUpdateOneWithoutUsersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.public_usersUpdateToOneWithWhereWithoutUsersInput, Prisma.public_usersUpdateWithoutUsersInput>, Prisma.public_usersUncheckedUpdateWithoutUsersInput>
 }
 
+export type public_usersCreateNestedOneWithoutNotificationsInput = {
+  create?: Prisma.XOR<Prisma.public_usersCreateWithoutNotificationsInput, Prisma.public_usersUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.public_usersCreateOrConnectWithoutNotificationsInput
+  connect?: Prisma.public_usersWhereUniqueInput
+}
+
+export type public_usersUpdateOneWithoutNotificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.public_usersCreateWithoutNotificationsInput, Prisma.public_usersUncheckedCreateWithoutNotificationsInput>
+  connectOrCreate?: Prisma.public_usersCreateOrConnectWithoutNotificationsInput
+  upsert?: Prisma.public_usersUpsertWithoutNotificationsInput
+  disconnect?: Prisma.public_usersWhereInput | boolean
+  delete?: Prisma.public_usersWhereInput | boolean
+  connect?: Prisma.public_usersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.public_usersUpdateToOneWithWhereWithoutNotificationsInput, Prisma.public_usersUpdateWithoutNotificationsInput>, Prisma.public_usersUncheckedUpdateWithoutNotificationsInput>
+}
+
 export type public_usersCreateWithoutChannelsInput = {
   email?: string | null
   user_name: string
   created_at?: Date | string
   updated_at?: Date | string
   profile_picture?: string | null
+  notifications?: Prisma.notificationsCreateNestedManyWithoutUsersInput
   users: Prisma.auth_usersCreateNestedOneWithoutUsersInput
 }
 
@@ -408,6 +432,7 @@ export type public_usersUncheckedCreateWithoutChannelsInput = {
   created_at?: Date | string
   updated_at?: Date | string
   profile_picture?: string | null
+  notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type public_usersCreateOrConnectWithoutChannelsInput = {
@@ -432,6 +457,7 @@ export type public_usersUpdateWithoutChannelsInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profile_picture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifications?: Prisma.notificationsUpdateManyWithoutUsersNestedInput
   users?: Prisma.auth_usersUpdateOneRequiredWithoutUsersNestedInput
 }
 
@@ -442,6 +468,7 @@ export type public_usersUncheckedUpdateWithoutChannelsInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profile_picture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notifications?: Prisma.notificationsUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type public_usersCreateWithoutUsersInput = {
@@ -451,6 +478,7 @@ export type public_usersCreateWithoutUsersInput = {
   updated_at?: Date | string
   profile_picture?: string | null
   channels?: Prisma.channelsCreateNestedManyWithoutUsersInput
+  notifications?: Prisma.notificationsCreateNestedManyWithoutUsersInput
 }
 
 export type public_usersUncheckedCreateWithoutUsersInput = {
@@ -460,6 +488,7 @@ export type public_usersUncheckedCreateWithoutUsersInput = {
   updated_at?: Date | string
   profile_picture?: string | null
   channels?: Prisma.channelsUncheckedCreateNestedManyWithoutUsersInput
+  notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type public_usersCreateOrConnectWithoutUsersInput = {
@@ -485,9 +514,67 @@ export type public_usersUpdateWithoutUsersInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profile_picture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   channels?: Prisma.channelsUpdateManyWithoutUsersNestedInput
+  notifications?: Prisma.notificationsUpdateManyWithoutUsersNestedInput
 }
 
 export type public_usersUncheckedUpdateWithoutUsersInput = {
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user_name?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profile_picture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channels?: Prisma.channelsUncheckedUpdateManyWithoutUsersNestedInput
+  notifications?: Prisma.notificationsUncheckedUpdateManyWithoutUsersNestedInput
+}
+
+export type public_usersCreateWithoutNotificationsInput = {
+  email?: string | null
+  user_name: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  profile_picture?: string | null
+  channels?: Prisma.channelsCreateNestedManyWithoutUsersInput
+  users: Prisma.auth_usersCreateNestedOneWithoutUsersInput
+}
+
+export type public_usersUncheckedCreateWithoutNotificationsInput = {
+  id: string
+  email?: string | null
+  user_name: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  profile_picture?: string | null
+  channels?: Prisma.channelsUncheckedCreateNestedManyWithoutUsersInput
+}
+
+export type public_usersCreateOrConnectWithoutNotificationsInput = {
+  where: Prisma.public_usersWhereUniqueInput
+  create: Prisma.XOR<Prisma.public_usersCreateWithoutNotificationsInput, Prisma.public_usersUncheckedCreateWithoutNotificationsInput>
+}
+
+export type public_usersUpsertWithoutNotificationsInput = {
+  update: Prisma.XOR<Prisma.public_usersUpdateWithoutNotificationsInput, Prisma.public_usersUncheckedUpdateWithoutNotificationsInput>
+  create: Prisma.XOR<Prisma.public_usersCreateWithoutNotificationsInput, Prisma.public_usersUncheckedCreateWithoutNotificationsInput>
+  where?: Prisma.public_usersWhereInput
+}
+
+export type public_usersUpdateToOneWithWhereWithoutNotificationsInput = {
+  where?: Prisma.public_usersWhereInput
+  data: Prisma.XOR<Prisma.public_usersUpdateWithoutNotificationsInput, Prisma.public_usersUncheckedUpdateWithoutNotificationsInput>
+}
+
+export type public_usersUpdateWithoutNotificationsInput = {
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user_name?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  profile_picture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  channels?: Prisma.channelsUpdateManyWithoutUsersNestedInput
+  users?: Prisma.auth_usersUpdateOneRequiredWithoutUsersNestedInput
+}
+
+export type public_usersUncheckedUpdateWithoutNotificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user_name?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -503,10 +590,12 @@ export type public_usersUncheckedUpdateWithoutUsersInput = {
 
 export type Public_usersCountOutputType = {
   channels: number
+  notifications: number
 }
 
 export type Public_usersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   channels?: boolean | Public_usersCountOutputTypeCountChannelsArgs
+  notifications?: boolean | Public_usersCountOutputTypeCountNotificationsArgs
 }
 
 /**
@@ -526,6 +615,13 @@ export type Public_usersCountOutputTypeCountChannelsArgs<ExtArgs extends runtime
   where?: Prisma.channelsWhereInput
 }
 
+/**
+ * Public_usersCountOutputType without action
+ */
+export type Public_usersCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.notificationsWhereInput
+}
+
 
 export type public_usersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -535,6 +631,7 @@ export type public_usersSelect<ExtArgs extends runtime.Types.Extensions.Internal
   updated_at?: boolean
   profile_picture?: boolean
   channels?: boolean | Prisma.public_users$channelsArgs<ExtArgs>
+  notifications?: boolean | Prisma.public_users$notificationsArgs<ExtArgs>
   users?: boolean | Prisma.auth_usersDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.Public_usersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["public_users"]>
@@ -571,6 +668,7 @@ export type public_usersSelectScalar = {
 export type public_usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "user_name" | "created_at" | "updated_at" | "profile_picture", ExtArgs["result"]["public_users"]>
 export type public_usersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   channels?: boolean | Prisma.public_users$channelsArgs<ExtArgs>
+  notifications?: boolean | Prisma.public_users$notificationsArgs<ExtArgs>
   users?: boolean | Prisma.auth_usersDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.Public_usersCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -585,6 +683,7 @@ export type $public_usersPayload<ExtArgs extends runtime.Types.Extensions.Intern
   name: "public_users"
   objects: {
     channels: Prisma.$channelsPayload<ExtArgs>[]
+    notifications: Prisma.$notificationsPayload<ExtArgs>[]
     users: Prisma.$auth_usersPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -989,6 +1088,7 @@ readonly fields: public_usersFieldRefs;
 export interface Prisma__public_usersClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   channels<T extends Prisma.public_users$channelsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.public_users$channelsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$channelsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifications<T extends Prisma.public_users$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.public_users$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$notificationsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   users<T extends Prisma.auth_usersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.auth_usersDefaultArgs<ExtArgs>>): Prisma.Prisma__auth_usersClient<runtime.Types.Result.GetResult<Prisma.$auth_usersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1447,6 +1547,30 @@ export type public_users$channelsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.ChannelsScalarFieldEnum | Prisma.ChannelsScalarFieldEnum[]
+}
+
+/**
+ * public_users.notifications
+ */
+export type public_users$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the notifications
+   */
+  select?: Prisma.notificationsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the notifications
+   */
+  omit?: Prisma.notificationsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.notificationsInclude<ExtArgs> | null
+  where?: Prisma.notificationsWhereInput
+  orderBy?: Prisma.notificationsOrderByWithRelationInput | Prisma.notificationsOrderByWithRelationInput[]
+  cursor?: Prisma.notificationsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationsScalarFieldEnum | Prisma.NotificationsScalarFieldEnum[]
 }
 
 /**

@@ -4,34 +4,52 @@ import React from 'react';
 import { CheckCheck, MoreHorizontal, Trash2 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import type { NotificationItem } from '@/demo/notificationsData';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { notificationTypeMap } from '@/utils/notification.utils';
+import {
+  fallbackNotificationTypeConfig,
+  formatNotificationDateTime,
+  formatNotificationRelativeTime,
+  formatNotificationTypeLabel,
+  notificationTypeMap,
+} from '@/utils/notification.utils';
+import type { NotificationItem } from '@/types/notification.type';
 
 type NotificationCardProps = {
   notification: NotificationItem;
+  isMarkingAsRead?: boolean;
+  isDeleting?: boolean;
   onMarkAsRead?: (notificationId: string) => void;
   onDelete?: (notificationId: string) => void;
 };
 
 const NotificationCard = ({
   notification,
+  isMarkingAsRead = false,
+  isDeleting = false,
   onMarkAsRead,
   onDelete,
 }: NotificationCardProps) => {
-  const config = notificationTypeMap[notification.type];
+  const config =
+    notificationTypeMap[
+      notification.type as keyof typeof notificationTypeMap
+    ] ?? fallbackNotificationTypeConfig;
+
   const Icon = config.icon;
+
+  const relativeTime = formatNotificationRelativeTime(notification.created_at);
+  const fullDateTime = formatNotificationDateTime(notification.created_at);
+  const notificationTypeLabel = formatNotificationTypeLabel(notification.type);
 
   return (
     <div
       className={cn(
         'rounded-xl border p-4 transition-all duration-200',
-        notification.isRead
+        notification.is_read
           ? 'border-white/5 bg-[#13131a]/45'
           : 'border-white/10 bg-[#13131a]/85 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]',
       )}
@@ -54,7 +72,7 @@ const NotificationCard = ({
                   {notification.title}
                 </p>
 
-                {!notification.isRead ? (
+                {!notification.is_read ? (
                   <span className="h-2 w-2 shrink-0 rounded-full bg-[#00d0ff]" />
                 ) : null}
               </div>
@@ -71,6 +89,7 @@ const NotificationCard = ({
                   variant="ghost"
                   size="icon"
                   className="shrink-0 rounded-xl border border-transparent hover:border-white/10 hover:bg-white/5"
+                  disabled={isMarkingAsRead || isDeleting}
                 >
                   <MoreHorizontal className="size-4" />
                 </Button>
@@ -78,18 +97,19 @@ const NotificationCard = ({
 
               <PopoverContent
                 align="end"
-                className="w-48 rounded-xl border-white/10 bg-[#13131a] p-2"
+                className="w-52 rounded-xl border-white/10 bg-[#13131a] p-2"
               >
                 <div className="flex flex-col gap-1">
-                  {!notification.isRead ? (
+                  {!notification.is_read ? (
                     <Button
                       type="button"
                       variant="ghost"
                       className="justify-start rounded-lg"
                       onClick={() => onMarkAsRead?.(notification.id)}
+                      disabled={isMarkingAsRead || isDeleting}
                     >
                       <CheckCheck className="size-4" />
-                      Mark as read
+                      {isMarkingAsRead ? 'Marking...' : 'Mark as read'}
                     </Button>
                   ) : null}
 
@@ -98,9 +118,10 @@ const NotificationCard = ({
                     variant="ghost"
                     className="justify-start rounded-lg text-red-400 hover:text-red-300"
                     onClick={() => onDelete?.(notification.id)}
+                    disabled={isMarkingAsRead || isDeleting}
                   >
                     <Trash2 className="size-4" />
-                    Delete notification
+                    {isDeleting ? 'Deleting...' : 'Delete notification'}
                   </Button>
                 </div>
               </PopoverContent>
@@ -108,13 +129,25 @@ const NotificationCard = ({
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-white/55">
-            <span>
-              {notification.date} • {notification.time}
-            </span>
+            <span title={fullDateTime}>{relativeTime}</span>
 
-            {notification.actor ? <span>{notification.actor}</span> : null}
+            <span className="h-1 w-1 rounded-full bg-white/20" />
 
-            {notification.meta ? <span>{notification.meta}</span> : null}
+            <span>{notificationTypeLabel}</span>
+
+            {notification.actor ? (
+              <>
+                <span className="h-1 w-1 rounded-full bg-white/20" />
+                <span>{notification.actor}</span>
+              </>
+            ) : null}
+
+            {notification.meta ? (
+              <>
+                <span className="h-1 w-1 rounded-full bg-white/20" />
+                <span>{notification.meta}</span>
+              </>
+            ) : null}
           </div>
         </div>
       </div>

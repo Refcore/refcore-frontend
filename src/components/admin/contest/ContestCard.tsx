@@ -21,6 +21,13 @@ const statusStyles: Record<Contest['status'], string> = {
 };
 
 const ContestCard = ({ contest, onView, onEdit }: ContestCardProps) => {
+  const handleEditContest = () => {
+    if (onEdit) {
+      onEdit(contest);
+      return;
+    }
+  };
+
   return (
     <div className="group space-y-3 rounded-xl border-2 bg-background/60 border-border/50 p-3 transition-colors duration-200 hover:border-(--neon-green)/20">
       <div className="flex items-start justify-between gap-3">
@@ -43,7 +50,10 @@ const ContestCard = ({ contest, onView, onEdit }: ContestCardProps) => {
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <CalendarDays className="size-4" />
         <span>
-          {new Date(contest.start_date)?.toLocaleDateString()} -{' '}
+          {contest.start_date
+            ? new Date(contest.start_date).toLocaleDateString()
+            : 'No start date'}{' '}
+          -{' '}
           {contest.end_date
             ? new Date(contest.end_date)?.toLocaleDateString()
             : 'No end date'}
@@ -86,7 +96,7 @@ const ContestCard = ({ contest, onView, onEdit }: ContestCardProps) => {
         <Button
           type="button"
           className="flex-1 rounded-xl bg-(--neon-green) text-black hover:bg-(--neon-green)/90"
-          onClick={() => onEdit?.(contest)}
+          onClick={handleEditContest}
         >
           <Pencil className="size-4" />
           Edit
