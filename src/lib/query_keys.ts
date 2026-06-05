@@ -30,6 +30,17 @@ export const queryKeys = {
 
   notifications: {
     all: ['notifications'] as const,
+
+    list: (params?: {
+      scope?: string;
+      channel_id?: string | null;
+      contest_id?: string | null;
+      is_read?: string | null;
+      type?: string | null;
+      page?: number;
+      limit?: number;
+    }) => [...queryKeys.notifications.all, 'list', params] as const,
+
     byChannel: (channel_id?: string | null) =>
       [
         ...queryKeys.notifications.all,

@@ -13,7 +13,8 @@ import {
 
 import { cn } from '@/lib/utils';
 import { useGetReferralGraph } from '@/hooks/admin/referrals/useGetReferralGraph';
-import { LoaderCircleIcon } from 'lucide-react';
+import { LucideGitGraph } from 'lucide-react';
+import IconLoader from '@/components/shared/IconLoader';
 
 const chartConfig = {
   referrals: {
@@ -78,7 +79,9 @@ const Graph = () => {
       <CardContent>
         {isLoading ? (
           <div className="flex h-70 w-full items-center justify-center sm:h-80 lg:h-90">
-            <LoaderCircleIcon className="h-12 w-12 animate-spin text-neon" />
+            <IconLoader>
+              <LucideGitGraph className="size-6 text-white/70" />
+            </IconLoader>
           </div>
         ) : (
           <ChartContainer

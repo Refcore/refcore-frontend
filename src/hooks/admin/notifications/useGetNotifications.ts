@@ -6,6 +6,7 @@ import { useAuthContext } from '@/context/AuthContext';
 import { AppResponse } from '@/types/response.type';
 import { authFetch, handleExpiredSession } from '@/lib/authFetch';
 import type { NotificationItem } from '@/types/notification.type';
+import { queryKeys } from '@/lib/query_keys';
 
 type NotificationModel = NotificationItem;
 
@@ -126,16 +127,16 @@ export const useGetNotifications = (params?: GetNotificationsParams) => {
     (scope === 'user' || Boolean(channelId));
 
   return useQuery({
-    queryKey: [
-      'notifications',
+    queryKey: queryKeys.notifications.list({
       scope,
-      channelId ?? 'no-channel',
-      params?.contest_id ?? 'all',
-      typeof params?.is_read === 'boolean' ? String(params.is_read) : 'all',
-      params?.type ?? 'all',
-      params?.page ?? 1,
-      params?.limit ?? 20,
-    ],
+      channel_id: channelId ?? null,
+      contest_id: params?.contest_id ?? null,
+      is_read:
+        typeof params?.is_read === 'boolean' ? String(params.is_read) : null,
+      type: params?.type ?? null,
+      page: params?.page ?? 1,
+      limit: params?.limit ?? 20,
+    }),
     queryFn: async () => {
       const supabase = createClient();
 

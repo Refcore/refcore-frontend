@@ -8,18 +8,36 @@ import NotificationCard from './NotificationCard';
 import { getNotificationTimestamp } from '@/utils/notification.utils';
 import type { NotificationItem } from '@/types/notification.type';
 import { useGetNotifications } from '@/hooks/admin/notifications/useGetNotifications';
+import { useMarkNotificationAsRead } from '@/hooks/admin/notifications/useMarkNotificationAsRead';
+import { useDeleteNotification } from '@/hooks/admin/notifications/useDeleteNotification';
+import { useMarkAllNotificationsAsRead } from '@/hooks/admin/notifications/useMarkAllNotificationsAsRead';
+import IconLoader from '@/components/shared/IconLoader';
 
 const NOTIFICATIONS_LIMIT = 20;
 
 const Notifications = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [markingNotificationIds, setMarkingNotificationIds] = useState<
+    Set<string>
+  >(() => new Set());
+
+  const [deletingNotificationIds, setDeletingNotificationIds] = useState<
+    Set<string>
+  >(() => new Set());
 
   const { data, isLoading, isError, error, refetch } = useGetNotifications({
     scope: 'all',
     page: currentPage,
     limit: NOTIFICATIONS_LIMIT,
   });
+
+  const { markNotificationAsRead } = useMarkNotificationAsRead();
+
+  const { deleteNotification } = useDeleteNotification();
+
+  const { markAllNotificationsAsRead, is_marking_all_notifications_as_read } =
+    useMarkAllNotificationsAsRead();
 
   const pagination = data?.pagination;
   const apiNotifications = useMemo(
@@ -41,17 +59,93 @@ const Notifications = () => {
   }, [notifications]);
 
   const handleMarkAllAsRead = () => {
-    // TODO: Connect to mark all notifications as read mutation.
+    markAllNotificationsAsRead({
+      scope: 'all',
+    });
   };
 
   const handleMarkAsRead = (notificationId: string) => {
-    // TODO: Connect to mark notification as read mutation.
-    console.log('Mark notification as read:', notificationId);
+    const targetNotification = notifications.find(
+      (item) => item.id === notificationId,
+    );
+
+    if (!targetNotification || targetNotification.is_read) return;
+
+    setMarkingNotificationIds((prev) => {
+      const next = new Set(prev);
+      next.add(notificationId);
+      return next;
+    });
+
+    setNotifications((prev) =>
+      prev.map((item) =>
+        item.id === notificationId
+          ? {
+              ...item,
+              is_read: true,
+            }
+          : item,
+      ),
+    );
+
+    markNotificationAsRead(notificationId, {
+      onError: () => {
+        setNotifications((prev) =>
+          prev.map((item) =>
+            item.id === notificationId
+              ? {
+                  ...item,
+                  is_read: targetNotification.is_read,
+                }
+              : item,
+          ),
+        );
+
+        refetch();
+      },
+
+      onSettled: () => {
+        setMarkingNotificationIds((prev) => {
+          const next = new Set(prev);
+          next.delete(notificationId);
+          return next;
+        });
+      },
+    });
   };
 
   const handleDeleteNotification = (notificationId: string) => {
-    // TODO: Connect to delete notification mutation.
-    console.log('Delete notification:', notificationId);
+    const targetNotification = notifications.find(
+      (item) => item.id === notificationId,
+    );
+
+    if (!targetNotification) return;
+
+    setDeletingNotificationIds((prev) => {
+      const next = new Set(prev);
+      next.add(notificationId);
+      return next;
+    });
+
+    deleteNotification(notificationId, {
+      onSuccess: () => {
+        setNotifications((prev) =>
+          prev.filter((item) => item.id !== notificationId),
+        );
+      },
+
+      onError: () => {
+        refetch();
+      },
+
+      onSettled: () => {
+        setDeletingNotificationIds((prev) => {
+          const next = new Set(prev);
+          next.delete(notificationId);
+          return next;
+        });
+      },
+    });
   };
 
   const handlePreviousPage = () => {
@@ -70,13 +164,9 @@ const Notifications = () => {
     return (
       <section className="rounded-xl border border-white/10 bg-[#1c1c26]/60 p-3 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-6">
         <div className="flex min-h-55 flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-[#13131a]/45 px-6 text-center">
-          <div className="relative mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-            <div className="absolute inset-0 rounded-full border-2 border-white/10 border-t-[#00d0ff] border-r-[#00ff9d] animate-spin" />
-
-            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/5">
-              <Bell className="size-6 text-white/70" />
-            </div>
-          </div>
+          <IconLoader>
+            <Bell className="size-6 text-white/70" />
+          </IconLoader>
 
           <h3 className="text-base font-semibold text-white">
             Loading notifications...
@@ -146,8 +236,8 @@ const Notifications = () => {
             variant="ghost"
             className="rounded-xl border border-white/10 bg-white/5 hover:bg-white/10"
             onClick={handleMarkAllAsRead}
-            // disabled={unreadCount === 0}
-            disabled
+            disabled={is_marking_all_notifications_as_read || unreadCount === 0}
+            loading={is_marking_all_notifications_as_read}
           >
             <CheckCheck className="size-4" />
             Mark all as read
@@ -158,14 +248,26 @@ const Notifications = () => {
       {sortedNotifications.length > 0 ? (
         <>
           <div className="space-y-3">
-            {sortedNotifications.map((notification) => (
-              <NotificationCard
-                key={notification.id}
-                notification={notification}
-                onMarkAsRead={handleMarkAsRead}
-                onDelete={handleDeleteNotification}
-              />
-            ))}
+            {sortedNotifications.map((notification) => {
+              const isMarkingThisNotification = markingNotificationIds.has(
+                notification.id,
+              );
+
+              const isDeletingThisNotification = deletingNotificationIds.has(
+                notification.id,
+              );
+
+              return (
+                <NotificationCard
+                  key={notification.id}
+                  notification={notification}
+                  onMarkAsRead={handleMarkAsRead}
+                  onDelete={handleDeleteNotification}
+                  isMarkingAsRead={isMarkingThisNotification}
+                  isDeleting={isDeletingThisNotification}
+                />
+              );
+            })}
           </div>
 
           {pagination && pagination.total_pages > 1 ? (

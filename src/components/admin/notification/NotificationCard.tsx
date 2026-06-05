@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CheckCheck, MoreHorizontal, Trash2 } from 'lucide-react';
+import { CheckCheck, Loader2, MoreHorizontal, Trash2 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -45,15 +45,38 @@ const NotificationCard = ({
   const fullDateTime = formatNotificationDateTime(notification.created_at);
   const notificationTypeLabel = formatNotificationTypeLabel(notification.type);
 
+  const isActionInProgress = isMarkingAsRead || isDeleting;
+
   return (
     <div
       className={cn(
-        'rounded-xl border p-4 transition-all duration-200',
+        'relative overflow-hidden rounded-xl border p-4 transition-all duration-200',
         notification.is_read
-          ? 'border-white/5 bg-[#13131a]/45'
+          ? 'border-white/5 bg-[#13131a]/45 opacity-50'
           : 'border-white/10 bg-[#13131a]/85 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]',
+        isActionInProgress && 'opacity-80',
+        isDeleting && 'border-red-500/20 bg-red-500/5',
       )}
     >
+      {isActionInProgress ? (
+        <div
+          className={cn(
+            'mb-3 flex items-center gap-2 rounded-lg border px-3 py-2 text-xs',
+            isDeleting
+              ? 'border-red-500/20 bg-red-500/10 text-red-300'
+              : 'border-[#00d0ff]/20 bg-[#00d0ff]/10 text-[#00d0ff]',
+          )}
+        >
+          <Loader2 className="size-3.5 animate-spin" />
+
+          <span>
+            {isDeleting
+              ? 'Deleting notification...'
+              : 'Marking notification as read...'}
+          </span>
+        </div>
+      ) : null}
+
       <div className="flex items-start gap-3">
         <div
           className={cn(
@@ -89,9 +112,13 @@ const NotificationCard = ({
                   variant="ghost"
                   size="icon"
                   className="shrink-0 rounded-xl border border-transparent hover:border-white/10 hover:bg-white/5"
-                  disabled={isMarkingAsRead || isDeleting}
+                  disabled={isActionInProgress}
                 >
-                  <MoreHorizontal className="size-4" />
+                  {isActionInProgress ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <MoreHorizontal className="size-4" />
+                  )}
                 </Button>
               </PopoverTrigger>
 
@@ -106,9 +133,13 @@ const NotificationCard = ({
                       variant="ghost"
                       className="justify-start rounded-lg"
                       onClick={() => onMarkAsRead?.(notification.id)}
-                      disabled={isMarkingAsRead || isDeleting}
+                      disabled={isActionInProgress}
                     >
-                      <CheckCheck className="size-4" />
+                      {isMarkingAsRead ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        <CheckCheck className="size-4" />
+                      )}
                       {isMarkingAsRead ? 'Marking...' : 'Mark as read'}
                     </Button>
                   ) : null}
@@ -118,9 +149,13 @@ const NotificationCard = ({
                     variant="ghost"
                     className="justify-start rounded-lg text-red-400 hover:text-red-300"
                     onClick={() => onDelete?.(notification.id)}
-                    disabled={isMarkingAsRead || isDeleting}
+                    disabled={isActionInProgress}
                   >
-                    <Trash2 className="size-4" />
+                    {isDeleting ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="size-4" />
+                    )}
                     {isDeleting ? 'Deleting...' : 'Delete notification'}
                   </Button>
                 </div>

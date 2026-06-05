@@ -15,10 +15,11 @@ const Stats = ({
   totalReferrals: number;
   activeContest: Contest | null;
 }) => {
-  const timeLeft =
-    activeContest?.start_date && activeContest?.end_date
+  const timeLeft = !activeContest
+    ? 'No active contest'
+    : activeContest.start_date && activeContest.end_date
       ? getTimeLeft(activeContest.start_date, activeContest.end_date)
-      : 'No active contest';
+      : 'Manual';
 
   return (
     <div className="grid gap-3 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
@@ -52,7 +53,7 @@ const Stats = ({
 
       <StatsCard
         title="Contest Status"
-        description="Time Remaining"
+        description={activeContest ? `${timeLeft} Contest` : timeLeft}
         value={timeLeft}
         color="#facc15"
         icon={Trophy}

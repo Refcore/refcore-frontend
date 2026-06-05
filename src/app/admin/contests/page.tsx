@@ -7,6 +7,8 @@ import ContestCard from '@/components/admin/contest/ContestCard';
 import { useGetMyContests } from '@/hooks/admin/contests/useGetMyContests';
 import { useRouter } from 'next/navigation';
 import { ADMIN_ROUTES } from '@/routes';
+import IconLoader from '@/components/shared/IconLoader';
+import { LucideTrophy } from 'lucide-react';
 
 const ContestPage = () => {
   const [activeTab, setActiveTab] = useState(contestTabs[0].value);
@@ -49,7 +51,11 @@ const ContestPage = () => {
             <div className="grid grid-cols-1 gap-4 rounded-xl md:border border-white/10 md:bg-white/5 md:p-3 lg:grid-cols-2 xl:grid-cols-3">
               {isLoading ? (
                 <div className="col-span-full rounded-xl border border-white/10 bg-white/5 p-8 text-center text-sm text-muted-foreground">
-                  Loading {activeTabLabel.toLowerCase()} contests...
+                  <IconLoader
+                    loadingText={`Loading ${activeTabLabel.toLowerCase()} contests...`}
+                  >
+                    <LucideTrophy className="size-6 text-white/70" />
+                  </IconLoader>{' '}
                 </div>
               ) : isError ? (
                 <div className="col-span-full rounded-xl border border-red-500/20 bg-red-500/10 p-8 text-center text-sm text-red-300">
