@@ -11,18 +11,20 @@ import { useGetNotifications } from '@/hooks/admin/notifications/useGetNotificat
 import { useMarkNotificationAsRead } from '@/hooks/admin/notifications/useMarkNotificationAsRead';
 import { useDeleteNotification } from '@/hooks/admin/notifications/useDeleteNotification';
 import { useMarkAllNotificationsAsRead } from '@/hooks/admin/notifications/useMarkAllNotificationsAsRead';
+import IconLoader from '@/components/shared/IconLoader';
 
 const NOTIFICATIONS_LIMIT = 20;
 
 const Notifications = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [markingNotificationId, setMarkingNotificationId] = useState<
-    string | null
-  >(null);
-  const [deletingNotificationId, setDeletingNotificationId] = useState<
-    string | null
-  >(null);
+  const [markingNotificationIds, setMarkingNotificationIds] = useState<
+    Set<string>
+  >(() => new Set());
+
+  const [deletingNotificationIds, setDeletingNotificationIds] = useState<
+    Set<string>
+  >(() => new Set());
 
   const { data, isLoading, isError, error, refetch } = useGetNotifications({
     scope: 'all',
@@ -30,11 +32,9 @@ const Notifications = () => {
     limit: NOTIFICATIONS_LIMIT,
   });
 
-  const { markNotificationAsRead, is_marking_notification_as_read } =
-    useMarkNotificationAsRead();
+  const { markNotificationAsRead } = useMarkNotificationAsRead();
 
-  const { deleteNotification, is_deleting_notification } =
-    useDeleteNotification();
+  const { deleteNotification } = useDeleteNotification();
 
   const { markAllNotificationsAsRead, is_marking_all_notifications_as_read } =
     useMarkAllNotificationsAsRead();
@@ -71,7 +71,11 @@ const Notifications = () => {
 
     if (!targetNotification || targetNotification.is_read) return;
 
-    setMarkingNotificationId(notificationId);
+    setMarkingNotificationIds((prev) => {
+      const next = new Set(prev);
+      next.add(notificationId);
+      return next;
+    });
 
     setNotifications((prev) =>
       prev.map((item) =>
@@ -101,7 +105,11 @@ const Notifications = () => {
       },
 
       onSettled: () => {
-        setMarkingNotificationId(null);
+        setMarkingNotificationIds((prev) => {
+          const next = new Set(prev);
+          next.delete(notificationId);
+          return next;
+        });
       },
     });
   };
@@ -113,7 +121,11 @@ const Notifications = () => {
 
     if (!targetNotification) return;
 
-    setDeletingNotificationId(notificationId);
+    setDeletingNotificationIds((prev) => {
+      const next = new Set(prev);
+      next.add(notificationId);
+      return next;
+    });
 
     deleteNotification(notificationId, {
       onSuccess: () => {
@@ -127,7 +139,11 @@ const Notifications = () => {
       },
 
       onSettled: () => {
-        setDeletingNotificationId(null);
+        setDeletingNotificationIds((prev) => {
+          const next = new Set(prev);
+          next.delete(notificationId);
+          return next;
+        });
       },
     });
   };
@@ -148,13 +164,9 @@ const Notifications = () => {
     return (
       <section className="rounded-xl border border-white/10 bg-[#1c1c26]/60 p-3 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-6">
         <div className="flex min-h-55 flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-[#13131a]/45 px-6 text-center">
-          <div className="relative mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-            <div className="absolute inset-0 animate-spin rounded-full border-2 border-white/10 border-r-[#00ff9d] border-t-[#00d0ff]" />
-
-            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/5">
-              <Bell className="size-6 text-white/70" />
-            </div>
-          </div>
+          <IconLoader>
+            <Bell className="size-6 text-white/70" />
+          </IconLoader>
 
           <h3 className="text-base font-semibold text-white">
             Loading notifications...
@@ -237,13 +249,13 @@ const Notifications = () => {
         <>
           <div className="space-y-3">
             {sortedNotifications.map((notification) => {
-              const isMarkingThisNotification =
-                is_marking_notification_as_read &&
-                markingNotificationId === notification.id;
+              const isMarkingThisNotification = markingNotificationIds.has(
+                notification.id,
+              );
 
-              const isDeletingThisNotification =
-                is_deleting_notification &&
-                deletingNotificationId === notification.id;
+              const isDeletingThisNotification = deletingNotificationIds.has(
+                notification.id,
+              );
 
               return (
                 <NotificationCard

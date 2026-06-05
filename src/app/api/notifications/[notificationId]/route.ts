@@ -105,9 +105,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    const now = new Date();
+
     await prisma.notifications.updateMany({
       where: {
         id: notificationId,
+        is_read: false,
         OR: [
           {
             user_id: user.id,
@@ -121,8 +124,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       },
       data: {
         is_read: true,
-        read_at: new Date(),
-        updated_at: new Date(),
+        read_at: now,
+        updated_at: now,
       },
     });
 

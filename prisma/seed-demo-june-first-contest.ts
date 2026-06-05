@@ -462,7 +462,7 @@ const main = async () => {
       contest_id: contest.id,
       referrer_participant_id: referrer.id,
       referee_phone_number: getReferralContactPhoneNumber(index),
-      referee_participant_id: null,
+      referee_participant_id: refereeParticipant?.id ?? null,
       referral_code_used: referrer.referral_code,
       status,
       notes: getReferralNote(status),
@@ -532,43 +532,43 @@ const main = async () => {
     },
   });
 
-  const referralCountByParticipant = new Map<string, number>();
+  // const referralCountByParticipant = new Map<string, number>();
 
-  referralsData.forEach((referral) => {
-    if (
-      referral.status !== 'valid' &&
-      referral.status !== 'became_participant'
-    ) {
-      return;
-    }
+  // referralsData.forEach((referral) => {
+  //   if (
+  //     referral.status !== 'valid' &&
+  //     referral.status !== 'became_participant'
+  //   ) {
+  //     return;
+  //   }
 
-    referralCountByParticipant.set(
-      referral.referrer_participant_id,
-      (referralCountByParticipant.get(referral.referrer_participant_id) ?? 0) +
-        1,
-    );
-  });
+  //   referralCountByParticipant.set(
+  //     referral.referrer_participant_id,
+  //     (referralCountByParticipant.get(referral.referrer_participant_id) ?? 0) +
+  //       1,
+  //   );
+  // });
 
-  await Promise.all(
-    Array.from(referralCountByParticipant.entries()).map(
-      ([participantId, referralCount]) =>
-        prisma.participants.update({
-          where: {
-            id: participantId,
-          },
-          data: {
-            total_referrals: {
-              increment: referralCount,
-            },
-            total_contests_joined: {
-              increment: 1,
-            },
-            last_joined_at: new Date(),
-            updated_at: new Date(),
-          },
-        }),
-    ),
-  );
+  // await Promise.all(
+  //   Array.from(referralCountByParticipant.entries()).map(
+  //     ([participantId, referralCount]) =>
+  //       prisma.participants.update({
+  //         where: {
+  //           id: participantId,
+  //         },
+  //         data: {
+  //           total_referrals: {
+  //             increment: referralCount,
+  //           },
+  //           total_contests_joined: {
+  //             increment: 1,
+  //           },
+  //           last_joined_at: new Date(),
+  //           updated_at: new Date(),
+  //         },
+  //       }),
+  //   ),
+  // );
 
   const statusSummary = referralsData.reduce<Record<string, number>>(
     (summary, referral) => {

@@ -309,13 +309,35 @@ export async function PATCH(request: Request) {
     try {
       body = (await request.json()) as MarkAllNotificationsAsReadPayload;
     } catch {
-      body = {};
+      return NextResponse.json<ApiResponse<null>>(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Invalid JSON payload.',
+          data: null,
+          error_code: 'INVALID_JSON_PAYLOAD',
+        },
+        { status: 400 },
+      );
     }
 
     const scope = getValidScope(body.scope ?? null);
     const channelId = body.channel_id ?? null;
     const contestId = body.contest_id ?? null;
     const type = body.type ?? null;
+
+    if (body.scope && !['user', 'channel', 'all'].includes(body.scope)) {
+      return NextResponse.json<ApiResponse<null>>(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Invalid scope value.',
+          data: null,
+          error_code: 'INVALID_SCOPE',
+        },
+        { status: 400 },
+      );
+    }
 
     if (channelId && !UUID_REGEX.test(channelId)) {
       return NextResponse.json<ApiResponse<null>>(
@@ -343,12 +365,25 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const notificationType =
+    if (
       type &&
       type !== 'all' &&
-      notificationTypeValues.includes(type as notification_type)
-        ? (type as notification_type)
-        : undefined;
+      !notificationTypeValues.includes(type as notification_type)
+    ) {
+      return NextResponse.json<ApiResponse<null>>(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Invalid notification type value.',
+          data: null,
+          error_code: 'INVALID_NOTIFICATION_TYPE',
+        },
+        { status: 400 },
+      );
+    }
+
+    const notificationType =
+      type && type !== 'all' ? (type as notification_type) : undefined;
 
     let resolvedChannelId: string | null = null;
 
