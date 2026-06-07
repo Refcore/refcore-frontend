@@ -1,6 +1,11 @@
 'use client';
 
-import { AlertTriangle, CalendarDays, OctagonX, ShieldAlert } from 'lucide-react';
+import {
+  AlertTriangle,
+  CalendarDays,
+  OctagonX,
+  ShieldAlert,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEndContest } from '@/hooks/admin/contests/useEndContest';
 import type { Contest } from '@/types/contest.type';
@@ -26,26 +31,25 @@ const formatContestDate = (date?: string | Date | null) => {
   });
 };
 
-const EndContestModal = ({
-  onClose,
-  activeContest,
-}: EndContestModalProps) => {
-const { endContest, is_ending_contest } = useEndContest();
+const EndContestModal = ({ onClose, activeContest }: EndContestModalProps) => {
+  const { endContest, is_ending_contest } = useEndContest();
 
-const handleEndContest = () => {
-  if (!activeContest?.id) return;
+  const isAuto = activeContest?.start_date && activeContest?.end_date;
 
-  endContest(
-    {
-      contest_id: activeContest.id,
-    },
-    {
-      onSuccess: () => {
-        onClose();
+  const handleEndContest = () => {
+    if (!activeContest?.id) return;
+
+    endContest(
+      {
+        contest_id: activeContest.id,
       },
-    },
-  );
-};
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      },
+    );
+  };
   return (
     <div className="relative flex w-full flex-col gap-6 overflow-hidden rounded-xl">
       <div className="pointer-events-none absolute left-1/2 top-0 h-40 w-40 -translate-x-1/2 rounded-full bg-red-500/20 blur-3xl" />
@@ -79,53 +83,61 @@ const handleEndContest = () => {
           {activeContest?.title ?? 'Untitled contest'}
         </h4>
 
-        <div className="mt-4 gap-3 sm:grid-cols-2 hidden md:grid">
-          <div className="rounded-xl border border-white/10 bg-[#13131a]/70 p-3">
-            <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
-              <CalendarDays className="size-4 text-[#00d0ff]" />
-              Started
+        {isAuto ? (
+          <>
+            {' '}
+            <div className="mt-4 gap-3 sm:grid-cols-2 hidden md:grid">
+              <div className="rounded-xl border border-white/10 bg-[#13131a]/70 p-3">
+                <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
+                  <CalendarDays className="size-4 text-[#00d0ff]" />
+                  Started
+                </div>
+
+                <p className="text-sm font-semibold text-white">
+                  {formatContestDate(activeContest?.start_date)}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-white/10 bg-[#13131a]/70 p-3">
+                <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
+                  <CalendarDays className="size-4 text-red-400" />
+                  Supposed to end
+                </div>
+
+                <p className="text-sm font-semibold text-white">
+                  {formatContestDate(activeContest?.end_date)}
+                </p>
+              </div>
             </div>
+            <div className="mt-4 gap-3 grid grid-cols-2 md:hidden">
+              <div className="">
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <CalendarDays className="size-4 text-[#00d0ff]" />
+                  Started
+                </div>
 
-            <p className="text-sm font-semibold text-white">
-              {formatContestDate(activeContest?.start_date)}
-            </p>
-          </div>
+                <p className="text-sm font-semibold text-white">
+                  {formatContestDate(activeContest?.start_date)}
+                </p>
+              </div>
 
-          <div className="rounded-xl border border-white/10 bg-[#13131a]/70 p-3">
-            <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
-              <CalendarDays className="size-4 text-red-400" />
-              Supposed to end
+              <div className="">
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <CalendarDays className="size-4 text-red-400" />
+                  Supposed to end
+                </div>
+
+                <p className="text-sm font-semibold text-white">
+                  {formatContestDate(activeContest?.end_date)}
+                </p>
+              </div>
             </div>
-
-            <p className="text-sm font-semibold text-white">
-              {formatContestDate(activeContest?.end_date)}
-            </p>
-          </div>
-        </div>
-
-          <div className="mt-4 gap-3 grid grid-cols-2 md:hidden">
-          <div className="">
-            <div className="flex items-center gap-2 text-xs text-gray-400">
-              <CalendarDays className="size-4 text-[#00d0ff]" />
-              Started
-            </div>
-
-            <p className="text-sm font-semibold text-white">
-              {formatContestDate(activeContest?.start_date)}
-            </p>
-          </div>
-
-          <div className="">
-            <div className="flex items-center gap-2 text-xs text-gray-400">
-              <CalendarDays className="size-4 text-red-400" />
-              Supposed to end
-            </div>
-
-            <p className="text-sm font-semibold text-white">
-              {formatContestDate(activeContest?.end_date)}
-            </p>
-          </div>
-        </div>
+          </>
+        ) : (
+          <p className="mt-4 text-sm text-gray-400">
+            This is a manually timed contest.
+          </p>
+        )}
       </div>
 
       <div className="relative rounded-xl border border-red-500/20 bg-red-500/6 p-4">

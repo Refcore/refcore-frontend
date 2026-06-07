@@ -19,7 +19,7 @@ export type ReferralModel = {
   created_at: string;
   referee_phone_number: string;
   referral_code_used: string;
-  status: string;
+  status: ReferralStatus;
   notes: string | null;
   first_seen_at: string;
   became_participant_at: string | null;
@@ -39,6 +39,12 @@ export type GetReferralsResponse = {
 };
 
 export type ReferralGraphRange = '7days' | '30days' | 'allTime';
+
+export type ReferralStatus =
+  | 'valid'
+  | 'became_participant'
+  | 'flagged'
+  | 'blocked';
 
 export type ReferralGraphDataItem = {
   label: string;

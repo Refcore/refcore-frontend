@@ -192,6 +192,8 @@ const QuickActions = ({
       return item;
     });
 
+  const isAuto = activeContest?.start_date && activeContest?.end_date;
+
   return (
     <section
       className={cn(
@@ -228,27 +230,37 @@ const QuickActions = ({
             <Trophy className="size-8 shrink-0 text-[#00ff9d]" />
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-white/10 bg-[#0a0a0f]/40 p-3">
-              <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
-                <CalendarDays className="size-4 text-[#00d0ff]" />
-                Start Date
+          {isAuto ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl border border-white/10 bg-[#0a0a0f]/40 p-3">
+                <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
+                  <CalendarDays className="size-4 text-[#00d0ff]" />
+                  Start Date
+                </div>
+                <p className="text-sm font-semibold text-white">
+                  {formatContestDate(activeContest?.start_date)}
+                </p>
               </div>
-              <p className="text-sm font-semibold text-white">
-                {formatContestDate(activeContest?.start_date)}
-              </p>
-            </div>
 
-            <div className="rounded-xl border border-white/10 bg-[#0a0a0f]/40 p-3">
-              <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
-                <CalendarDays className="size-4 text-[#b700ff]" />
-                End Date
+              <div className="rounded-xl border border-white/10 bg-[#0a0a0f]/40 p-3">
+                <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
+                  <CalendarDays className="size-4 text-[#b700ff]" />
+                  End Date
+                </div>
+                <p className="text-sm font-semibold text-white">
+                  {formatContestDate(activeContest?.end_date)}
+                </p>
               </div>
-              <p className="text-sm font-semibold text-white">
-                {formatContestDate(activeContest?.end_date)}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-white/10 bg-[#0a0a0f]/40 p-3">
+              <p>Manual Contest</p>
+              <p className="text-sm text-gray-400">
+                This is a manually timed contest. End the contest
+                whenever you want by using the button below.
               </p>
             </div>
-          </div>
+          )}
         </div>
       ) : (
         <div className="mb-4 rounded-xl border border-[#00d0ff]/20 bg-[#00d0ff]/6 p-4">

@@ -2,25 +2,22 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/utils/supabase/client';
-import { useAuthContext } from '@/context/AuthContext';
 import { queryKeys } from '@/lib/query_keys';
 import { AppResponse } from '@/types/response.type';
-import { GetReferralsResponse, ReferralStatus } from '@/types/referral.type';
 import { authFetch, handleExpiredSession } from '@/lib/authFetch';
+import { GetContestParticipantsResponse } from '@/types/contest-participant.type';
 
-type GetReferralsParams = {
+type GetContestParticipantsParams = {
   page?: number;
   limit?: number;
   search?: string;
-  contest_id?: string | null;
-  status?: ReferralStatus;
 };
 
-const getReferrals = async (
+const getContestParticipants = async (
   access_token: string,
-  channel_id: string,
-  params?: GetReferralsParams,
-): Promise<GetReferralsResponse> => {
+  contestId: string,
+  params?: GetContestParticipantsParams,
+): Promise<GetContestParticipantsResponse> => {
   const search_params = new URLSearchParams();
 
   if (params?.page && params.page > 0) {
@@ -35,18 +32,12 @@ const getReferrals = async (
     search_params.set('search', params.search.trim());
   }
 
-  if (params?.contest_id?.trim()) {
-    search_params.set('contest_id', params.contest_id.trim());
-  }
-
-  if (params?.status?.trim()) {
-    search_params.set('status', params.status.trim());
-  }
-
   const query_string = search_params.toString();
 
   const response = await authFetch(
-    `/api/referrals/${channel_id}${query_string ? `?${query_string}` : ''}`,
+    `/api/contests/${contestId}/participants${
+      query_string ? `?${query_string}` : ''
+    }`,
     {
       method: 'GET',
       headers: {
@@ -55,15 +46,16 @@ const getReferrals = async (
     },
   );
 
-  const result = (await response.json()) as AppResponse<GetReferralsResponse>;
+  const result =
+    (await response.json()) as AppResponse<GetContestParticipantsResponse>;
 
   if (!response.ok || !result.success) {
-    throw new Error(result.message || 'Failed to fetch referrals.');
+    throw new Error(result.message || 'Failed to fetch contest participants.');
   }
 
   return (
     result.data ?? {
-      referrals: [],
+      participants: [],
       pagination: {
         page: params?.page ?? 1,
         limit: params?.limit ?? 20,
@@ -74,27 +66,20 @@ const getReferrals = async (
   );
 };
 
-export const useGetReferrals = (params?: GetReferralsParams) => {
-  const {
-    myChannel,
-    isAuthenticated,
-    isLoading: isAuthLoading,
-  } = useAuthContext();
-
+export const useGetContestParticipants = (
+  contest_id?: string | null,
+  params?: GetContestParticipantsParams,
+) => {
   const page = params?.page ?? 1;
   const limit = params?.limit ?? 20;
   const search = params?.search?.trim() ?? '';
-  const contest_id = params?.contest_id?.trim() ?? '';
-  const status = params?.status;
 
   return useQuery({
     queryKey: [
-      ...queryKeys.referrals.byChannel(myChannel?.id),
+      ...queryKeys.contestParticipants.byContest(contest_id),
       page,
       limit,
       search,
-      contest_id,
-      status,
     ],
     queryFn: async () => {
       const supabase = createClient();
@@ -114,20 +99,18 @@ export const useGetReferrals = (params?: GetReferralsParams) => {
         throw new Error('Your session has expired. Please sign in again.');
       }
 
-      if (!myChannel?.id) {
-        throw new Error('Channel not found.');
+      if (!contest_id) {
+        throw new Error('Contest not found.');
       }
 
-      return getReferrals(session.access_token, myChannel.id, {
+      return getContestParticipants(session.access_token, contest_id, {
         ...params,
         page,
         limit,
         search,
-        contest_id,
-        status,
       });
     },
-    enabled: isAuthenticated && !!myChannel?.id && !isAuthLoading,
+    enabled: !!contest_id,
     staleTime: 1000 * 60 * 5,
   });
 };

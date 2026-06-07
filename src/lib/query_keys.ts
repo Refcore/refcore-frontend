@@ -22,6 +22,16 @@ export const queryKeys = {
       [...queryKeys.participants.all, 'channel', channel_id] as const,
   },
 
+  contestParticipants: {
+    all: ['contest_participants'] as const,
+    byContest: (contest_id?: string | null) =>
+      [
+        ...queryKeys.contestParticipants.all,
+        'contest',
+        contest_id ?? '',
+      ] as const,
+  },
+
   referrals: {
     all: ['referrals'] as const,
     byChannel: (channel_id?: string) =>

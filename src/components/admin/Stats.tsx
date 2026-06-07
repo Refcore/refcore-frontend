@@ -53,7 +53,7 @@ const Stats = ({
 
       <StatsCard
         title="Contest Status"
-        description={activeContest ? `${timeLeft} Contest` : timeLeft}
+        description={activeContest ? `${activeContest.title} (${timeLeft} Contest)` : timeLeft}
         value={timeLeft}
         color="#facc15"
         icon={Trophy}
