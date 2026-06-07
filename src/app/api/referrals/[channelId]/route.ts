@@ -5,6 +5,7 @@ import {
   ReferralModel,
   ReferralStatus,
 } from '@/types/referral.type';
+import { getApiAuthUser } from '@/lib/api-auth';
 
 type RouteParams = {
   params: Promise<{
@@ -43,7 +44,59 @@ const isReferralStatus = (status: string): status is ReferralStatus => {
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const { user, error: authError } = await getApiAuthUser(request);
+
+    if (authError || !user) {
+      return NextResponse.json(
+        authError ?? {
+          success: false,
+          message: 'Unauthorized.',
+        },
+        { status: authError?.status_code ?? 401 },
+      );
+    }
+
     const { channelId } = await params;
+
+    if (!channelId?.trim()) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Channel id is required.',
+        },
+        { status: 400 },
+      );
+    }
+
+    const channel = await prisma.channels.findUnique({
+      where: {
+        id: channelId,
+      },
+      select: {
+        id: true,
+        owner_id: true,
+      },
+    });
+
+    if (!channel) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Channel not found.',
+        },
+        { status: 404 },
+      );
+    }
+
+    if (channel.owner_id !== user.id) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Forbidden.',
+        },
+        { status: 403 },
+      );
+    }
 
     if (!channelId?.trim()) {
       return NextResponse.json(
