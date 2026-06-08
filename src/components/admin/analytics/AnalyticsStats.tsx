@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   BarChart3,
   CheckCircle2,
@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import StatsCard from '../StatsCard';
 
-
 type AnalyticsStatsProps = {
   totalParticipants: number;
   totalReferrals: number;
@@ -20,6 +19,7 @@ type AnalyticsStatsProps = {
   conversionRate: number;
   suspiciousReferrals: number;
   isContestActive?: boolean;
+  isLoading?: boolean;
 };
 
 const AnalyticsStats = ({
@@ -30,7 +30,83 @@ const AnalyticsStats = ({
   conversionRate,
   suspiciousReferrals,
   isContestActive = true,
+  isLoading = false,
 }: AnalyticsStatsProps) => {
+  const initialValuesRef = useRef({
+    totalParticipants,
+    totalReferrals,
+    validReferrals,
+    averageReferralsPerParticipant,
+    conversionRate,
+    suspiciousReferrals,
+  });
+
+  const [loadedCards, setLoadedCards] = useState({
+    totalParticipants: false,
+    totalReferrals: false,
+    validReferrals: false,
+    averageReferralsPerParticipant: false,
+    conversionRate: false,
+    suspiciousReferrals: false,
+  });
+
+  useEffect(() => {
+    const initialValues = initialValuesRef.current;
+
+    setLoadedCards((previousState) => ({
+      totalParticipants:
+        previousState.totalParticipants ||
+        !isLoading ||
+        totalParticipants !== initialValues.totalParticipants,
+
+      totalReferrals:
+        previousState.totalReferrals ||
+        !isLoading ||
+        totalReferrals !== initialValues.totalReferrals,
+
+      validReferrals:
+        previousState.validReferrals ||
+        !isLoading ||
+        validReferrals !== initialValues.validReferrals,
+
+      averageReferralsPerParticipant:
+        previousState.averageReferralsPerParticipant ||
+        !isLoading ||
+        averageReferralsPerParticipant !==
+          initialValues.averageReferralsPerParticipant,
+
+      conversionRate:
+        previousState.conversionRate ||
+        !isLoading ||
+        conversionRate !== initialValues.conversionRate,
+
+      suspiciousReferrals:
+        previousState.suspiciousReferrals ||
+        !isLoading ||
+        suspiciousReferrals !== initialValues.suspiciousReferrals,
+    }));
+  }, [
+    totalParticipants,
+    totalReferrals,
+    validReferrals,
+    averageReferralsPerParticipant,
+    conversionRate,
+    suspiciousReferrals,
+    isLoading,
+  ]);
+
+  const cardLoadingState = useMemo(() => {
+    return {
+      totalParticipants: isLoading && !loadedCards.totalParticipants,
+      totalReferrals: isLoading && !loadedCards.totalReferrals,
+      validReferrals: isLoading && !loadedCards.validReferrals,
+      averageReferralsPerParticipant:
+        isLoading && !loadedCards.averageReferralsPerParticipant,
+      conversionRate: isLoading && !loadedCards.conversionRate,
+      suspiciousReferrals: isLoading && !loadedCards.suspiciousReferrals,
+    };
+  }, [isLoading, loadedCards]);
+
   return (
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
       <StatsCard
@@ -42,6 +118,8 @@ const AnalyticsStats = ({
         color="#00ff9d"
         locked={!isContestActive}
         lockedText="No active contest"
+        isLoading={cardLoadingState.totalParticipants}
+        loadingText="Loading participants"
       />
 
       <StatsCard
@@ -53,6 +131,8 @@ const AnalyticsStats = ({
         color="#00d0ff"
         locked={!isContestActive}
         lockedText="No active contest"
+        isLoading={cardLoadingState.totalReferrals}
+        loadingText="Loading referrals"
       />
 
       <StatsCard
@@ -68,6 +148,8 @@ const AnalyticsStats = ({
         color="#22c55e"
         locked={!isContestActive}
         lockedText="No active contest"
+        isLoading={cardLoadingState.validReferrals}
+        loadingText="Loading valid referrals"
       />
 
       <StatsCard
@@ -79,6 +161,8 @@ const AnalyticsStats = ({
         color="#b700ff"
         locked={!isContestActive}
         lockedText="No active contest"
+        isLoading={cardLoadingState.averageReferralsPerParticipant}
+        loadingText="Loading average"
       />
 
       <StatsCard
@@ -90,6 +174,8 @@ const AnalyticsStats = ({
         color="#f59e0b"
         locked={!isContestActive}
         lockedText="No active contest"
+        isLoading={cardLoadingState.conversionRate}
+        loadingText="Loading conversion"
       />
 
       <StatsCard
@@ -101,6 +187,8 @@ const AnalyticsStats = ({
         color="#ef4444"
         locked={!isContestActive}
         lockedText="No active contest"
+        isLoading={cardLoadingState.suspiciousReferrals}
+        loadingText="Loading suspicious referrals"
       />
     </section>
   );

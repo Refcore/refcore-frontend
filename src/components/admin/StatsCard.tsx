@@ -3,6 +3,7 @@
 import React, { type ReactNode } from 'react';
 import { Lock, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import IconLoader from '@/components/shared/IconLoader';
 
 type StatsCardProps = {
   title: string;
@@ -14,6 +15,11 @@ type StatsCardProps = {
   locked?: boolean;
   lockedText?: string;
   className?: string;
+
+  isLoading?: boolean;
+  loadingText?: string;
+  isEmpty?: boolean;
+  emptyText?: string;
 };
 
 const hexToRgba = (hex: string, alpha: number) => {
@@ -44,6 +50,11 @@ const StatsCard = ({
   locked = false,
   lockedText = 'Locked',
   className,
+
+  isLoading = false,
+  loadingText = 'Loading',
+  isEmpty = false,
+  emptyText = 'No data available right now.',
 }: StatsCardProps) => {
   const borderColor = hexToRgba(color, 0.2);
   const hoverBorderColor = hexToRgba(color, 0.4);
@@ -53,15 +64,17 @@ const StatsCard = ({
   const glowHoverColor = hexToRgba(color, 0.26);
   const overlayBg = 'rgba(10, 10, 15, 0.72)';
 
+  const shouldShowOverlay = locked || isLoading || isEmpty;
+
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-xl border-2 bg-[#1c1c26]/60 p-3 md:p-6 backdrop-blur-xl transition-all duration-300',
+        'group relative overflow-hidden rounded-xl border-2 bg-[#1c1c26]/60 p-3 backdrop-blur-xl transition-all duration-300 md:p-6',
         'hover:-translate-y-1',
         className,
       )}
       style={{
-        borderColor: locked ? borderColor : borderColor,
+        borderColor,
         boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
       }}
       onMouseEnter={(event) => {
@@ -98,7 +111,10 @@ const StatsCard = ({
           </div>
 
           {info ? (
-            <div className="shrink-0 text-right text-xs font-bold" style={{ color }}>
+            <div
+              className="shrink-0 text-right text-xs font-bold"
+              style={{ color }}
+            >
               {info}
             </div>
           ) : null}
@@ -112,25 +128,40 @@ const StatsCard = ({
         </p>
       </div>
 
-      {locked ? (
+      {shouldShowOverlay ? (
         <div
           className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 px-4 text-center backdrop-blur-[2px]"
           style={{ backgroundColor: overlayBg }}
         >
-          <div
-            className="flex h-12 w-12 items-center justify-center rounded-full border"
-            style={{
-              backgroundColor: hexToRgba(color, 0.16),
-              borderColor: hexToRgba(color, 0.28),
-            }}
-          >
-            <Lock className="size-5 text-white" />
-          </div>
+          {isLoading ? (
+            <IconLoader loadingText={loadingText}>
+              <Icon className="size-5" />
+            </IconLoader>
+          ) : (
+            <>
+              <div
+                className="flex h-12 w-12 items-center justify-center rounded-full border"
+                style={{
+                  backgroundColor: hexToRgba(color, 0.16),
+                  borderColor: hexToRgba(color, 0.28),
+                }}
+              >
+                {locked ? (
+                  <Lock className="size-5 text-white" />
+                ) : (
+                  <Icon className="size-5 text-white" />
+                )}
+              </div>
 
-          <p className="text-sm font-semibold text-white">{lockedText}</p>
-          <p className="max-w-55 text-xs text-white/70">
-            This metric is not available right now.
-          </p>
+              <p className="text-sm font-semibold text-white">
+                {locked ? lockedText : 'No data'}
+              </p>
+
+              <p className="max-w-55 text-xs text-white/70">
+                {locked ? 'This metric is not available right now.' : emptyText}
+              </p>
+            </>
+          )}
         </div>
       ) : null}
     </div>
