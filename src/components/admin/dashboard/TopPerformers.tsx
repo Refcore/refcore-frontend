@@ -155,11 +155,17 @@ const TopPerformers = ({
         </Link>
       </div>
 
-      <div className="space-y-3">
-        {leaderboard.map((participant) => (
-          <TopPerformerRow key={participant.id} participant={participant} />
-        ))}
-      </div>
+      {leaderboard.length === 0 ? (
+        <p className="text-center text-sm text-muted-foreground">
+          No performers to show yet.
+        </p>
+      ) : (
+        <div className="space-y-3">
+          {leaderboard.map((participant) => (
+            <TopPerformerRow key={participant.id} participant={participant} />
+          ))}
+        </div>
+      )}
     </section>
   );
 };

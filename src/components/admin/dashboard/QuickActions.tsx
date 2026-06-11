@@ -6,7 +6,7 @@ import {
   CalendarDays,
   Download,
   FilePenLine,
-  Play,
+  // Play,
   Square,
   Trophy,
   type LucideIcon,
@@ -50,11 +50,11 @@ const formatContestDate = (date?: string | Date | null) => {
 };
 
 const quickActions: QuickActionItem[] = [
-  {
-    label: 'Start Contest',
-    icon: Play,
-    variant: 'success',
-  },
+  // {
+  //   label: 'Start Contest',
+  //   icon: Play,
+  //   variant: 'success',
+  // },
   {
     label: 'End Contest',
     icon: Square,
@@ -70,6 +70,7 @@ const quickActions: QuickActionItem[] = [
     label: 'Export Data',
     icon: Download,
     variant: 'neutral',
+    href: ADMIN_ROUTES.EXPORT,
   },
 ];
 
@@ -256,8 +257,8 @@ const QuickActions = ({
             <div className="rounded-xl border border-white/10 bg-[#0a0a0f]/40 p-3">
               <p>Manual Contest</p>
               <p className="text-sm text-gray-400">
-                This is a manually timed contest. End the contest
-                whenever you want by using the button below.
+                This is a manually timed contest. End the contest whenever you
+                want by using the button below.
               </p>
             </div>
           )}
@@ -283,7 +284,7 @@ const QuickActions = ({
 
             <Link
               href={ADMIN_ROUTES.CONTESTS}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-[#b700ff] to-[#00d0ff] px-5 py-3 text-sm font-bold text-white transition-all hover:scale-[1.02]"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-[#3700ff2f] to-[#00d0ff7a] px-5 py-3 text-sm font-bold text-white transition-all hover:scale-[1.02]"
             >
               <FilePenLine className="size-4" />
               Manage Contests

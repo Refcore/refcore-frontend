@@ -118,9 +118,7 @@ const TopContributorsInactiveState = () => {
   return (
     <div className="flex min-h-70 flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-[#13131a]/60 px-6 text-center">
       <div className="mb-4">
-        <IconLoader loadingText="No active contest">
-          <TrendingUp />
-        </IconLoader>
+        <TrendingUp className="size-6 text-muted-foreground" />
       </div>
 
       <h4 className="text-base font-semibold text-white">No active contest</h4>
@@ -150,11 +148,7 @@ const ContributionSummaryEmptyState = ({
   return (
     <div className="flex min-h-70 flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-[#13131a]/60 px-6 text-center">
       <div className="mb-4">
-        <IconLoader
-          loadingText={isContestActive ? 'No summary yet' : 'No active contest'}
-        >
-          <Trophy />
-        </IconLoader>
+          <Trophy className="size-6 text-muted-foreground" />
       </div>
 
       <h4 className="text-base font-semibold text-white">

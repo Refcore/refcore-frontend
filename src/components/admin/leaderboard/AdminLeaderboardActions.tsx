@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React from 'react';
 import { MoreHorizontal, Eye, Copy, Users } from 'lucide-react';
@@ -8,6 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import DialogueTool from '@/components/shared/DialogueTool';
 
 type LeaderboardActionsProps = {
   participantId: string;
@@ -31,7 +32,7 @@ const LeaderboardActions = ({
   };
 
   const handleViewParticipant = () => {
-    console.log('view participant', participantId);
+    console.log('view participant', participantId, referralCode, phone);
   };
 
   const handleViewReferrals = () => {
@@ -56,15 +57,21 @@ const LeaderboardActions = ({
         className="w-52 rounded-xl border-white/10 bg-[#13131a] p-2"
       >
         <div className="flex flex-col gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            className="justify-start rounded-lg"
-            onClick={handleViewParticipant}
+          <DialogueTool
+            content="Participant details would go here"
+            title="Participant details"
+            description="More participant details would go here"
           >
-            <Eye className="size-4" />
-            View participant
-          </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="justify-start rounded-lg"
+              onClick={handleViewParticipant}
+            >
+              <Eye className="size-4" />
+              View participant
+            </Button>
+          </DialogueTool>
 
           <Button
             type="button"

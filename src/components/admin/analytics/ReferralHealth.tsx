@@ -89,9 +89,7 @@ const ReferralHealthInactiveState = () => {
   return (
     <div className="flex min-h-65 flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-[#13131a]/60 px-6 text-center">
       <div className="mb-4">
-        <IconLoader loadingText="No active contest">
-          <ShieldAlert />
-        </IconLoader>
+          <ShieldAlert className="size-6 text-muted-foreground" />
       </div>
 
       <h4 className="text-base font-semibold text-white">No active contest</h4>
