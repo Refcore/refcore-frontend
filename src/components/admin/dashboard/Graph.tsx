@@ -38,8 +38,10 @@ const Graph = () => {
 
   const chartData = data?.graph_data ?? [];
 
+  console.log('Referral Graph Data:', chartData);
+
   return (
-    <Card className="border-white/10 lg:max-w-151 2xl:max-w-none bg-[#111118] text-white shadow-none">
+    <Card className="border-white/10 lg:max-w-171 2xl:max-w-none bg-[#111118] text-white shadow-none">
       <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <CardTitle className="text-lg font-semibold">
@@ -82,6 +84,12 @@ const Graph = () => {
             <IconLoader>
               <LucideGitGraph className="size-6 text-white/70" />
             </IconLoader>
+          </div>
+        ) : !chartData.length ? (
+          <div className="flex h-70 w-full items-center justify-center sm:h-80 lg:h-90">
+            <p className="text-sm text-muted-foreground">
+              No referral data available for the selected period.
+            </p>
           </div>
         ) : (
           <ChartContainer

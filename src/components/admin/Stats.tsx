@@ -22,7 +22,7 @@ const Stats = ({
       : 'Manual';
 
   return (
-    <div className="grid gap-3 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-3 grid-cols-1 lg:grid-cols-2 xl:grid-cols-4">
       <StatsCard
         title="Participants"
         description="Total Participants"
@@ -30,10 +30,14 @@ const Stats = ({
         color="#00ff9d"
         icon={Users}
         info={
-          <span className="inline-flex items-center gap-1">
-            <ArrowUp className="size-3.5" />
-            +12%
-          </span>
+          totalParticipants > 0 ? (
+            <span className="inline-flex items-center gap-1">
+              <ArrowUp className="size-3.5" />
+              +18%
+            </span>
+          ) : (
+            <span className="text-muted-foreground">--</span>
+          )
         }
       />
 
@@ -44,16 +48,24 @@ const Stats = ({
         color="#00d0ff"
         icon={Link2}
         info={
-          <span className="inline-flex items-center gap-1">
-            <ArrowUp className="size-3.5" />
-            +24%
-          </span>
+          totalReferrals > 0 ? (
+            <span className="inline-flex items-center gap-1">
+              <ArrowUp className="size-3.5" />
+              +24%
+            </span>
+          ) : (
+            <span className="text-muted-foreground">--</span>
+          )
         }
       />
 
       <StatsCard
         title="Contest Status"
-        description={activeContest ? `${activeContest.title} (${timeLeft} Contest)` : timeLeft}
+        description={
+          activeContest
+            ? `${activeContest.title} (${timeLeft} Contest)`
+            : timeLeft
+        }
         value={timeLeft}
         color="#facc15"
         icon={Trophy}
@@ -67,7 +79,7 @@ const Stats = ({
         color="#b700ff"
         icon={Trophy}
         locked
-        lockedText="Available on Growth plan"
+        lockedText="Coefficient coming soon"
       />
     </div>
   );
