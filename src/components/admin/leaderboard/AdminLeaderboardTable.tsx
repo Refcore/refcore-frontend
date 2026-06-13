@@ -136,7 +136,7 @@ const AdminLeaderboardTable = ({
                             column.mobileHidden && 'hidden md:table-cell',
                           )}
                         >
-                          {column.render(participant, { topReferrals, contestId })}
+                          {column.render(participant, { topReferrals, contestId: contestId ?? undefined })}
                         </td>
                       ))}
                     </tr>
