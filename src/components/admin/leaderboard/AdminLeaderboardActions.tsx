@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { MoreHorizontal, Eye, Copy, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,18 +9,25 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import DialogueTool from '@/components/shared/DialogueTool';
+import ViewParticipantModal from '@/components/modals/ViewContestParticipantModal';
 
 type LeaderboardActionsProps = {
   participantId: string;
   referralCode: string;
   phone: string | null;
+  contestId: string | null;
 };
 
 const LeaderboardActions = ({
   participantId,
   referralCode,
   phone,
+  contestId,
 }: LeaderboardActionsProps) => {
+  const [open, setOpen] = useState(false);
+
+  const canViewParticipant = Boolean(contestId && participantId);
+
   const handleCopyReferralCode = async () => {
     await navigator.clipboard.writeText(referralCode);
   };
@@ -32,11 +39,21 @@ const LeaderboardActions = ({
   };
 
   const handleViewParticipant = () => {
+    if (!canViewParticipant) return;
     console.log('view participant', participantId, referralCode, phone);
+    setOpen(true);
   };
 
   const handleViewReferrals = () => {
     console.log('view referrals', participantId);
+  };
+
+  const handleCloseModal = () => {
+    setOpen(false);
+  };
+
+  const handleToggleModal = (nextOpen: boolean) => {
+    setOpen(nextOpen);
   };
 
   return (
@@ -58,15 +75,25 @@ const LeaderboardActions = ({
       >
         <div className="flex flex-col gap-1">
           <DialogueTool
-            content="Participant details would go here"
+            open={open}
+            onOpenChange={handleToggleModal}
+            content={
+              canViewParticipant ? (
+                <ViewParticipantModal
+                  onClose={handleCloseModal}
+                  contestId={contestId}
+                  participantId={participantId}
+                />
+              ) : null
+            }
             title="Participant details"
-            description="More participant details would go here"
           >
             <Button
               type="button"
               variant="ghost"
               className="justify-start rounded-lg"
               onClick={handleViewParticipant}
+              disabled={!canViewParticipant}
             >
               <Eye className="size-4" />
               View participant

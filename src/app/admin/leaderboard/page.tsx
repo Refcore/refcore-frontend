@@ -62,6 +62,7 @@ const CurrentContestLeaderboardContent = ({
         onPageChange={onPageChange}
         showPagination={showPagination}
         leaderboardInfo={leaderboardData?.summary}
+        contestId={activeContestId}
       />
     </>
   );
