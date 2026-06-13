@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { prisma } from '@/lib/prisma';
 import { getApiAuthUser } from '@/lib/api-auth';
 import {
   ContestParticipantModel,
   GetContestParticipantsResponse,
 } from '@/types/contest-participant.type';
+import type { Prisma } from '@/generated/prisma/client';
 
 type ApiResponse<T> = {
   success: boolean;
@@ -84,8 +86,26 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const safePage = parsePositiveInteger(searchParams.get('page'), 1);
     const safeLimit = parsePositiveInteger(searchParams.get('limit'), 20, 100);
     const search = searchParams.get('search')?.trim() ?? '';
+    const participantId = searchParams.get('participantId')?.trim() ?? '';
 
-    const skip = (safePage - 1) * safeLimit;
+    if (participantId && !UUID_REGEX.test(participantId)) {
+      return NextResponse.json<ApiResponse<GetContestParticipantsResponse>>(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Invalid participant ID format.',
+          data: null,
+          error_code: 'INVALID_PARTICIPANT_ID',
+        },
+        { status: 400 },
+      );
+    }
+
+    const isSingleParticipantLookup = Boolean(participantId);
+
+    const page = isSingleParticipantLookup ? 1 : safePage;
+    const limit = isSingleParticipantLookup ? 1 : safeLimit;
+    const skip = isSingleParticipantLookup ? 0 : (safePage - 1) * safeLimit;
 
     const contest = await prisma.contests.findUnique({
       where: {
@@ -129,16 +149,23 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const where = {
+    const where: Prisma.contest_participantsWhereInput = {
       contest_id: contest.id,
       channel_id: contest.channel_id,
-      ...(search
+
+      ...(participantId
+        ? {
+            participant_id: participantId,
+          }
+        : {}),
+
+      ...(!participantId && search
         ? {
             OR: [
               {
                 status: {
                   contains: search,
-                  mode: 'insensitive' as const,
+                  mode: 'insensitive',
                 },
               },
               {
@@ -146,7 +173,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                   is: {
                     display_name: {
                       contains: search,
-                      mode: 'insensitive' as const,
+                      mode: 'insensitive',
                     },
                   },
                 },
@@ -156,7 +183,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                   is: {
                     phone_number: {
                       contains: search,
-                      mode: 'insensitive' as const,
+                      mode: 'insensitive',
                     },
                   },
                 },
@@ -166,7 +193,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                   is: {
                     referral_code: {
                       contains: search,
-                      mode: 'insensitive' as const,
+                      mode: 'insensitive',
                     },
                   },
                 },
@@ -183,7 +210,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           joined_at: 'desc',
         },
         skip,
-        take: safeLimit,
+        take: limit,
         select: {
           id: true,
           channel_id: true,
@@ -218,6 +245,19 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       }),
     ]);
 
+    if (participantId && total === 0) {
+      return NextResponse.json<ApiResponse<GetContestParticipantsResponse>>(
+        {
+          success: false,
+          status_code: 404,
+          message: 'Participant was not found in this contest.',
+          data: null,
+          error_code: 'CONTEST_PARTICIPANT_NOT_FOUND',
+        },
+        { status: 404 },
+      );
+    }
+
     const participants: ContestParticipantModel[] =
       contest_participants_data.map((item) => ({
         id: item.id,
@@ -249,10 +289,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const data: GetContestParticipantsResponse = {
       participants,
       pagination: {
-        page: safePage,
-        limit: safeLimit,
+        page,
+        limit,
         total,
-        total_pages: Math.ceil(total / safeLimit),
+        total_pages: Math.ceil(total / limit),
       },
     };
 
@@ -260,7 +300,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       {
         success: true,
         status_code: 200,
-        message: 'Contest participants fetched successfully.',
+        message: participantId
+          ? 'Contest participant fetched successfully.'
+          : 'Contest participants fetched successfully.',
         data,
       },
       { status: 200 },

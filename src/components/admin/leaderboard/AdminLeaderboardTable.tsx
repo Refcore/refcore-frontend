@@ -26,6 +26,7 @@ type AdminLeaderboardTableProps = {
   onNextPage?: () => void;
   onPageChange?: (page: number) => void;
   showPagination?: boolean;
+  contestId?: string | null;
 };
 
 const AdminLeaderboardTable = ({
@@ -40,6 +41,7 @@ const AdminLeaderboardTable = ({
   onNextPage,
   onPageChange,
   showPagination,
+  contestId,
 }: AdminLeaderboardTableProps) => {
   const participants = [...leaderboard].sort((a, b) => a.rank - b.rank);
 
@@ -134,7 +136,7 @@ const AdminLeaderboardTable = ({
                             column.mobileHidden && 'hidden md:table-cell',
                           )}
                         >
-                          {column.render(participant, { topReferrals })}
+                          {column.render(participant, { topReferrals, contestId })}
                         </td>
                       ))}
                     </tr>

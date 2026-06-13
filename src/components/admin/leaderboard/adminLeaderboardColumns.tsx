@@ -6,6 +6,7 @@ import LeaderboardActions from './AdminLeaderboardActions';
 
 type LeaderboardRenderContext = {
   topReferrals: number;
+  contestId?: string | null;
 };
 
 export type LeaderboardColumn = {
@@ -196,12 +197,13 @@ export const leaderboardColumns: LeaderboardColumn[] = [
     id: 'actions',
     header: '',
     className: 'w-[72px] text-right',
-    render: (participant) => (
+    render: (participant, context) => (
       <div className="flex justify-end">
         <LeaderboardActions
           participantId={participant.participant_id}
           referralCode={participant.referral_code ?? ''}
           phone={participant.phone_number}
+          contestId={context.contestId ?? ''}
         />
       </div>
     ),
