@@ -6,7 +6,7 @@ import LeaderboardActions from './AdminLeaderboardActions';
 
 type LeaderboardRenderContext = {
   topReferrals: number;
-  contestId?: string | null;
+  contestId?: string;
 };
 
 export type LeaderboardColumn = {
@@ -203,7 +203,7 @@ export const leaderboardColumns: LeaderboardColumn[] = [
           participantId={participant.participant_id}
           referralCode={participant.referral_code ?? ''}
           phone={participant.phone_number}
-          contestId={context.contestId ?? ''}
+          contestId={context.contestId ?? null}
         />
       </div>
     ),

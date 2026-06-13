@@ -15,7 +15,7 @@ type LeaderboardActionsProps = {
   participantId: string;
   referralCode: string;
   phone: string | null;
-  contestId: string;
+  contestId: string | null;
 };
 
 const LeaderboardActions = ({
@@ -25,6 +25,8 @@ const LeaderboardActions = ({
   contestId,
 }: LeaderboardActionsProps) => {
   const [open, setOpen] = useState(false);
+
+  const canViewParticipant = Boolean(contestId && participantId);
 
   const handleCopyReferralCode = async () => {
     await navigator.clipboard.writeText(referralCode);
@@ -37,6 +39,7 @@ const LeaderboardActions = ({
   };
 
   const handleViewParticipant = () => {
+    if (!canViewParticipant) return;
     console.log('view participant', participantId, referralCode, phone);
     setOpen(true);
   };
@@ -49,8 +52,8 @@ const LeaderboardActions = ({
     setOpen(false);
   };
 
-  const handleToggleModal = () => {
-    setOpen(!open);
+  const handleToggleModal = (nextOpen: boolean) => {
+    setOpen(nextOpen);
   };
 
   return (
@@ -75,11 +78,13 @@ const LeaderboardActions = ({
             open={open}
             onOpenChange={handleToggleModal}
             content={
-              <ViewParticipantModal
-                onClose={handleCloseModal}
-                contestId={contestId}
-                participantId={participantId}
-              />
+              canViewParticipant ? (
+                <ViewParticipantModal
+                  onClose={handleCloseModal}
+                  contestId={contestId}
+                  participantId={participantId}
+                />
+              ) : null
             }
             title="Participant details"
           >
@@ -88,6 +93,7 @@ const LeaderboardActions = ({
               variant="ghost"
               className="justify-start rounded-lg"
               onClick={handleViewParticipant}
+              disabled={!canViewParticipant}
             >
               <Eye className="size-4" />
               View participant
