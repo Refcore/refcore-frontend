@@ -155,7 +155,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
       ...(participantId
         ? {
-            participant_id: participantId,
+            id: participantId,
           }
         : {}),
 

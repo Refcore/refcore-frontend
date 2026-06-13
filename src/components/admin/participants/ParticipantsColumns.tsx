@@ -68,7 +68,7 @@ const getStatusClass = (status: ParticipantModel['status']) => {
     : 'bg-white/30';
 };
 
-const formatDate = (value?: string | null) => {
+const formatDate = (value?: string | Date | null) => {
   if (!value) return '—';
 
   return new Intl.DateTimeFormat('en', {
@@ -78,7 +78,7 @@ const formatDate = (value?: string | null) => {
   }).format(new Date(value));
 };
 
-const formatDateTime = (value?: string | null) => {
+const formatDateTime = (value?: string | Date | null) => {
   if (!value) return '—';
 
   return new Intl.DateTimeFormat('en', {
