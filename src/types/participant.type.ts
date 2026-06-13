@@ -11,6 +11,10 @@ type ParticipantBase = Pick<
   | 'total_referrals'
   | 'total_contests_joined'
   | 'first_joined_at'
+  | 'last_joined_at'
+  | 'created_at'
+  | 'updated_at'
+  | 'display_name'
 >;
 
 export type ParticipantModel = ParticipantBase & {
@@ -27,5 +31,5 @@ export type ParticipantModel = ParticipantBase & {
   status: ParticipantStatus;
 
   // override Date from Prisma into string for API/UI
-  first_joined_at: string;
+  last_joined_at: string;
 };

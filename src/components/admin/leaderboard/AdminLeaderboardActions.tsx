@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/popover';
 import DialogueTool from '@/components/shared/DialogueTool';
 import ViewParticipantModal from '@/components/modals/ViewContestParticipantModal';
+import ViewAlltimeParticipantModal from '@/components/modals/ViewAlltimeParticipantModal';
 
 type LeaderboardActionsProps = {
   participantId: string;
@@ -44,6 +45,12 @@ const LeaderboardActions = ({
     setOpen(true);
   };
 
+  const handleViewAllTimeParticipant = () => {
+    if (canViewParticipant) return;
+    console.log('view participant', participantId, referralCode, phone);
+    setOpen(true);
+  };
+
   const handleViewReferrals = () => {
     console.log('view referrals', participantId);
   };
@@ -74,31 +81,57 @@ const LeaderboardActions = ({
         className="w-52 rounded-xl border-white/10 bg-[#13131a] p-2"
       >
         <div className="flex flex-col gap-1">
-          <DialogueTool
-            open={open}
-            onOpenChange={handleToggleModal}
-            content={
-              canViewParticipant ? (
-                <ViewParticipantModal
-                  onClose={handleCloseModal}
-                  contestId={contestId}
-                  participantId={participantId}
-                />
-              ) : null
-            }
-            title="Participant details"
-          >
-            <Button
-              type="button"
-              variant="ghost"
-              className="justify-start rounded-lg"
-              onClick={handleViewParticipant}
-              disabled={!canViewParticipant}
+          {canViewParticipant ? (
+            <DialogueTool
+              open={open}
+              onOpenChange={handleToggleModal}
+              content={
+                canViewParticipant ? (
+                  <ViewParticipantModal
+                    onClose={handleCloseModal}
+                    contestId={contestId}
+                    participantId={participantId}
+                  />
+                ) : null
+              }
+              title="Participant details"
             >
-              <Eye className="size-4" />
-              View participant
-            </Button>
-          </DialogueTool>
+              <Button
+                type="button"
+                variant="ghost"
+                className="justify-start rounded-lg"
+                onClick={handleViewParticipant}
+                disabled={!canViewParticipant}
+              >
+                <Eye className="size-4" />
+                View participant
+              </Button>
+            </DialogueTool>
+          ) : (
+            <DialogueTool
+              open={open}
+              onOpenChange={handleToggleModal}
+              content={
+                !canViewParticipant ? (
+                  <ViewAlltimeParticipantModal
+                    onClose={handleCloseModal}
+                    participantId={participantId}
+                  />
+                ) : null
+              }
+              title="Participant details"
+            >
+              <Button
+                type="button"
+                variant="ghost"
+                className="justify-start rounded-lg"
+                onClick={handleViewAllTimeParticipant}
+              >
+                <Eye className="size-4" />
+                View
+              </Button>
+            </DialogueTool>
+          )}
 
           <Button
             type="button"

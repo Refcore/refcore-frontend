@@ -31,7 +31,9 @@ const CurrentContestLeaderboardContent = ({
   onNextPage,
   onPageChange,
 }: LeaderboardContentProps) => {
-  const { data: contestsData, isLoading } = useGetMyContests({ status: 'active' });
+  const { data: contestsData, isLoading } = useGetMyContests({
+    status: 'active',
+  });
 
   const activeContestId = contestsData?.[0]?.id ?? null;
 
@@ -45,7 +47,10 @@ const CurrentContestLeaderboardContent = ({
 
   return (
     <>
-      <LeaderboardSummary summary={leaderboardData?.summary} isLoading={isContestLoading} />
+      <LeaderboardSummary
+        summary={leaderboardData?.summary}
+        isLoading={isContestLoading}
+      />
 
       <AdminLeaderboardTable
         currentPage={leaderboardData?.pagination.page ?? 1}
@@ -81,7 +86,10 @@ const AllTimeLeaderboardContent = ({
 
   return (
     <>
-      <LeaderboardSummary summary={leaderboardData?.summary} isLoading={allTimeLeaderboard.isLoading} />
+      <LeaderboardSummary
+        summary={leaderboardData?.summary}
+        isLoading={allTimeLeaderboard.isLoading}
+      />
 
       <AdminLeaderboardTable
         currentPage={leaderboardData?.pagination.page ?? 1}
@@ -97,7 +105,7 @@ const AllTimeLeaderboardContent = ({
         onNextPage={onNextPage}
         onPageChange={onPageChange}
         showPagination={showPagination}
-         leaderboardInfo={leaderboardData?.summary}
+        leaderboardInfo={leaderboardData?.summary}
       />
     </>
   );
