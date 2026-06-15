@@ -31,6 +31,28 @@ const parsePositiveInteger = (
   return parsed_value;
 };
 
+const getTrimmedSearchParam = (
+  searchParams: URLSearchParams,
+  keys: string[],
+) => {
+  for (const key of keys) {
+    const value = searchParams.get(key)?.trim();
+
+    if (value) {
+      return value;
+    }
+  }
+
+  return '';
+};
+
+const uuidRegex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const isUuid = (value: string) => {
+  return uuidRegex.test(value);
+};
+
 const referralStatuses: ReferralStatus[] = [
   'valid',
   'became_participant',
@@ -57,8 +79,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     const { channelId } = await params;
+    const channel_id = channelId?.trim();
 
-    if (!channelId?.trim()) {
+    if (!channel_id) {
       return NextResponse.json(
         {
           success: false,
@@ -68,9 +91,19 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    if (!isUuid(channel_id)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Invalid channel id.',
+        },
+        { status: 400 },
+      );
+    }
+
     const channel = await prisma.channels.findUnique({
       where: {
-        id: channelId,
+        id: channel_id,
       },
       select: {
         id: true,
@@ -98,24 +131,23 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    if (!channelId?.trim()) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Channel id is required.',
-        },
-        { status: 400 },
-      );
-    }
-
     const { searchParams } = new URL(request.url);
 
     const safePage = parsePositiveInteger(searchParams.get('page'), 1);
     const safeLimit = parsePositiveInteger(searchParams.get('limit'), 20, 100);
 
     const search = searchParams.get('search')?.trim() ?? '';
-    const contest_id = searchParams.get('contest_id')?.trim() ?? '';
     const status = searchParams.get('status')?.trim() ?? '';
+
+    const contest_id = getTrimmedSearchParam(searchParams, [
+      'contest_id',
+      'contestId',
+    ]);
+
+    const referrer_participant_id = getTrimmedSearchParam(searchParams, [
+      'referrer_participant_id',
+      'referrerParticipantId',
+    ]);
 
     const skip = (safePage - 1) * safeLimit;
 
@@ -129,11 +161,36 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    if (contest_id && !isUuid(contest_id)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Invalid contest id.',
+        },
+        { status: 400 },
+      );
+    }
+
+    if (referrer_participant_id && !isUuid(referrer_participant_id)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Invalid referrer participant id.',
+        },
+        { status: 400 },
+      );
+    }
+
     const where = {
-      channel_id: channelId,
+      channel_id,
       ...(contest_id
         ? {
             contest_id,
+          }
+        : {}),
+      ...(referrer_participant_id
+        ? {
+            referrer_participant_id,
           }
         : {}),
       ...(status

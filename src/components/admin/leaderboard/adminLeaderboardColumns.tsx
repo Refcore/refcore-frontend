@@ -200,6 +200,7 @@ export const leaderboardColumns: LeaderboardColumn[] = [
     render: (participant, context) => (
       <div className="flex justify-end">
         <LeaderboardActions
+          constestParticipantId={participant.participant_id ?? null}
           participantId={participant.id}
           referralCode={participant.referral_code ?? ''}
           phone={participant.phone_number}

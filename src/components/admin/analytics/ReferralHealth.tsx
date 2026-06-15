@@ -176,7 +176,7 @@ const ReferralHealth = ({
 
           <div className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-[#00ff9d]">
             <ShieldCheck className="size-4" />
-            {validRate}% valid {total}
+            {validRate}% valid
           </div>
         </div>
 
@@ -187,7 +187,7 @@ const ReferralHealth = ({
         ) : !hasReferralHealthData ? (
           <ReferralHealthEmptyState />
         ) : (
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <ChartContainer config={chartConfig} className="h-65 w-full">
               <PieChart accessibilityLayer>
                 <ChartTooltip content={<ChartTooltipContent hideLabel />} />

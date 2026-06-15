@@ -192,7 +192,7 @@ export const participantsColumns: ParticipantsColumn[] = [
     mobileHidden: true,
     render: (participant) => (
       <div className="text-center">
-        <div className="inline-flex items-center justify-center gap-1 text-sm font-semibold text-white">
+        <div className="inline-flex items-center justify-center gap-1 text-sm text-white">
           <CalendarDays className="size-3.5 text-[#00d0ff]" />
           {formatDate(participant.first_joined_at)}
         </div>
@@ -207,9 +207,9 @@ export const participantsColumns: ParticipantsColumn[] = [
     mobileHidden: true,
     render: (participant) => (
       <div className="text-center">
-        <div className="inline-flex items-center justify-center gap-1 text-sm font-semibold text-white">
+        <div className="inline-flex items-center justify-center gap-1 text-sm text-white">
           <Clock className="size-3.5 text-[#00ff9d]" />
-          {formatDateTime(participant.last_active_at)}
+          {formatDateTime(participant.updated_at)}
         </div>
         <div className="mt-1 text-[11px] text-gray-500">activity</div>
       </div>
