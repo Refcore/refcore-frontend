@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import React from 'react';
 import { Trophy, SearchCheck, ShieldCheck, ArrowLeft } from 'lucide-react';
 
 import LeaderboardSearch from '@/components/publicleaderboard/LeaderboardSearch';
@@ -9,7 +8,7 @@ const LeaderboardPage = () => {
     <div className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(124,58,237,0.14),transparent_32%),radial-gradient(circle_at_right,rgba(11,158,202,0.14),transparent_28%)]" />
 
-      <div className="absolute top-0 right-0 h-full w-full rotate-180 opacity-20">
+      <div className="absolute top-0 right-0 h-full w-full rotate-180 opacity-15">
         <Image
           src="/svg/bbblurry.svg"
           className="pointer-events-none h-full w-full select-none object-cover"

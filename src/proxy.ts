@@ -4,29 +4,42 @@ import { updateSession } from '@/utils/supabase/middleware';
 
 const PUBLIC_API_ROUTES = new Set(['/api/auth/register']);
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
+const PUBLIC_API_PREFIXES = ['/api/public'];
 
-const supabaseAuth = createClient(
-  supabaseUrl,
-  supabaseKey,
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!;
+
+const supabaseAuth = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
   },
-);
+});
+
+const isPublicApiRoute = (request: NextRequest) => {
+  const { pathname } = request.nextUrl;
+
+  if (PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+    return true;
+  }
+
+  if (request.method === 'POST' && PUBLIC_API_ROUTES.has(pathname)) {
+    return true;
+  }
+
+  return false;
+};
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isApiRoute = pathname.startsWith('/api');
 
-  const isPublicApiRoute =
-    request.method === 'POST' && PUBLIC_API_ROUTES.has(pathname);
+  if (isApiRoute) {
+    if (isPublicApiRoute(request)) {
+      return NextResponse.next();
+    }
 
-  if (isApiRoute && !isPublicApiRoute) {
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.startsWith('Bearer ')
       ? authHeader.replace('Bearer ', '')
