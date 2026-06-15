@@ -29,17 +29,20 @@ export default function LeaderboardSearch({
 }: LeaderboardSearchProps) {
   const router = useRouter();
 
+  const MIN_SEARCH_LENGTH = 2;
+  const DEBOUNCE_DELAY = 650;
+
   const [value, setValue] = React.useState('');
   const [debouncedValue, setDebouncedValue] = React.useState('');
   const [error, setError] = React.useState('');
 
   const cleanValue = value.trim();
-  const shouldShowResults = cleanValue.length > 0;
+  const shouldShowResults = cleanValue.length >= MIN_SEARCH_LENGTH;
 
   React.useEffect(() => {
     const timeout = window.setTimeout(() => {
       setDebouncedValue(cleanValue);
-    }, 350);
+    }, DEBOUNCE_DELAY);
 
     return () => {
       window.clearTimeout(timeout);
@@ -53,13 +56,15 @@ export default function LeaderboardSearch({
     isError,
     error: searchError,
   } = useSearchPublicChannels({
-    search: debouncedValue,
+    search: debouncedValue.length >= MIN_SEARCH_LENGTH ? debouncedValue : '',
     limit: 6,
   });
 
   const channels = data?.channels ?? [];
   const isSearching =
-    shouldShowResults && debouncedValue && (isLoading || isFetching);
+    shouldShowResults &&
+    debouncedValue === cleanValue &&
+    (isLoading || isFetching);
 
   const navigateToLeaderboard = (slug: string) => {
     const safeSlug = slug.trim();
@@ -80,7 +85,7 @@ export default function LeaderboardSearch({
 
     setError('');
 
-    if (channels.length > 0) {
+    if (cleanValue === debouncedValue && channels.length > 0) {
       navigateToLeaderboard(channels[0].slug);
       return;
     }

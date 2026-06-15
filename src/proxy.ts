@@ -19,7 +19,11 @@ const supabaseAuth = createClient(supabaseUrl, supabaseKey, {
 const isPublicApiRoute = (request: NextRequest) => {
   const { pathname } = request.nextUrl;
 
-  if (PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+  if (
+    PUBLIC_API_PREFIXES.some(
+      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    )
+  ) {
     return true;
   }
 

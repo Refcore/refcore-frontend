@@ -95,13 +95,15 @@ const AppPagination = ({
     safeTotalPages || 1,
   );
 
+  const displayPage = safeTotalPages === 0 ? 0 : safeCurrentPage;
+
   const pages = getPaginationItems(safeCurrentPage, safeTotalPages);
 
   return (
     <div className="flex flex-col items-center justify-between gap-4 border-t border-border/50 px-1 py-4 md:flex-row md:px-4">
-      <p className="text-sm text-muted-foreground">
-        Page {safeCurrentPage} of {safeTotalPages}
-      </p>
+    <p className="text-sm text-muted-foreground">
+  Page {displayPage} of {safeTotalPages}
+</p>
 
       <Pagination className="mx-0 w-auto justify-end">
         <PaginationContent className="flex-wrap justify-center">
