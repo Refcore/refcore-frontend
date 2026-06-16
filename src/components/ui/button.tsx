@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Loader2 } from 'lucide-react';
+// import { Loader2 } from 'lucide-react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Slot } from 'radix-ui';
 
@@ -69,7 +69,7 @@ function Button({
       disabled={disabled || loading}
       {...props}
     >
-      {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+      {/* {loading ? <Loader2 className="size-4 animate-spin" /> : null} */}
       {children}
     </Comp>
   );

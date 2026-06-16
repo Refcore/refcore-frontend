@@ -2,6 +2,8 @@ import Image from 'next/image';
 import { Trophy, SearchCheck, ShieldCheck, ArrowLeft } from 'lucide-react';
 
 import LeaderboardSearch from '@/components/publicleaderboard/LeaderboardSearch';
+import CompanyLogo from '@/components/shared/CompanyLogo';
+import Link from 'next/link';
 
 const LeaderboardPage = () => {
   return (
@@ -19,10 +21,17 @@ const LeaderboardPage = () => {
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(10,10,15,1)_0%,rgba(10,10,15,0.9)_18%,rgba(10,10,15,0.45)_45%,rgba(10,10,15,0.12)_70%,transparent_100%)]" />
       </div>
 
-      <div className="mx-auto flex min-h-screen w-full max-w-(--breakpoint-2xl) items-center px-0 py-6 md:py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto flex min-h-screen w-full max-w-(--breakpoint-2xl) items-center py-6 md:py-12 px-3 md:px-12">
         <div className="mx-auto w-full max-w-3xl">
-          <div className="rounded-[32px] md:border-2 md:border-white/5 md:bg-white/1 p-6 backdrop-blur-2xl shadow-[0_20px_80px_rgba(0,0,0,0.35)] md:p-10">
-            <ArrowLeft className="w-5 text-muted-foreground hover:text-foreground hover:-translate-x-1 transition-all" />{' '}
+          <div className="rounded-[32px] md:border-2 md:border-white/5 md:bg-white/1 p-0 backdrop-blur-2xl shadow-[0_20px_80px_rgba(0,0,0,0.35)] md:p-10">
+            <Link href="/" className="flex items-center mb-4 w-fit mx-auto justify-center gap-4 text-sm text-white/70">
+              <ArrowLeft className="w-5 text-muted-foreground hover:text-foreground hover:-translate-x-1 transition-all" />{' '}
+              <CompanyLogo
+                width={100}
+                height={25}
+                className="overflow-hidden h-12"
+              />
+            </Link>
             <div className="mb-6 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70">
                 <Trophy className="size-4 text-[#0b9eca]" />
