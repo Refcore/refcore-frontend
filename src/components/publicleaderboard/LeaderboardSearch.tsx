@@ -116,13 +116,13 @@ export default function LeaderboardSearch({
                 onChange={handleInputChange}
                 placeholder={placeholder}
                 aria-label="Search leaderboard by WhatsApp TV name or code"
-                className="h-14 rounded-2xl border-0 bg-transparent pl-12 pr-4 text-base text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-[#8b5cf6]/70 focus-visible:ring-offset-0"
+                className="md:h-14 h-10 rounded-2xl border-0 bg-transparent pl-12 text-sm pr-4 md:text-base text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-[#8b5cf6]/70 focus-visible:ring-offset-0"
               />
             </div>
 
             <Button
               type="submit"
-              className="h-14 rounded-2xl bg-[linear-gradient(#2563eb_50%,#0b9eca_100%)] px-6 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(91,62,244,0.35)] hover:opacity-95"
+              className="md:h-14 h-10 rounded-2xl bg-[linear-gradient(#2563eb_50%,#0b9eca_100%)] px-6 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(91,62,244,0.35)] hover:opacity-95"
             >
               Search
               <ArrowRight className="size-4" />

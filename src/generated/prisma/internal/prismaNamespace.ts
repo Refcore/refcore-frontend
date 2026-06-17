@@ -2759,7 +2759,8 @@ export const ChannelsScalarFieldEnum = {
   channel_banner: 'channel_banner',
   contest_defaults: 'contest_defaults',
   referral_rules: 'referral_rules',
-  notification_settings: 'notification_settings'
+  notification_settings: 'notification_settings',
+  live_contest: 'live_contest'
 } as const
 
 export type ChannelsScalarFieldEnum = (typeof ChannelsScalarFieldEnum)[keyof typeof ChannelsScalarFieldEnum]

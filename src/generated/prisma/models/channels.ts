@@ -48,6 +48,7 @@ export type ChannelsMinAggregateOutputType = {
   created_at: Date | null
   updated_at: Date | null
   channel_banner: string | null
+  live_contest: boolean | null
 }
 
 export type ChannelsMaxAggregateOutputType = {
@@ -63,6 +64,7 @@ export type ChannelsMaxAggregateOutputType = {
   created_at: Date | null
   updated_at: Date | null
   channel_banner: string | null
+  live_contest: boolean | null
 }
 
 export type ChannelsCountAggregateOutputType = {
@@ -81,6 +83,7 @@ export type ChannelsCountAggregateOutputType = {
   contest_defaults: number
   referral_rules: number
   notification_settings: number
+  live_contest: number
   _all: number
 }
 
@@ -106,6 +109,7 @@ export type ChannelsMinAggregateInputType = {
   created_at?: true
   updated_at?: true
   channel_banner?: true
+  live_contest?: true
 }
 
 export type ChannelsMaxAggregateInputType = {
@@ -121,6 +125,7 @@ export type ChannelsMaxAggregateInputType = {
   created_at?: true
   updated_at?: true
   channel_banner?: true
+  live_contest?: true
 }
 
 export type ChannelsCountAggregateInputType = {
@@ -139,6 +144,7 @@ export type ChannelsCountAggregateInputType = {
   contest_defaults?: true
   referral_rules?: true
   notification_settings?: true
+  live_contest?: true
   _all?: true
 }
 
@@ -244,6 +250,7 @@ export type ChannelsGroupByOutputType = {
   contest_defaults: runtime.JsonValue
   referral_rules: runtime.JsonValue
   notification_settings: runtime.JsonValue
+  live_contest: boolean
   _count: ChannelsCountAggregateOutputType | null
   _avg: ChannelsAvgAggregateOutputType | null
   _sum: ChannelsSumAggregateOutputType | null
@@ -285,6 +292,7 @@ export type channelsWhereInput = {
   contest_defaults?: Prisma.JsonFilter<"channels">
   referral_rules?: Prisma.JsonFilter<"channels">
   notification_settings?: Prisma.JsonFilter<"channels">
+  live_contest?: Prisma.BoolFilter<"channels"> | boolean
   users?: Prisma.XOR<Prisma.Public_usersScalarRelationFilter, Prisma.public_usersWhereInput>
   contest_participants?: Prisma.Contest_participantsListRelationFilter
   contests?: Prisma.XOR<Prisma.ContestsNullableScalarRelationFilter, Prisma.contestsWhereInput> | null
@@ -309,6 +317,7 @@ export type channelsOrderByWithRelationInput = {
   contest_defaults?: Prisma.SortOrder
   referral_rules?: Prisma.SortOrder
   notification_settings?: Prisma.SortOrder
+  live_contest?: Prisma.SortOrder
   users?: Prisma.public_usersOrderByWithRelationInput
   contest_participants?: Prisma.contest_participantsOrderByRelationAggregateInput
   contests?: Prisma.contestsOrderByWithRelationInput
@@ -336,6 +345,7 @@ export type channelsWhereUniqueInput = Prisma.AtLeast<{
   contest_defaults?: Prisma.JsonFilter<"channels">
   referral_rules?: Prisma.JsonFilter<"channels">
   notification_settings?: Prisma.JsonFilter<"channels">
+  live_contest?: Prisma.BoolFilter<"channels"> | boolean
   users?: Prisma.XOR<Prisma.Public_usersScalarRelationFilter, Prisma.public_usersWhereInput>
   contest_participants?: Prisma.Contest_participantsListRelationFilter
   contests?: Prisma.XOR<Prisma.ContestsNullableScalarRelationFilter, Prisma.contestsWhereInput> | null
@@ -360,6 +370,7 @@ export type channelsOrderByWithAggregationInput = {
   contest_defaults?: Prisma.SortOrder
   referral_rules?: Prisma.SortOrder
   notification_settings?: Prisma.SortOrder
+  live_contest?: Prisma.SortOrder
   _count?: Prisma.channelsCountOrderByAggregateInput
   _avg?: Prisma.channelsAvgOrderByAggregateInput
   _max?: Prisma.channelsMaxOrderByAggregateInput
@@ -386,6 +397,7 @@ export type channelsScalarWhereWithAggregatesInput = {
   contest_defaults?: Prisma.JsonWithAggregatesFilter<"channels">
   referral_rules?: Prisma.JsonWithAggregatesFilter<"channels">
   notification_settings?: Prisma.JsonWithAggregatesFilter<"channels">
+  live_contest?: Prisma.BoolWithAggregatesFilter<"channels"> | boolean
 }
 
 export type channelsCreateInput = {
@@ -403,6 +415,7 @@ export type channelsCreateInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   users: Prisma.public_usersCreateNestedOneWithoutChannelsInput
   contest_participants?: Prisma.contest_participantsCreateNestedManyWithoutChannelsInput
   contests?: Prisma.contestsCreateNestedOneWithoutChannelsInput
@@ -427,6 +440,7 @@ export type channelsUncheckedCreateInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   contest_participants?: Prisma.contest_participantsUncheckedCreateNestedManyWithoutChannelsInput
   contests?: Prisma.contestsUncheckedCreateNestedOneWithoutChannelsInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutChannelsInput
@@ -449,6 +463,7 @@ export type channelsUpdateInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   users?: Prisma.public_usersUpdateOneRequiredWithoutChannelsNestedInput
   contest_participants?: Prisma.contest_participantsUpdateManyWithoutChannelsNestedInput
   contests?: Prisma.contestsUpdateOneWithoutChannelsNestedInput
@@ -473,6 +488,7 @@ export type channelsUncheckedUpdateInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contest_participants?: Prisma.contest_participantsUncheckedUpdateManyWithoutChannelsNestedInput
   contests?: Prisma.contestsUncheckedUpdateOneWithoutChannelsNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutChannelsNestedInput
@@ -496,6 +512,7 @@ export type channelsCreateManyInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
 }
 
 export type channelsUpdateManyMutationInput = {
@@ -513,6 +530,7 @@ export type channelsUpdateManyMutationInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type channelsUncheckedUpdateManyInput = {
@@ -531,6 +549,7 @@ export type channelsUncheckedUpdateManyInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChannelsScalarRelationFilter = {
@@ -554,6 +573,7 @@ export type channelsCountOrderByAggregateInput = {
   contest_defaults?: Prisma.SortOrder
   referral_rules?: Prisma.SortOrder
   notification_settings?: Prisma.SortOrder
+  live_contest?: Prisma.SortOrder
 }
 
 export type channelsAvgOrderByAggregateInput = {
@@ -573,6 +593,7 @@ export type channelsMaxOrderByAggregateInput = {
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   channel_banner?: Prisma.SortOrder
+  live_contest?: Prisma.SortOrder
 }
 
 export type channelsMinOrderByAggregateInput = {
@@ -588,6 +609,7 @@ export type channelsMinOrderByAggregateInput = {
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   channel_banner?: Prisma.SortOrder
+  live_contest?: Prisma.SortOrder
 }
 
 export type channelsSumOrderByAggregateInput = {
@@ -742,6 +764,7 @@ export type channelsCreateWithoutContest_participantsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   users: Prisma.public_usersCreateNestedOneWithoutChannelsInput
   contests?: Prisma.contestsCreateNestedOneWithoutChannelsInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutChannelsInput
@@ -765,6 +788,7 @@ export type channelsUncheckedCreateWithoutContest_participantsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   contests?: Prisma.contestsUncheckedCreateNestedOneWithoutChannelsInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutChannelsInput
   participants?: Prisma.participantsUncheckedCreateNestedManyWithoutChannelsInput
@@ -802,6 +826,7 @@ export type channelsUpdateWithoutContest_participantsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   users?: Prisma.public_usersUpdateOneRequiredWithoutChannelsNestedInput
   contests?: Prisma.contestsUpdateOneWithoutChannelsNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutChannelsNestedInput
@@ -825,6 +850,7 @@ export type channelsUncheckedUpdateWithoutContest_participantsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contests?: Prisma.contestsUncheckedUpdateOneWithoutChannelsNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutChannelsNestedInput
   participants?: Prisma.participantsUncheckedUpdateManyWithoutChannelsNestedInput
@@ -846,6 +872,7 @@ export type channelsCreateWithoutParticipantsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   users: Prisma.public_usersCreateNestedOneWithoutChannelsInput
   contest_participants?: Prisma.contest_participantsCreateNestedManyWithoutChannelsInput
   contests?: Prisma.contestsCreateNestedOneWithoutChannelsInput
@@ -869,6 +896,7 @@ export type channelsUncheckedCreateWithoutParticipantsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   contest_participants?: Prisma.contest_participantsUncheckedCreateNestedManyWithoutChannelsInput
   contests?: Prisma.contestsUncheckedCreateNestedOneWithoutChannelsInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutChannelsInput
@@ -906,6 +934,7 @@ export type channelsUpdateWithoutParticipantsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   users?: Prisma.public_usersUpdateOneRequiredWithoutChannelsNestedInput
   contest_participants?: Prisma.contest_participantsUpdateManyWithoutChannelsNestedInput
   contests?: Prisma.contestsUpdateOneWithoutChannelsNestedInput
@@ -929,6 +958,7 @@ export type channelsUncheckedUpdateWithoutParticipantsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contest_participants?: Prisma.contest_participantsUncheckedUpdateManyWithoutChannelsNestedInput
   contests?: Prisma.contestsUncheckedUpdateOneWithoutChannelsNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutChannelsNestedInput
@@ -950,6 +980,7 @@ export type channelsCreateWithoutReferralsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   users: Prisma.public_usersCreateNestedOneWithoutChannelsInput
   contest_participants?: Prisma.contest_participantsCreateNestedManyWithoutChannelsInput
   contests?: Prisma.contestsCreateNestedOneWithoutChannelsInput
@@ -973,6 +1004,7 @@ export type channelsUncheckedCreateWithoutReferralsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   contest_participants?: Prisma.contest_participantsUncheckedCreateNestedManyWithoutChannelsInput
   contests?: Prisma.contestsUncheckedCreateNestedOneWithoutChannelsInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutChannelsInput
@@ -1010,6 +1042,7 @@ export type channelsUpdateWithoutReferralsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   users?: Prisma.public_usersUpdateOneRequiredWithoutChannelsNestedInput
   contest_participants?: Prisma.contest_participantsUpdateManyWithoutChannelsNestedInput
   contests?: Prisma.contestsUpdateOneWithoutChannelsNestedInput
@@ -1033,6 +1066,7 @@ export type channelsUncheckedUpdateWithoutReferralsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contest_participants?: Prisma.contest_participantsUncheckedUpdateManyWithoutChannelsNestedInput
   contests?: Prisma.contestsUncheckedUpdateOneWithoutChannelsNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutChannelsNestedInput
@@ -1054,6 +1088,7 @@ export type channelsCreateWithoutContestsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   users: Prisma.public_usersCreateNestedOneWithoutChannelsInput
   contest_participants?: Prisma.contest_participantsCreateNestedManyWithoutChannelsInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutChannelsInput
@@ -1077,6 +1112,7 @@ export type channelsUncheckedCreateWithoutContestsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   contest_participants?: Prisma.contest_participantsUncheckedCreateNestedManyWithoutChannelsInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutChannelsInput
   participants?: Prisma.participantsUncheckedCreateNestedManyWithoutChannelsInput
@@ -1114,6 +1150,7 @@ export type channelsUpdateWithoutContestsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   users?: Prisma.public_usersUpdateOneRequiredWithoutChannelsNestedInput
   contest_participants?: Prisma.contest_participantsUpdateManyWithoutChannelsNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutChannelsNestedInput
@@ -1137,6 +1174,7 @@ export type channelsUncheckedUpdateWithoutContestsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contest_participants?: Prisma.contest_participantsUncheckedUpdateManyWithoutChannelsNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutChannelsNestedInput
   participants?: Prisma.participantsUncheckedUpdateManyWithoutChannelsNestedInput
@@ -1158,6 +1196,7 @@ export type channelsCreateWithoutUsersInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   contest_participants?: Prisma.contest_participantsCreateNestedManyWithoutChannelsInput
   contests?: Prisma.contestsCreateNestedOneWithoutChannelsInput
   notifications?: Prisma.notificationsCreateNestedManyWithoutChannelsInput
@@ -1180,6 +1219,7 @@ export type channelsUncheckedCreateWithoutUsersInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   contest_participants?: Prisma.contest_participantsUncheckedCreateNestedManyWithoutChannelsInput
   contests?: Prisma.contestsUncheckedCreateNestedOneWithoutChannelsInput
   notifications?: Prisma.notificationsUncheckedCreateNestedManyWithoutChannelsInput
@@ -1232,6 +1272,7 @@ export type channelsScalarWhereInput = {
   contest_defaults?: Prisma.JsonFilter<"channels">
   referral_rules?: Prisma.JsonFilter<"channels">
   notification_settings?: Prisma.JsonFilter<"channels">
+  live_contest?: Prisma.BoolFilter<"channels"> | boolean
 }
 
 export type channelsCreateWithoutNotificationsInput = {
@@ -1249,6 +1290,7 @@ export type channelsCreateWithoutNotificationsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   users: Prisma.public_usersCreateNestedOneWithoutChannelsInput
   contest_participants?: Prisma.contest_participantsCreateNestedManyWithoutChannelsInput
   contests?: Prisma.contestsCreateNestedOneWithoutChannelsInput
@@ -1272,6 +1314,7 @@ export type channelsUncheckedCreateWithoutNotificationsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
   contest_participants?: Prisma.contest_participantsUncheckedCreateNestedManyWithoutChannelsInput
   contests?: Prisma.contestsUncheckedCreateNestedOneWithoutChannelsInput
   participants?: Prisma.participantsUncheckedCreateNestedManyWithoutChannelsInput
@@ -1309,6 +1352,7 @@ export type channelsUpdateWithoutNotificationsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   users?: Prisma.public_usersUpdateOneRequiredWithoutChannelsNestedInput
   contest_participants?: Prisma.contest_participantsUpdateManyWithoutChannelsNestedInput
   contests?: Prisma.contestsUpdateOneWithoutChannelsNestedInput
@@ -1332,6 +1376,7 @@ export type channelsUncheckedUpdateWithoutNotificationsInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contest_participants?: Prisma.contest_participantsUncheckedUpdateManyWithoutChannelsNestedInput
   contests?: Prisma.contestsUncheckedUpdateOneWithoutChannelsNestedInput
   participants?: Prisma.participantsUncheckedUpdateManyWithoutChannelsNestedInput
@@ -1353,6 +1398,7 @@ export type channelsCreateManyUsersInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: boolean
 }
 
 export type channelsUpdateWithoutUsersInput = {
@@ -1370,6 +1416,7 @@ export type channelsUpdateWithoutUsersInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contest_participants?: Prisma.contest_participantsUpdateManyWithoutChannelsNestedInput
   contests?: Prisma.contestsUpdateOneWithoutChannelsNestedInput
   notifications?: Prisma.notificationsUpdateManyWithoutChannelsNestedInput
@@ -1392,6 +1439,7 @@ export type channelsUncheckedUpdateWithoutUsersInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contest_participants?: Prisma.contest_participantsUncheckedUpdateManyWithoutChannelsNestedInput
   contests?: Prisma.contestsUncheckedUpdateOneWithoutChannelsNestedInput
   notifications?: Prisma.notificationsUncheckedUpdateManyWithoutChannelsNestedInput
@@ -1414,6 +1462,7 @@ export type channelsUncheckedUpdateManyWithoutUsersInput = {
   contest_defaults?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   referral_rules?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   notification_settings?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  live_contest?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -1490,6 +1539,7 @@ export type channelsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   contest_defaults?: boolean
   referral_rules?: boolean
   notification_settings?: boolean
+  live_contest?: boolean
   users?: boolean | Prisma.public_usersDefaultArgs<ExtArgs>
   contest_participants?: boolean | Prisma.channels$contest_participantsArgs<ExtArgs>
   contests?: boolean | Prisma.channels$contestsArgs<ExtArgs>
@@ -1515,6 +1565,7 @@ export type channelsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   contest_defaults?: boolean
   referral_rules?: boolean
   notification_settings?: boolean
+  live_contest?: boolean
   users?: boolean | Prisma.public_usersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["channels"]>
 
@@ -1534,6 +1585,7 @@ export type channelsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   contest_defaults?: boolean
   referral_rules?: boolean
   notification_settings?: boolean
+  live_contest?: boolean
   users?: boolean | Prisma.public_usersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["channels"]>
 
@@ -1553,9 +1605,10 @@ export type channelsSelectScalar = {
   contest_defaults?: boolean
   referral_rules?: boolean
   notification_settings?: boolean
+  live_contest?: boolean
 }
 
-export type channelsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "owner_id" | "tv_name" | "slug" | "whatsapp_number" | "whatsapp_verified" | "whatsapp_verified_at" | "status" | "channel_members_limit" | "created_at" | "updated_at" | "channel_banner" | "contest_defaults" | "referral_rules" | "notification_settings", ExtArgs["result"]["channels"]>
+export type channelsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "owner_id" | "tv_name" | "slug" | "whatsapp_number" | "whatsapp_verified" | "whatsapp_verified_at" | "status" | "channel_members_limit" | "created_at" | "updated_at" | "channel_banner" | "contest_defaults" | "referral_rules" | "notification_settings" | "live_contest", ExtArgs["result"]["channels"]>
 export type channelsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.public_usersDefaultArgs<ExtArgs>
   contest_participants?: boolean | Prisma.channels$contest_participantsArgs<ExtArgs>
@@ -1598,6 +1651,7 @@ export type $channelsPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     contest_defaults: runtime.JsonValue
     referral_rules: runtime.JsonValue
     notification_settings: runtime.JsonValue
+    live_contest: boolean
   }, ExtArgs["result"]["channels"]>
   composites: {}
 }
@@ -2042,6 +2096,7 @@ export interface channelsFieldRefs {
   readonly contest_defaults: Prisma.FieldRef<"channels", 'Json'>
   readonly referral_rules: Prisma.FieldRef<"channels", 'Json'>
   readonly notification_settings: Prisma.FieldRef<"channels", 'Json'>
+  readonly live_contest: Prisma.FieldRef<"channels", 'Boolean'>
 }
     
 

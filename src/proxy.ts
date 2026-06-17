@@ -62,21 +62,37 @@ export async function proxy(request: NextRequest) {
       );
     }
 
-    const {
-      data: { user },
-      error,
-    } = await supabaseAuth.auth.getUser(token);
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabaseAuth.auth.getUser(token);
 
-    if (error || !user) {
+      if (error || !user) {
+        return NextResponse.json(
+          {
+            success: false,
+            status_code: 401,
+            message: 'Your session has expired. Please sign in again.',
+            data: null,
+            error_code: 'SESSION_EXPIRED',
+          },
+          { status: 401 },
+        );
+      }
+    } catch (error) {
+      console.error('[proxy] Supabase auth validation failed:', error);
+
       return NextResponse.json(
         {
           success: false,
-          status_code: 401,
-          message: 'Your session has expired. Please sign in again.',
+          status_code: 503,
+          message:
+            'Authentication service is temporarily unavailable. Please try again.',
           data: null,
-          error_code: 'SESSION_EXPIRED',
+          error_code: 'AUTH_SERVICE_UNAVAILABLE',
         },
-        { status: 401 },
+        { status: 503 },
       );
     }
 
