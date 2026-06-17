@@ -43,10 +43,39 @@ const getPublicContestSelect = {
   updated_at: true,
 } as const;
 
+const safelyDecodeSlug = (slug?: string | null) => {
+  try {
+    return {
+      success: true,
+      slug: decodeURIComponent(slug ?? '').trim(),
+    };
+  } catch {
+    return {
+      success: false,
+      slug: '',
+    };
+  }
+};
+
 export async function GET(_request: Request, { params }: RouteParams) {
   try {
     const { slug } = await params;
-    const clean_slug = decodeURIComponent(slug ?? '').trim();
+
+    const decoded_slug = safelyDecodeSlug(slug);
+
+    if (!decoded_slug.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Invalid channel slug.',
+          data: null,
+        },
+        { status: 400 },
+      );
+    }
+
+    const clean_slug = decoded_slug.slug;
 
     if (!clean_slug) {
       return NextResponse.json(
@@ -87,7 +116,8 @@ export async function GET(_request: Request, { params }: RouteParams) {
         {
           success: false,
           status_code: 409,
-          message: 'This channel currently has no active contest at the moment.',
+          message:
+            'This channel currently has no active contest at the moment.',
           data: {
             channel: {
               ...channel,
@@ -116,7 +146,8 @@ export async function GET(_request: Request, { params }: RouteParams) {
         {
           success: false,
           status_code: 409,
-          message: 'This channel currently has no active contest at the moment.',
+          message:
+            'This channel currently has no active contest at the moment.',
           data: {
             channel: {
               ...channel,

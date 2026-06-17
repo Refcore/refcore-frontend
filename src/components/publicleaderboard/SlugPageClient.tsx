@@ -10,17 +10,17 @@ import Navbar from '@/components/shared/Navbar';
 import { Button } from '@/components/ui/button';
 import { useGetChannelBySlug } from '@/hooks/public/useGetChannelBySlug';
 import { useGetPublicContestLeaderboard } from '@/hooks/public/useGetPublicContestLeaderboard';
-import {  PublicLeaderboardPayload } from '@/types/public-leaderboard';
+import { PublicLeaderboardPayload } from '@/types/public-leaderboard';
 
 import { getStorageFileUrl } from '@/utils/getStorageFileUrl';
 import {
   AlertTriangle,
-//   Clock3,
-//   Link2,
+  //   Clock3,
+  //   Link2,
   Loader2,
   RefreshCcw,
   Trophy,
-//   Users,
+  //   Users,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -272,7 +272,7 @@ const LeaderboardErrorState = ({
 };
 
 const SlugPageClient = ({ slug }: SlugPageClientProps) => {
-  const clean_slug = decodeURIComponent(slug ?? '').trim();
+  const clean_slug = slug.trim();
 
   const {
     data: channel_data,

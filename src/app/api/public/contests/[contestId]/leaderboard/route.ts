@@ -61,6 +61,11 @@ export async function GET(_request: Request, { params }: RouteParams) {
         top_performer_phone: true,
         top_performer_referrals: true,
         updated_at: true,
+        channels: {
+          select: {
+            live_contest: true,
+          },
+        },
       },
     });
 
@@ -73,6 +78,19 @@ export async function GET(_request: Request, { params }: RouteParams) {
           data: null,
         },
         { status: 404 },
+      );
+    }
+
+    if (!contest.channels.live_contest) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 409,
+          message:
+            'This channel currently has no active contest at the moment.',
+          data: null,
+        },
+        { status: 409 },
       );
     }
 
