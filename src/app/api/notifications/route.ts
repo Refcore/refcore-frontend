@@ -225,42 +225,96 @@ export async function GET(request: Request) {
         : {}),
     };
 
-    const [notifications, total, unreadCount] = await Promise.all([
-      prisma.notifications.findMany({
-        where,
-        orderBy: {
-          created_at: 'desc',
-        },
-        skip,
-        take: safeLimit,
-        select: {
-          id: true,
-          user_id: true,
-          channel_id: true,
-          contest_id: true,
-          type: true,
-          title: true,
-          description: true,
-          actor: true,
-          meta: true,
-          is_read: true,
-          read_at: true,
-          created_at: true,
-          updated_at: true,
-        },
-      }),
+    /**
+     * CHANGE ADDED:
+     * Use Promise.allSettled instead of Promise.all.
+     *
+     * Why:
+     * - notifications.findMany() is required because the UI needs the actual list.
+     * - total count and unread count are useful, but they should not crash
+     *   the whole request if one count query times out.
+     */
+    const [notificationsResult, totalResult, unreadCountResult] =
+      await Promise.allSettled([
+        prisma.notifications.findMany({
+          where,
+          orderBy: {
+            created_at: 'desc',
+          },
+          skip,
+          take: safeLimit,
+          select: {
+            id: true,
+            user_id: true,
+            channel_id: true,
+            contest_id: true,
+            type: true,
+            title: true,
+            description: true,
+            actor: true,
+            meta: true,
+            is_read: true,
+            read_at: true,
+            created_at: true,
+            updated_at: true,
+          },
+        }),
 
-      prisma.notifications.count({
-        where,
-      }),
+        prisma.notifications.count({
+          where,
+        }),
 
-      prisma.notifications.count({
-        where: {
-          ...where,
-          is_read: false,
-        },
-      }),
-    ]);
+        prisma.notifications.count({
+          where: {
+            ...where,
+            is_read: false,
+          },
+        }),
+      ]);
+
+    /**
+     * CHANGE ADDED:
+     * If the actual notifications list fails, the endpoint should still fail.
+     * The UI cannot render the notifications page without this list.
+     */
+    if (notificationsResult.status === 'rejected') {
+      throw notificationsResult.reason;
+    }
+
+    const notifications = notificationsResult.value;
+
+    /**
+     * CHANGE ADDED:
+     * If total count times out, do not crash the request.
+     * Fall back to the visible result size plus skip.
+     */
+    const total =
+      totalResult.status === 'fulfilled'
+        ? totalResult.value
+        : skip + notifications.length;
+
+    if (totalResult.status === 'rejected') {
+      console.error('GET_NOTIFICATIONS_TOTAL_COUNT_ERROR', totalResult.reason);
+    }
+
+    /**
+     * CHANGE ADDED:
+     * If unread count times out, do not crash the request.
+     * Fall back to unread notifications visible on the current page.
+     */
+    const unreadCount =
+      unreadCountResult.status === 'fulfilled'
+        ? unreadCountResult.value
+        : notifications.filter((notification) => !notification.is_read).length;
+
+    if (unreadCountResult.status === 'rejected') {
+      console.error(
+        'GET_NOTIFICATIONS_UNREAD_COUNT_ERROR',
+        unreadCountResult.reason,
+      );
+    }
+
+    const totalPages = Math.ceil(total / safeLimit);
 
     return NextResponse.json({
       success: true,
@@ -272,7 +326,7 @@ export async function GET(request: Request) {
           page: safePage,
           limit: safeLimit,
           total,
-          total_pages: Math.ceil(total / safeLimit),
+          total_pages: totalPages,
           can_previous_page: safePage > 1,
           can_next_page: safePage * safeLimit < total,
         },

@@ -4,18 +4,15 @@ import React, { useMemo } from 'react';
 import {
   Activity,
   ChartColumnBig,
-  Radar,
   TrendingUp,
   UsersRound,
 } from 'lucide-react';
 import {
+  Bar,
+  BarChart,
   CartesianGrid,
   Line,
   LineChart,
-  PolarAngleAxis,
-  PolarGrid,
-  Radar as RechartsRadar,
-  RadarChart,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -48,6 +45,13 @@ type ReferralsChartItem = {
 type JoinsChartItem = {
   day: string;
   joins: number;
+};
+
+type HistoricalDataState = {
+  has_any_data: boolean;
+  has_recent_data: boolean;
+  total_count: number;
+  latest_activity_label: string | null;
 };
 
 const referralsChartConfig = {
@@ -84,8 +88,51 @@ const getDayLabel = (date: Date) => {
   });
 };
 
-const isValidDate = (date: Date) => {
-  return !Number.isNaN(date.getTime());
+const formatFullDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
+
+const getValidDate = (date?: string | Date | null) => {
+  if (!date) return null;
+
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  return parsedDate;
+};
+
+const getLatestActivityLabel = (
+  dates: Array<string | Date | null | undefined>,
+) => {
+  const latestDate = dates.reduce<Date | null>((latest, currentDate) => {
+    const parsedDate = getValidDate(currentDate);
+
+    if (!parsedDate) {
+      return latest;
+    }
+
+    if (!latest || parsedDate.getTime() > latest.getTime()) {
+      return parsedDate;
+    }
+
+    return latest;
+  }, null);
+
+  return latestDate ? formatFullDate(latestDate) : null;
+};
+
+const hasChartData = <T extends Record<string, string | number>>(
+  data: T[],
+  valueKey: keyof T,
+) => {
+  return data.some((item) => Number(item[valueKey]) > 0);
 };
 
 const buildReferralsChartData = (
@@ -95,15 +142,16 @@ const buildReferralsChartData = (
 
   const referralsByDay = referrals.reduce<Record<string, number>>(
     (accumulator, referral) => {
-      const referralDate = new Date(referral.created_at);
+      const referralDate = getValidDate(referral.created_at);
 
-      if (!isValidDate(referralDate)) {
+      if (!referralDate) {
         return accumulator;
       }
 
       referralDate.setHours(0, 0, 0, 0);
 
       const dayKey = getDayKey(referralDate);
+
       accumulator[dayKey] = (accumulator[dayKey] ?? 0) + 1;
 
       return accumulator;
@@ -128,15 +176,16 @@ const buildJoinsChartData = (
 
   const joinsByDay = participants.reduce<Record<string, number>>(
     (accumulator, participant) => {
-      const joinedDate = new Date(participant.joined_at);
+      const joinedDate = getValidDate(participant.joined_at);
 
-      if (!isValidDate(joinedDate)) {
+      if (!joinedDate) {
         return accumulator;
       }
 
       joinedDate.setHours(0, 0, 0, 0);
 
       const dayKey = getDayKey(joinedDate);
+
       accumulator[dayKey] = (accumulator[dayKey] ?? 0) + 1;
 
       return accumulator;
@@ -154,30 +203,99 @@ const buildJoinsChartData = (
   });
 };
 
-const hasChartData = <T extends Record<string, string | number>>(
-  data: T[],
-  valueKey: keyof T,
-) => {
-  return data.some((item) => Number(item[valueKey]) > 0);
+/**
+ * CHANGE ADDED:
+ * This only checks whether referrals exist outside the 7-day chart window.
+ * It does not change the chart UI.
+ */
+const getReferralHistoricalState = (
+  referrals: ReferralModel[],
+  chartData: ReferralsChartItem[],
+): HistoricalDataState => {
+  const validReferrals = referrals.filter((referral) => {
+    return Boolean(getValidDate(referral.created_at));
+  });
+
+  return {
+    has_any_data: validReferrals.length > 0,
+    has_recent_data: hasChartData(chartData, 'referrals'),
+    total_count: validReferrals.length,
+    latest_activity_label: getLatestActivityLabel(
+      validReferrals.map((referral) => referral.created_at),
+    ),
+  };
+};
+
+/**
+ * CHANGE ADDED:
+ * This only checks whether joins exist outside the 7-day chart window.
+ * It does not change the joins chart type.
+ */
+const getJoinsHistoricalState = (
+  participants: ContestParticipantChartItem[],
+  chartData: JoinsChartItem[],
+): HistoricalDataState => {
+  const validParticipants = participants.filter((participant) => {
+    return Boolean(getValidDate(participant.joined_at));
+  });
+
+  return {
+    has_any_data: validParticipants.length > 0,
+    has_recent_data: hasChartData(chartData, 'joins'),
+    total_count: validParticipants.length,
+    latest_activity_label: getLatestActivityLabel(
+      validParticipants.map((participant) => participant.joined_at),
+    ),
+  };
 };
 
 const ChartEmptyState = ({
   title,
   description,
+  historicalState,
   children,
 }: {
   title: string;
   description: string;
+  historicalState?: HistoricalDataState;
   children: React.ReactNode;
 }) => {
+  const hasOldDataOnly =
+    historicalState?.has_any_data && !historicalState.has_recent_data;
+
   return (
     <div className="flex h-70 w-full flex-col items-center justify-center rounded-xl border border-dashed border-white/10 bg-[#0a0a0f]/30 px-4 text-center">
-      <div className="mb-4 flex items-center justify-center">{children}</div>
+      <div className="mb-4 flex items-center justify-center text-gray-500">
+        {children}
+      </div>
 
       <h4 className="text-sm font-semibold text-white">{title}</h4>
+
       <p className="mt-1 max-w-xs text-xs leading-5 text-gray-400">
         {description}
       </p>
+
+      {/* CHANGE ADDED: Only extra info. No new graph. No UI structure change. */}
+      {hasOldDataOnly ? (
+        <div className="mt-4 rounded-xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3 text-left">
+          <div className="flex gap-2">
+            <Activity className="mt-0.5 size-4 shrink-0 text-yellow-400" />
+
+            <div>
+              <p className="text-xs font-semibold text-yellow-100">
+                Data exists, but not in the last 7 days.
+              </p>
+
+              <p className="mt-1 text-[11px] leading-5 text-yellow-100/70">
+                Total records: {historicalState.total_count}
+                {historicalState.latest_activity_label
+                  ? ` • Last activity: ${historicalState.latest_activity_label}`
+                  : ''}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
@@ -209,12 +327,21 @@ const AnalyticsCharts = ({
     return buildJoinsChartData(participants);
   }, [participants]);
 
-  const hasReferralsData = hasChartData(
-    referralsOverTimeData,
-    'referrals',
-  );
+  /**
+   * CHANGE ADDED:
+   * These are only used to improve empty-state text.
+   * They do not add new graph fields or change the chart rendering.
+   */
+  const referralHistoricalState = useMemo(() => {
+    return getReferralHistoricalState(referrals, referralsOverTimeData);
+  }, [referrals, referralsOverTimeData]);
 
-  const hasJoinsData = hasChartData(joinsPerDayData, 'joins');
+  const joinsHistoricalState = useMemo(() => {
+    return getJoinsHistoricalState(participants, joinsPerDayData);
+  }, [participants, joinsPerDayData]);
+
+  const hasReferralChartData = referralHistoricalState.has_recent_data;
+  const hasJoinsChartData = joinsHistoricalState.has_recent_data;
 
   return (
     <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
@@ -224,8 +351,9 @@ const AnalyticsCharts = ({
             <h3 className="text-lg font-bold text-white md:text-xl">
               Referrals Over Time
             </h3>
+
             <p className="mt-1 text-sm text-gray-400">
-              Referral growth across the current contest
+              Referral growth across the last 7 days
             </p>
           </div>
 
@@ -239,20 +367,24 @@ const AnalyticsCharts = ({
           <ChartLoadingState text="Loading referral chart">
             <ChartColumnBig />
           </ChartLoadingState>
-        ) : !hasReferralsData ? (
+        ) : !hasReferralChartData ? (
           <ChartEmptyState
-            title="No referral data yet"
-            description="Once referrals start coming in for this contest, the growth trend will appear here."
+            title={
+              referralHistoricalState.has_any_data
+                ? 'No referrals in the last 7 days'
+                : 'No referral data yet'
+            }
+            description={
+              referralHistoricalState.has_any_data
+                ? 'Referral history exists, but there has been no new referral activity within this 7-day chart window.'
+                : 'Once referrals start coming in for this contest, the growth trend will appear here.'
+            }
+            historicalState={referralHistoricalState}
           >
-            <IconLoader loadingText="No referrals yet">
-              <ChartColumnBig />
-            </IconLoader>
+            <ChartColumnBig />
           </ChartEmptyState>
         ) : (
-          <ChartContainer
-            config={referralsChartConfig}
-            className="h-70 w-full"
-          >
+          <ChartContainer config={referralsChartConfig} className="h-70 w-full">
             <LineChart
               accessibilityLayer
               data={referralsOverTimeData}
@@ -263,46 +395,43 @@ const AnalyticsCharts = ({
                 bottom: 0,
               }}
             >
-              <CartesianGrid
-                vertical={false}
-                stroke="rgba(255,255,255,0.06)"
-              />
+              <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.06)" />
+
               <XAxis
                 dataKey="day"
                 tickLine={false}
                 axisLine={false}
-                tickMargin={10}
-                tick={{ fill: '#9ca3af', fontSize: 12 }}
+                tickMargin={8}
+                tick={{
+                  fill: '#9ca3af',
+                  fontSize: 12,
+                }}
               />
+
               <YAxis
-                allowDecimals={false}
                 tickLine={false}
                 axisLine={false}
-                tickMargin={10}
-                tick={{ fill: '#9ca3af', fontSize: 12 }}
-              />
-              <ChartTooltip
-                cursor={{
-                  stroke: 'rgba(255,255,255,0.12)',
-                  strokeWidth: 1,
+                tickMargin={8}
+                allowDecimals={false}
+                width={30}
+                tick={{
+                  fill: '#9ca3af',
+                  fontSize: 12,
                 }}
-                content={<ChartTooltipContent indicator="line" />}
               />
+
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+
               <Line
                 type="monotone"
                 dataKey="referrals"
                 stroke="var(--color-referrals)"
-                strokeWidth={3}
+                strokeWidth={2}
                 dot={{
-                  r: 4,
-                  fill: 'var(--color-referrals)',
-                  strokeWidth: 0,
+                  r: 3,
                 }}
                 activeDot={{
-                  r: 6,
-                  fill: 'var(--color-referrals)',
-                  stroke: '#0a0a0f',
-                  strokeWidth: 2,
+                  r: 5,
                 }}
               />
             </LineChart>
@@ -316,72 +445,85 @@ const AnalyticsCharts = ({
             <h3 className="text-lg font-bold text-white md:text-xl">
               Joins Per Day
             </h3>
+
             <p className="mt-1 text-sm text-gray-400">
-              Daily join distribution for this contest
+              Participant joins across the last 7 days
             </p>
           </div>
 
           <div className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-[#b700ff]">
-            <Radar className="size-4" />
-            Pattern
+            <UsersRound className="size-4" />
+            Joins
           </div>
         </div>
 
         {isLoading ? (
-          <ChartLoadingState text="Loading join chart">
+          <ChartLoadingState text="Loading joins chart">
             <UsersRound />
           </ChartLoadingState>
-        ) : !hasJoinsData ? (
+        ) : !hasJoinsChartData ? (
           <ChartEmptyState
-            title="No join data yet"
-            description="Once participants join this contest, the daily join pattern will appear here."
+            title={
+              joinsHistoricalState.has_any_data
+                ? 'No joins in the last 7 days'
+                : 'No join data yet'
+            }
+            description={
+              joinsHistoricalState.has_any_data
+                ? 'Participant history exists, but there have been no new joins within this 7-day chart window.'
+                : 'Once participants join this contest, daily joins will appear here.'
+            }
+            historicalState={joinsHistoricalState}
           >
-            <IconLoader loadingText="No joins yet">
-              <UsersRound />
-            </IconLoader>
+            <UsersRound />
           </ChartEmptyState>
         ) : (
           <ChartContainer config={joinsChartConfig} className="h-70 w-full">
-            <RadarChart
+            <BarChart
               accessibilityLayer
               data={joinsPerDayData}
               margin={{
-                top: 10,
-                right: 10,
-                bottom: 10,
-                left: 10,
+                left: 8,
+                right: 8,
+                top: 8,
+                bottom: 0,
               }}
             >
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <PolarGrid stroke="rgba(255,255,255,0.08)" />
-              <PolarAngleAxis
+              <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.06)" />
+
+              <XAxis
                 dataKey="day"
-                tick={{ fill: '#9ca3af', fontSize: 12 }}
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tick={{
+                  fill: '#9ca3af',
+                  fontSize: 12,
+                }}
               />
-              <RechartsRadar
+
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                allowDecimals={false}
+                width={30}
+                tick={{
+                  fill: '#9ca3af',
+                  fontSize: 12,
+                }}
+              />
+
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+
+              <Bar
                 dataKey="joins"
                 fill="var(--color-joins)"
-                fillOpacity={0.3}
-                stroke="var(--color-joins)"
-                strokeWidth={2}
+                radius={[6, 6, 0, 0]}
               />
-            </RadarChart>
+            </BarChart>
           </ChartContainer>
         )}
-      </div>
-
-      <div className="rounded-xl border border-white/10 bg-[#13131a]/70 px-4 py-3 backdrop-blur-md md:px-6 xl:col-span-2">
-        <div className="flex flex-col gap-2 text-xs text-gray-400 sm:flex-row sm:items-center sm:justify-between">
-          <p className="flex items-center gap-2">
-            <Activity className="size-4 text-[#00ff9d]" />
-            These charts reflect current contest activity only.
-          </p>
-
-          <p>
-            Referrals show growth trend, while joins reveal the weekly entry
-            pattern.
-          </p>
-        </div>
       </div>
     </section>
   );

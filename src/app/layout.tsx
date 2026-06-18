@@ -12,6 +12,9 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  ),
   title: {
     default: 'REFCORE | Automated WhatsApp Referral Contests',
     template: '%s | REFCORE',
@@ -58,7 +61,9 @@ export const metadata: Metadata = {
     title: 'REFCORE | Automated WhatsApp Referral Contests',
     description:
       'Run automated WhatsApp referral contests with live leaderboard tracking and anti-cheat support.',
-    images: ['https://drive.google.com/file/d/1Ihi1HH6rsANQxpgUuxYspkyXB8SHSxsA/view?usp=sharing'],
+    images: [
+      'https://drive.google.com/file/d/1Ihi1HH6rsANQxpgUuxYspkyXB8SHSxsA/view?usp=sharing',
+    ],
   },
 
   icons: {
@@ -66,8 +71,6 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
-
-  metadataBase: new URL('https://refcore-frontend.vercel.app/'),
 };
 
 export default function RootLayout({
