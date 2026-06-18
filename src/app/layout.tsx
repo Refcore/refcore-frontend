@@ -11,8 +11,10 @@ const fredoka = Fredoka({
   variable: '--font-fredoka', // important
 });
 
-const siteOgImage =
-  'https://refcore-frontend.vercel.app/og/refcore-og.webp';
+const siteOgImage = 'https://refcore-frontend.vercel.app/og/refcore-og.webp';
+
+const twitterOgImage =
+  'https://vbgxtawndhslmciadtbh.supabase.co/storage/v1/object/public/site_assets/refcore-og.webp?v=1';
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -64,7 +66,7 @@ export const metadata: Metadata = {
     title: 'REFCORE | Automated WhatsApp Referral Contests',
     description:
       'Run automated WhatsApp referral contests with live leaderboard tracking and anti-cheat support.',
-    images: [siteOgImage],
+    images: [twitterOgImage],
   },
 
   icons: {
