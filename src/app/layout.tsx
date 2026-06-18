@@ -12,7 +12,7 @@ const fredoka = Fredoka({
 });
 
 const siteOgImage =
-  'https://refcore-frontend.vercel.app/og/refcore-og.png';
+  'https://refcore-frontend.vercel.app/og/refcore-og.webp';
 
 export const metadata: Metadata = {
   metadataBase: new URL(
