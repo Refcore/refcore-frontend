@@ -86,7 +86,7 @@ const PageShell = ({ children }: { children: React.ReactNode }) => {
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,transparent_0%,transparent_72%,rgba(10,10,15,0.28)_88%,rgba(10,10,15,0.65)_96%,#0a0a0f_100%)]" />
       </div>
 
-      <div className="relative z-10 mx-auto min-h-screen w-full py-10 md:py-16">
+      <div className="relative z-10 mx-auto min-h-screen w-full py-20 md:py-16">
         {children}
       </div>
     </div>

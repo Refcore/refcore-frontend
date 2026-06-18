@@ -52,12 +52,12 @@ export default function LeaderboardBannerFirst({
   const hasBanner = Boolean(channel.channel_banner_url);
 
   return (
-    <section className="relative overflow-hidden py-8 sm:py-10 lg:py-14">
+    <section className="relative py-8 sm:py-10 lg:py-14">
       <div className="bg-purple-glow pointer-events-none absolute top-0 left-1/4 -z-10 h-72 w-72 rounded-full blur-3xl md:h-96 md:w-96" />
       <div className="bg-green-glow pointer-events-none absolute right-1/4 bottom-0 -z-10 h-72 w-72 rounded-full blur-3xl md:h-96 md:w-96" />
 
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative min-h-90 overflow-hidden rounded-[2rem] border border-white/10 bg-[#07070b] shadow-[0_24px_90px_rgba(0,0,0,0.45)] sm:min-h-107.5 lg:min-h-115">
+      <div className="mx-auto w-full max-w-7xl px-3 md:px-8">
+        <div className="relative min-h-90 overflow-hidden rounded-2xl bg-[#07070b] shadow-[0_24px_90px_rgba(0,0,0,0.45)] sm:min-h-107.5 lg:min-h-115">
           {hasBanner ? (
             <>
               <Image
