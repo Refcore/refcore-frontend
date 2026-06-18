@@ -22,6 +22,23 @@ export const metadata: Metadata = {
   description:
     'REFCORE helps WhatsApp TV owners run automated referral contests with participant registration, referral tracking, live leaderboards, and basic anti-cheat checks.',
 
+  keywords: [
+    'REFCORE',
+    'WhatsApp referral contest',
+    'WhatsApp TV',
+    'referral tracking',
+    'leaderboard automation',
+    'contest automation',
+    'WhatsApp marketing',
+    'referral system',
+    'anti-cheat referral contest',
+  ],
+
+  applicationName: 'REFCORE',
+  authors: [{ name: 'REFCORE' }],
+  creator: 'REFCORE',
+  publisher: 'REFCORE',
+
   openGraph: {
     title: 'REFCORE | Automated WhatsApp Referral Contests',
     description:
