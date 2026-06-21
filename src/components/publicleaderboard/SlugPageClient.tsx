@@ -15,12 +15,14 @@ import { PublicLeaderboardPayload } from '@/types/public-leaderboard';
 import { getStorageFileUrl } from '@/utils/getStorageFileUrl';
 import {
   AlertTriangle,
-  //   Clock3,
-  //   Link2,
+  CalendarDays,
+  Gift,
   Loader2,
+  LockKeyhole,
   RefreshCcw,
   Trophy,
-  //   Users,
+  Users,
+  Zap,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -29,43 +31,6 @@ import React from 'react';
 type SlugPageClientProps = {
   slug: string;
 };
-
-// const formatNumber = (value?: number | null) => {
-//   return new Intl.NumberFormat('en-US').format(value ?? 0);
-// };
-
-// const formatDate = (value?: string | null) => {
-//   if (!value) return 'Not set';
-
-//   const date = new Date(value);
-
-//   if (Number.isNaN(date.getTime())) return 'Not set';
-
-//   return new Intl.DateTimeFormat('en-US', {
-//     month: 'short',
-//     day: 'numeric',
-//     year: 'numeric',
-//   }).format(date);
-// };
-
-// const getTimeRemainingLabel = (end_date?: string | null) => {
-//   if (!end_date) return 'No end date';
-
-//   const endDate = new Date(end_date);
-//   const now = new Date();
-
-//   if (Number.isNaN(endDate.getTime())) return 'No end date';
-
-//   const diff = endDate.getTime() - now.getTime();
-
-//   if (diff <= 0) return 'Ending soon';
-
-//   const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
-//   if (days === 1) return '1 day left';
-
-//   return `${days} days left`;
-// };
 
 const PageShell = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -122,91 +87,6 @@ const PageStateCard = ({
     </div>
   );
 };
-
-// const ChannelContestHeader = ({
-//   public_leaderboard,
-// }: {
-//   public_leaderboard: PublicLeaderboardPayload;
-// }) => {
-//   const { channel, active_contest } = public_leaderboard;
-
-//   return (
-//     <section className="mx-auto w-full max-w-7xl px-4 pb-8 pt-2 sm:px-6 lg:px-8">
-//       <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/4 shadow-[0_24px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-//         <div className="relative min-h-65 overflow-hidden">
-//           {channel.channel_banner_url ? (
-//             <>
-//               {/* eslint-disable-next-line @next/next/no-img-element */}
-//               <img
-//                 src={channel.channel_banner_url}
-//                 alt={channel.tv_name}
-//                 className="absolute inset-0 size-full object-cover"
-//               />
-//               <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(10,10,15,0.25),rgba(10,10,15,0.9))]" />
-//               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,208,255,0.22),transparent_36%),radial-gradient(circle_at_bottom_left,rgba(183,0,255,0.2),transparent_42%)]" />
-//             </>
-//           ) : (
-//             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,208,255,0.18),transparent_36%),radial-gradient(circle_at_bottom_left,rgba(183,0,255,0.22),transparent_42%),linear-gradient(135deg,rgba(28,28,38,0.9),rgba(10,10,15,0.98))]" />
-//           )}
-
-//           <div className="relative z-10 flex min-h-65 flex-col justify-end p-5 sm:p-8 lg:p-10">
-//             <div className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-[#00ff9d]/30 bg-[#00ff9d]/10 px-4 py-2 text-xs font-bold uppercase tracking-wide text-[#00ff9d]">
-//               <span className="size-2 rounded-full bg-[#00ff9d] shadow-[0_0_12px_rgba(0,255,157,0.9)]" />
-//               Live contest
-//             </div>
-
-//             <div className="max-w-3xl">
-//               <h1 className="text-3xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
-//                 {channel.tv_name}
-//               </h1>
-
-//               <p className="mt-3 text-lg font-semibold text-white/85 sm:text-xl">
-//                 {active_contest.title}
-//               </p>
-
-//               {active_contest.description ? (
-//                 <p className="mt-3 max-w-2xl text-sm leading-6 text-white/60 sm:text-base">
-//                   {active_contest.description}
-//                 </p>
-//               ) : null}
-//             </div>
-
-//             <div className="mt-6 flex flex-wrap gap-3 text-sm">
-//               <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-black/25 px-4 py-2 text-white/75 backdrop-blur">
-//                 <Users className="size-4 text-[#00d0ff]" />
-//                 <span className="text-white/45">Participants:</span>
-//                 <span className="font-bold text-white">
-//                   {formatNumber(active_contest.participants_count)}
-//                 </span>
-//               </div>
-
-//               <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-black/25 px-4 py-2 text-white/75 backdrop-blur">
-//                 <Link2 className="size-4 text-[#00ff9d]" />
-//                 <span className="text-white/45">Referrals:</span>
-//                 <span className="font-bold text-white">
-//                   {formatNumber(active_contest.referrals_count)}
-//                 </span>
-//               </div>
-
-//               <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-black/25 px-4 py-2 text-white/75 backdrop-blur">
-//                 <Clock3 className="size-4 text-[#b700ff]" />
-//                 <span className="text-white/45">Ends:</span>
-//                 <span className="font-bold text-white">
-//                   {getTimeRemainingLabel(active_contest.end_date)}
-//                 </span>
-//               </div>
-//             </div>
-
-//             <p className="mt-4 text-xs text-white/40">
-//               Contest period: {formatDate(active_contest.start_date)} -{' '}
-//               {formatDate(active_contest.end_date)}
-//             </p>
-//           </div>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// };
 
 const LeaderboardLoadingState = () => {
   return (
@@ -271,6 +151,128 @@ const LeaderboardErrorState = ({
   );
 };
 
+const formatDate = (date?: string | Date | null) => {
+  if (!date) return 'Not set';
+
+  const formattedDate = new Date(date);
+
+  if (Number.isNaN(formattedDate.getTime())) {
+    return 'Not set';
+  }
+
+  return formattedDate.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
+
+const getWinnerText = (maxWinners?: number | null) => {
+  if (!maxWinners || maxWinners < 1) {
+    return 'Winners not set';
+  }
+
+  if (maxWinners === 1) {
+    return 'The first 1 participant will be selected as winner.';
+  }
+
+  return `The first ${maxWinners} participants will be selected as winners.`;
+};
+
+const ContestInfoSection = ({
+  leaderboard,
+}: {
+  leaderboard: PublicLeaderboardPayload;
+}) => {
+  const { active_contest } = leaderboard;
+
+  return (
+    <section className="mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6 lg:px-8">
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-3xl border border-white/10 bg-white/4 p-5 shadow-[0_20px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl lg:col-span-2">
+          <div className="mb-4 flex items-start gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-[#00d0ff]/20 bg-[#00d0ff]/10">
+              <Trophy className="size-5 text-[#00d0ff]" />
+            </div>
+
+            <div>
+              <h2 className="text-lg font-bold text-white">
+                Contest details
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="mb-2 flex items-center gap-2 text-xs font-medium text-white/45">
+                <CalendarDays className="size-4 text-[#00d0ff]" />
+                Contest Period
+              </div>
+
+              <p className="text-sm font-semibold text-white">
+                {formatDate(active_contest.start_date)} -{' '}
+                {formatDate(active_contest.end_date)}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="mb-2 flex items-center gap-2 text-xs font-medium text-white/45">
+                <Trophy className="size-4 text-yellow-400" />
+                Winners
+              </div>
+
+              <p className="text-sm font-semibold text-white">
+                {getWinnerText(active_contest.max_winners)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-white/10 bg-white/4 p-5 shadow-[0_20px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+          <div className="mb-4 flex items-start gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl border border-[#00ff9d]/20 bg-[#00ff9d]/10">
+              <Gift className="size-5 text-[#00ff9d]" />
+            </div>
+
+            <div>
+              <h2 className="text-lg font-bold text-white">Reward</h2>
+
+              <p className="mt-1 text-sm leading-6 text-white/55">
+                {active_contest.reward_description ||
+                  'Reward details have not been added yet.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="mb-2 flex items-center gap-2 text-xs font-medium text-white/45">
+                <Users className="size-4 text-[#00d0ff]" />
+                Participants
+              </div>
+
+              <p className="text-lg font-black text-white">
+                {active_contest.participants_count?.toLocaleString() ?? '0'}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="mb-2 flex items-center gap-2 text-xs font-medium text-white/45">
+                <Zap className="size-4 text-[#00ff9d]" />
+                Referrals
+              </div>
+
+              <p className="text-lg font-black text-white">
+                {active_contest.referrals_count?.toLocaleString() ?? '0'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const SlugPageClient = ({ slug }: SlugPageClientProps) => {
   const clean_slug = slug.trim();
 
@@ -283,7 +285,10 @@ const SlugPageClient = ({ slug }: SlugPageClientProps) => {
     refetch: refetchChannel,
   } = useGetChannelBySlug(clean_slug);
 
-  const active_contest_id = channel_data?.active_contest.id ?? null;
+  const active_contest = channel_data?.active_contest ?? null;
+  const is_public_contest = active_contest?.visibility === 'public';
+  const active_contest_id =
+    active_contest && is_public_contest ? active_contest.id : null;
 
   const {
     data: contest_leaderboard,
@@ -306,9 +311,9 @@ const SlugPageClient = ({ slug }: SlugPageClientProps) => {
 
   const public_leaderboard =
     React.useMemo<PublicLeaderboardPayload | null>(() => {
-      if (!channel_data) return null;
+      if (!channel_data || !active_contest || !is_public_contest) return null;
 
-      const { channel, active_contest } = channel_data;
+      const { channel } = channel_data;
 
       const channel_banner_url = getStorageFileUrl(
         'channel_banners',
@@ -324,7 +329,7 @@ const SlugPageClient = ({ slug }: SlugPageClientProps) => {
         active_contest_id: active_contest.id,
         contest_leaderboard: contest_leaderboard ?? null,
       };
-    }, [channel_data, contest_leaderboard]);
+    }, [channel_data, active_contest, is_public_contest, contest_leaderboard]);
 
   if (isChannelLoading) {
     return (
@@ -376,13 +381,73 @@ const SlugPageClient = ({ slug }: SlugPageClientProps) => {
     );
   }
 
+  if (!active_contest) {
+    return (
+      <PageShell>
+        <PageStateCard
+          icon={<Trophy className="size-6 text-white/70" />}
+          title="No active contest found"
+          description="This channel does not currently have an active contest with a public leaderboard."
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl border-white/10 bg-white/5 text-white hover:bg-white/10"
+              asChild
+            >
+              <Link href="/">Go home</Link>
+            </Button>
+          }
+        />
+      </PageShell>
+    );
+  }
+
+  if (!is_public_contest) {
+    return (
+      <PageShell>
+        <PageStateCard
+          icon={<LockKeyhole className="size-6 text-yellow-400" />}
+          title="This leaderboard is private"
+          description="This contest is active, but it is not publicly visible. Only public contests can be viewed from this leaderboard page."
+          action={
+            <div className="flex flex-col justify-center gap-3 sm:flex-row">
+              <Button
+                type="button"
+                onClick={() => refetchChannel()}
+                disabled={isChannelFetching}
+                className="rounded-xl bg-white text-black hover:bg-white/90"
+              >
+                {isChannelFetching ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <RefreshCcw className="size-4" />
+                )}
+                Check again
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl border-white/10 bg-white/5 text-white hover:bg-white/10"
+                asChild
+              >
+                <Link href="/">Go home</Link>
+              </Button>
+            </div>
+          }
+        />
+      </PageShell>
+    );
+  }
+
   if (!public_leaderboard) {
     return (
       <PageShell>
         <PageStateCard
           icon={<Trophy className="size-6 text-white/70" />}
           title="No leaderboard found"
-          description="We could not find a live leaderboard for this channel."
+          description="We could not find a live public leaderboard for this channel."
           action={
             <Button
               type="button"
@@ -406,9 +471,9 @@ const SlugPageClient = ({ slug }: SlugPageClientProps) => {
 
   return (
     <PageShell>
-      {/* <ChannelContestHeader public_leaderboard={public_leaderboard} /> */}
-
       <LeaderboardBannerFirst leaderboard={public_leaderboard} />
+
+      <ContestInfoSection leaderboard={public_leaderboard} />
 
       {shouldShowLeaderboardLoading ? (
         <LeaderboardLoadingState />

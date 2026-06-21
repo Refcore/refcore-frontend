@@ -21,6 +21,25 @@ type RouteParams = {
   }>;
 };
 
+const getContestTimingMode = (
+  startDate?: Date | string | null,
+  endDate?: Date | string | null,
+) => {
+  return startDate && endDate ? 'automatic' : 'manual';
+};
+
+const normalizeDateValue = (date?: Date | string | null) => {
+  if (!date) return null;
+
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  return parsedDate.toISOString();
+};
+
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const { user, error: authError } = await getApiAuthUser(request);
@@ -428,6 +447,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       select: {
         id: true,
         channel_id: true,
+        status: true,
+        slug: true,
+        visibility: true,
+        referral_code_prefix: true,
+        start_date: true,
+        end_date: true,
         channels: {
           select: {
             owner_id: true,
@@ -460,6 +485,56 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         },
         { status: 403 },
       );
+    }
+
+    if (existingContest.status === 'active') {
+      const existingTimingMode = getContestTimingMode(
+        existingContest.start_date,
+        existingContest.end_date,
+      );
+
+      const lockedFieldChanges: string[] = [];
+
+      if (body.slug.trim() !== existingContest.slug) {
+        lockedFieldChanges.push('contest slug');
+      }
+
+      if (body.visibility !== existingContest.visibility) {
+        lockedFieldChanges.push('visibility');
+      }
+
+      if (
+        body.referral_code_prefix.toUpperCase() !==
+        existingContest.referral_code_prefix
+      ) {
+        lockedFieldChanges.push('referral code prefix');
+      }
+
+      if (body.contest_timing_mode !== existingTimingMode) {
+        lockedFieldChanges.push('timing mode');
+      }
+
+      if (
+        normalizeDateValue(body.start_date) !==
+        normalizeDateValue(existingContest.start_date)
+      ) {
+        lockedFieldChanges.push('start date');
+      }
+
+      if (lockedFieldChanges.length > 0) {
+        return NextResponse.json<ApiResponse<Contest>>(
+          {
+            success: false,
+            status_code: 409,
+            message: `This contest is live, so ${lockedFieldChanges.join(
+              ', ',
+            )} cannot be changed. These fields are locked to protect existing referral links, participant access, and contest history.`,
+            data: null,
+            error_code: 'LIVE_CONTEST_LOCKED_FIELDS',
+          },
+          { status: 409 },
+        );
+      }
     }
 
     const isAutomaticContest = body.contest_timing_mode === 'automatic';

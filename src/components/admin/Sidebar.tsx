@@ -10,7 +10,7 @@ import AdminUser from './AdminUser';
 
 const Sidebar = () => {
   return (
-    <aside className="hidden sticky top-0 h-screen w-70 shrink-0 border-r border-white/10 bg-[#0a0a0f] px-4 py-6 lg:flex lg:flex-col">
+    <aside className="hidden sticky overflow-y-auto top-0 h-screen w-70 shrink-0 border-r border-white/10 bg-[#0a0a0f] px-4 py-6 lg:flex lg:flex-col">
       <Link
         href={ADMIN_ROUTES.HOME}
         className="mb-8 flex items-center gap-3 px-2"
