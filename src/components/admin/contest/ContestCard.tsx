@@ -1,13 +1,17 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { CalendarDays, Eye, Pencil, Users, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { Contest } from '@/types/contest.type';
 import { cn } from '@/lib/utils';
+import DialogueTool from '@/components/shared/DialogueTool';
+import ViewContestModal from '@/components/modals/ViewContestModal';
 
 type ContestCardProps = {
   contest: Contest;
-  onView?: (contest: Contest) => void;
   onEdit?: (contest: Contest) => void;
+  past?: boolean;
 };
 
 const statusStyles: Record<Contest['status'], string> = {
@@ -20,7 +24,9 @@ const statusStyles: Record<Contest['status'], string> = {
     'border-[color:var(--neon-purple)]/20 bg-[color:var(--neon-purple)]/10 text-[color:var(--neon-purple)]',
 };
 
-const ContestCard = ({ contest, onView, onEdit }: ContestCardProps) => {
+const ContestCard = ({ contest, onEdit, past }: ContestCardProps) => {
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+
   const handleEditContest = () => {
     if (onEdit) {
       onEdit(contest);
@@ -28,81 +34,113 @@ const ContestCard = ({ contest, onView, onEdit }: ContestCardProps) => {
     }
   };
 
+  const handleViewContest = () => {
+    setIsViewModalOpen(true);
+  };
+
+  const handleCloseViewModal = () => {
+    setIsViewModalOpen(false);
+  };
+
   return (
-    <div className="group space-y-3 rounded-xl border-2 bg-background/60 border-border/50 p-3 transition-colors duration-200 hover:border-(--neon-green)/20">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 space-y-2">
-          <div
-            className={cn(
-              'inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium capitalize',
-              statusStyles[contest.status],
-            )}
+    <>
+      <DialogueTool
+        open={isViewModalOpen}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) {
+            handleCloseViewModal();
+          }
+        }}
+        content={
+          <ViewContestModal contest={contest} onClose={handleCloseViewModal} />
+        }
+        title="Contest details"
+      >
+        <button
+          type="button"
+          aria-hidden="true"
+          tabIndex={-1}
+          className="hidden"
+        />
+      </DialogueTool>
+
+      <div className="group space-y-3 rounded-xl border-2 bg-background/60 border-border/50 p-3 transition-colors duration-200 hover:border-(--neon-green)/20">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 space-y-2">
+            <div
+              className={cn(
+                'inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium capitalize',
+                statusStyles[contest.status],
+              )}
+            >
+              {contest.status}
+            </div>
+
+            <h3 className="truncate text-sm font-semibold text-white transition-colors duration-200 group-hover:text-(--neon-green)">
+              {contest.title}
+            </h3>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <CalendarDays className="size-4" />
+          <span>
+            {contest.start_date
+              ? new Date(contest.start_date).toLocaleDateString()
+              : 'No start date'}{' '}
+            -{' '}
+            {contest.end_date
+              ? new Date(contest.end_date)?.toLocaleDateString()
+              : 'No end date'}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-border bg-white/5 p-3">
+            <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
+              <Users className="size-4" />
+              Participants
+            </div>
+            <p className="text-sm font-semibold text-white">
+              {contest.participants_count?.toLocaleString()}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-border bg-white/5 p-3">
+            <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
+              <Zap className="size-4" />
+              Referrals
+            </div>
+            <p className="text-sm font-semibold text-white">
+              {contest.referrals_count?.toLocaleString()}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex-1 rounded-xl border-border bg-white/5 hover:bg-white/10"
+            onClick={handleViewContest}
           >
-            {contest.status}
-          </div>
+            <Eye className="size-4" />
+            View
+          </Button>
 
-          <h3 className="truncate text-sm font-semibold text-white transition-colors duration-200 group-hover:text-(--neon-green)">
-            {contest.title}
-          </h3>
+          {!past && (
+            <Button
+              type="button"
+              className="flex-1 rounded-xl bg-(--neon-green) text-black hover:bg-(--neon-green)/90"
+              onClick={handleEditContest}
+            >
+              <Pencil className="size-4" />
+              Edit
+            </Button>
+          )}
         </div>
       </div>
-
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <CalendarDays className="size-4" />
-        <span>
-          {contest.start_date
-            ? new Date(contest.start_date).toLocaleDateString()
-            : 'No start date'}{' '}
-          -{' '}
-          {contest.end_date
-            ? new Date(contest.end_date)?.toLocaleDateString()
-            : 'No end date'}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl border border-border bg-white/5 p-3">
-          <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
-            <Users className="size-4" />
-            Participants
-          </div>
-          <p className="text-sm font-semibold text-white">
-            {contest.participants_count?.toLocaleString()}
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-border bg-white/5 p-3">
-          <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
-            <Zap className="size-4" />
-            Referrals
-          </div>
-          <p className="text-sm font-semibold text-white">
-            {contest.referrals_count?.toLocaleString()}
-          </p>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          className="flex-1 rounded-xl border-border bg-white/5 hover:bg-white/10"
-          onClick={() => onView?.(contest)}
-        >
-          <Eye className="size-4" />
-          View
-        </Button>
-
-        <Button
-          type="button"
-          className="flex-1 rounded-xl bg-(--neon-green) text-black hover:bg-(--neon-green)/90"
-          onClick={handleEditContest}
-        >
-          <Pencil className="size-4" />
-          Edit
-        </Button>
-      </div>
-    </div>
+    </>
   );
 };
 

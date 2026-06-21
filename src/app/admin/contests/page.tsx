@@ -68,14 +68,12 @@ const ContestPage = () => {
                   <ContestCard
                     key={contest.id}
                     contest={contest}
-                    onView={(selectedContest) =>
-                      console.log('view', selectedContest)
-                    }
                     onEdit={(selectedContest) => {
                       router.push(
                         ADMIN_ROUTES.CONTESTS_EDIT(selectedContest.id),
                       );
                     }}
+                    past={tab.value === 'past'}
                   />
                 ))
               ) : (
