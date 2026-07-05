@@ -8,10 +8,10 @@ export const contestTabs: ContestTabItem[] = [
     label: 'Active',
     value: 'active',
   },
-  {
-    label: 'Upcoming',
-    value: 'upcoming',
-  },
+  // {
+  //   label: 'Upcoming',
+  //   value: 'upcoming',
+  // },
   {
     label: 'Past',
     value: 'past',

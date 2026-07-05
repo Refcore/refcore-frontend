@@ -211,6 +211,207 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   }
 }
 
+export async function POST(request: Request, { params }: RouteParams) {
+  try {
+    const { user, error: authError } = await getApiAuthUser(request);
+
+    if (authError || !user) {
+      return NextResponse.json(authError, {
+        status: authError?.status_code ?? 401,
+      });
+    }
+
+    const { contestId } = await params;
+
+    if (!contestId) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Contest ID is required.',
+          data: null,
+        },
+        { status: 400 },
+      );
+    }
+
+    if (!UUID_REGEX.test(contestId)) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 400,
+          message: 'Invalid contest ID format.',
+          data: null,
+        },
+        { status: 400 },
+      );
+    }
+
+    const contest = await prisma.contests.findUnique({
+      where: {
+        id: contestId,
+      },
+      select: {
+        id: true,
+        channel_id: true,
+        title: true,
+        status: true,
+        channels: {
+          select: {
+            id: true,
+            owner_id: true,
+          },
+        },
+      },
+    });
+
+    if (!contest) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 404,
+          message: 'Contest not found.',
+          data: null,
+        },
+        { status: 404 },
+      );
+    }
+
+    if (contest.channels.owner_id !== user.id) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 403,
+          message: 'You are not allowed to start this contest.',
+          data: null,
+        },
+        { status: 403 },
+      );
+    }
+
+    if (contest.status !== 'draft') {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 409,
+          message: 'Only a draft contest can be started.',
+          data: null,
+          error_code: 'CONTEST_NOT_DRAFT',
+        },
+        { status: 409 },
+      );
+    }
+
+    const active_contest = await prisma.contests.findFirst({
+      where: {
+        channel_id: contest.channel_id,
+        status: 'active',
+        NOT: {
+          id: contestId,
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+      },
+    });
+
+    if (active_contest) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 409,
+          message: `You already have an active contest: ${active_contest.title}. End it before starting another contest.`,
+          data: null,
+          error_code: 'ACTIVE_CONTEST_EXISTS',
+        },
+        { status: 409 },
+      );
+    }
+
+    const update_result = await prisma.contests.updateMany({
+      where: {
+        id: contestId,
+        status: 'draft',
+      },
+      data: {
+        status: 'active',
+        is_published: true,
+        start_date: new Date(),
+        updated_at: new Date(),
+      },
+    });
+
+    if (update_result.count === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          status_code: 409,
+          message: 'Only a draft contest can be started.',
+          data: null,
+          error_code: 'CONTEST_NOT_DRAFT',
+        },
+        { status: 409 },
+      );
+    }
+
+    const started_contest = await prisma.contests.findUnique({
+      where: {
+        id: contestId,
+      },
+      select: {
+        id: true,
+        channel_id: true,
+        title: true,
+        slug: true,
+        description: true,
+        status: true,
+        visibility: true,
+        referral_code_prefix: true,
+        start_date: true,
+        end_date: true,
+        reward_type: true,
+        reward_value: true,
+        reward_description: true,
+        winner_selection: true,
+        max_winners: true,
+        participants_count: true,
+        referrals_count: true,
+        views_count: true,
+        top_performer_name: true,
+        top_performer_phone: true,
+        top_performer_referrals: true,
+        is_published: true,
+        is_archived: true,
+        created_at: true,
+        updated_at: true,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        status_code: 200,
+        message: 'Contest started successfully.',
+        data: started_contest,
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error('Start contest API error:', error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        status_code: 500,
+        message: 'Something went wrong while starting the contest.',
+        data: null,
+      },
+      { status: 500 },
+    );
+  }
+}
+
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { user, error: authError } = await getApiAuthUser(request);

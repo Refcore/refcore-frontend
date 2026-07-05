@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CalendarDays, Eye, Pencil, Users, Zap } from 'lucide-react';
+import { CalendarDays, Eye, Pencil, Play, Users, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { Contest } from '@/types/contest.type';
 import { cn } from '@/lib/utils';
 import DialogueTool from '@/components/shared/DialogueTool';
 import ViewContestModal from '@/components/modals/ViewContestModal';
+import StartContestModal from '@/components/modals/StartContestModal';
 
 type ContestCardProps = {
   contest: Contest;
@@ -26,6 +27,9 @@ const statusStyles: Record<Contest['status'], string> = {
 
 const ContestCard = ({ contest, onEdit, past }: ContestCardProps) => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isActivateModalOpen, setIsActivateModalOpen] = useState(false);
+
+  const isDraftContest = contest.status === 'draft';
 
   const handleEditContest = () => {
     if (onEdit) {
@@ -42,6 +46,14 @@ const ContestCard = ({ contest, onEdit, past }: ContestCardProps) => {
     setIsViewModalOpen(false);
   };
 
+  const handleOpenActivateModal = () => {
+    setIsActivateModalOpen(true);
+  };
+
+  const handleCloseActivateModal = () => {
+    setIsActivateModalOpen(false);
+  };
+
   return (
     <>
       <DialogueTool
@@ -55,6 +67,29 @@ const ContestCard = ({ contest, onEdit, past }: ContestCardProps) => {
           <ViewContestModal contest={contest} onClose={handleCloseViewModal} />
         }
         title="Contest details"
+      >
+        <button
+          type="button"
+          aria-hidden="true"
+          tabIndex={-1}
+          className="hidden"
+        />
+      </DialogueTool>
+
+      <DialogueTool
+        open={isActivateModalOpen}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) {
+            handleCloseActivateModal();
+          }
+        }}
+        content={
+          <StartContestModal
+            contest={contest}
+            onClose={handleCloseActivateModal}
+          />
+        }
+        title="Activate contest"
       >
         <button
           type="button"
@@ -136,6 +171,17 @@ const ContestCard = ({ contest, onEdit, past }: ContestCardProps) => {
             >
               <Pencil className="size-4" />
               Edit
+            </Button>
+          )}
+
+          {!past && isDraftContest && (
+            <Button
+              type="button"
+              className="flex-1 rounded-xl bg-(--neon-purple) text-white hover:bg-(--neon-purple)/90"
+              onClick={handleOpenActivateModal}
+            >
+              <Play className="size-4" />
+              Activate
             </Button>
           )}
         </div>
