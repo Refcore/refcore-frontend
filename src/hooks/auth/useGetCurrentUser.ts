@@ -9,6 +9,8 @@ type CurrentUserResponse = {
   auth_user: {
     id: string;
     email: string | null;
+    email_confirmed: boolean;
+    email_confirmed_at: string | null;
   };
   profile: User | null;
 };
@@ -36,8 +38,7 @@ const getCurrentUser = async (): Promise<CurrentUserResponse | null> => {
     },
   });
 
-  const result =
-    (await response.json()) as AppResponse<CurrentUserResponse>;
+  const result = (await response.json()) as AppResponse<CurrentUserResponse>;
 
   if (!response.ok || !result.success) {
     throw new Error(result.message || 'Unable to fetch current user.');

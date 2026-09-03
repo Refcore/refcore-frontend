@@ -26,6 +26,8 @@ export async function GET(request: Request) {
         auth_user: {
           id: user.id,
           email: user.email ?? null,
+          email_confirmed: !!user.email_confirmed_at,
+          email_confirmed_at: user.email_confirmed_at ?? null,
         },
         profile,
       },

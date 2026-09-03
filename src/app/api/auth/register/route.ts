@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { registerAccountSchema } from '@/schema/register.schema';
-import { supabaseAdmin } from '@/utils/supabase/admin';
+// import { supabaseAdmin } from '@/utils/supabase/admin';
+import { createClient } from '@/utils/supabase/server';
 
 export async function POST(request: Request) {
+  const supabase = await createClient();
+
   try {
     const body = await request.json();
 
@@ -23,12 +26,14 @@ export async function POST(request: Request) {
 
     const payload = parsed.data;
 
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    const { data, error } = await supabase.auth.signUp({
       email: payload.email,
       password: payload.password,
-      email_confirm: true,
-      user_metadata: {
-        user_name: payload.user_name,
+      options: {
+        data: {
+          user_name: payload.user_name,
+        },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/login`,
       },
     });
 
@@ -78,7 +83,8 @@ export async function POST(request: Request) {
       {
         success: true,
         status_code: 201,
-        message: 'User created successfully.',
+        message:
+          'Account created. Please check your email to verify your account.',
         data: {
           user_id: publicUser.id,
           email: publicUser.email ?? payload.email,

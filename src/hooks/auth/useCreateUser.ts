@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { createClient } from '@/utils/supabase/client';
 import type { RegisterAccountFormData } from '@/schema/register.schema';
-import { AppResponse } from '@/types/response.type';
+import type { AppResponse } from '@/types/response.type';
 
 type CreateUserResponseData = {
   user_id: string;
@@ -11,10 +11,11 @@ type CreateUserResponseData = {
 
 export const useCreateUser = () => {
   const [loading, setLoading] = useState(false);
-  const supabase = createClient();
+  const router = useRouter();
 
   const createUser = async (
     payload: RegisterAccountFormData,
+    redirectTo?: string,
   ): Promise<AppResponse<CreateUserResponseData>> => {
     try {
       setLoading(true);
@@ -35,27 +36,14 @@ export const useCreateUser = () => {
         return result;
       }
 
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: payload.email,
-        password: payload.password,
-      });
+      toast.success(
+        result.message ||
+          'Account created. Please check your email to verify your account.',
+      );
 
-      if (signInError) {
-        toast.error(
-          'Account created, but automatic sign in failed. Please sign in manually.',
-        );
-
-        return {
-          ...result,
-          success: false,
-          status_code: 401,
-          message:
-            'Account created, but automatic sign in failed. Please sign in manually.',
-          error_code: signInError.code,
-        };
+      if (redirectTo) {
+        router.push(redirectTo);
       }
-
-      toast.success(result.message || 'User created successfully.');
 
       return result;
     } catch (error) {
@@ -72,6 +60,7 @@ export const useCreateUser = () => {
       };
 
       toast.error(errorResponse.message);
+
       return errorResponse;
     } finally {
       setLoading(false);

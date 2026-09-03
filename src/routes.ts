@@ -10,6 +10,10 @@ export const PUBLIC_ROUTES = {
 export const AUTH_ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
+  FORGOT_PASSWORD: '/forgot-password',
+  RESET_PASSWORD: (token: string) => `/reset-password/${token}`,
+  VERIFY_EMAIL: (token: string) => `/verify-email/${token}`,
+  VERIFICATION_EMAIL_SENT: '/email-sent',
 };
 
 // ADMIN ROUTES
