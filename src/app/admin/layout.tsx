@@ -1,6 +1,5 @@
 'use client';
 
-// import RequireWhatsappVerified from '@/components/auth/RequireWhatsappVerified';
 import MobileNav from '@/components/admin/MobileNav';
 import Sidebar from '@/components/admin/Sidebar';
 import { useEffect, type ReactNode } from 'react';
@@ -15,26 +14,57 @@ type DashboardLayoutProps = {
 };
 
 export default function AdminLayout({ children }: DashboardLayoutProps) {
-  const { isLoading, authUser } = useAuthContext();
-  const { isLoading: adminloading } = useAdminLoading();
+  const {
+    authUser,
+    registrationStatus,
+    // isRegistrationComplete,
+    isLoading,
+  } = useAuthContext();
+
+  const { isLoading: adminLoading } = useAdminLoading();
+
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !authUser) {
-      router.replace(AUTH_ROUTES.LOGIN);
-    }
-  }, [isLoading, authUser, router]);
+    if (isLoading) return;
 
-  if (isLoading || adminloading || !authUser) {
+    switch (registrationStatus) {
+      case 'unauthenticated':
+        router.replace(AUTH_ROUTES.LOGIN);
+        break;
+
+      case 'email_unverified':
+        router.replace(AUTH_ROUTES.VERIFICATION_EMAIL_SENT);
+        break;
+
+      case 'channel_required':
+        router.replace(AUTH_ROUTES.REGISTER);
+        break;
+
+      case 'whatsapp_unverified':
+        // router.replace(AUTH_ROUTES.REGISTER);
+        break;
+
+      case 'complete':
+        break;
+    }
+  }, [isLoading, registrationStatus, router]);
+
+  if (
+    isLoading ||
+    adminLoading ||
+    !authUser
+    //  || !isRegistrationComplete
+  ) {
     return <Loadingscreen />;
   }
 
   return (
-    <section className="min-h-screen relative bg-background custom-scrollbar flex flex-col lg:flex-row">
-      {/* <RequireWhatsappVerified>{children}</RequireWhatsappVerified> */}
+    <section className="relative flex min-h-screen flex-col bg-background custom-scrollbar lg:flex-row">
       <Sidebar />
       <MobileNav />
-      <div className="flex-1"> {children}</div>
+
+      <div className="flex-1">{children}</div>
     </section>
   );
 }

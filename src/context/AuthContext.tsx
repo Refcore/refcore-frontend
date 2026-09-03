@@ -17,16 +17,29 @@ import { MyChannel } from '@/types/channel.type';
 type AuthUser = {
   id: string;
   email: string | null;
+  email_confirmed: boolean;
+  email_confirmed_at: string | null;
 };
+
+type RegistrationStatus =
+  | 'unauthenticated'
+  | 'email_unverified'
+  | 'channel_required'
+  | 'whatsapp_unverified'
+  | 'complete';
 
 type AuthContextType = {
   authUser: AuthUser | null;
   currentUser: User | null;
   myChannel: MyChannel | null;
+
   isAuthenticated: boolean;
+  isEmailVerified: boolean;
   isWhatsappVerified: boolean;
-  registrationStep: 1 | 2 | 3;
+
+  registrationStatus: RegistrationStatus;
   isRegistrationComplete: boolean;
+
   isLoading: boolean;
   isError: boolean;
   refetchAuthState: () => void;
@@ -73,6 +86,8 @@ const getCurrentUser = async (): Promise<CurrentUserResponse | null> => {
     auth_user: {
       id: user.id,
       email: user.email ?? null,
+      email_confirmed: !!user.email_confirmed_at,
+      email_confirmed_at: user.email_confirmed_at ?? null,
     },
     profile: profile ?? null,
   };
@@ -172,32 +187,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const isLoading =
       !isMounted || isLoadingUser || (isAuthenticated && isLoadingChannel);
 
+    const isEmailVerified = !!authUser?.email_confirmed;
     const isWhatsappVerified = !!myChannel?.whatsapp_verified;
 
-    let registrationStep: 1 | 2 | 3 = 1;
-    let isRegistrationComplete = false;
+    let registrationStatus: RegistrationStatus = 'unauthenticated';
 
     if (!isAuthenticated) {
-      registrationStep = 1;
+      registrationStatus = 'unauthenticated';
+    } else if (!isEmailVerified) {
+      registrationStatus = 'email_unverified';
     } else if (!myChannel) {
-      registrationStep = 2;
-    } else if (!myChannel.whatsapp_verified) {
-      registrationStep = 3;
+      registrationStatus = 'channel_required';
+    } else if (!isWhatsappVerified) {
+      registrationStatus = 'whatsapp_unverified';
     } else {
-      registrationStep = 3;
-      isRegistrationComplete = true;
+      registrationStatus = 'complete';
     }
 
+    const isRegistrationComplete = registrationStatus === 'complete';
     return {
       authUser,
       currentUser,
       myChannel: myChannel ?? null,
+
       isAuthenticated,
+      isEmailVerified,
       isWhatsappVerified,
-      registrationStep,
+
+      registrationStatus,
       isRegistrationComplete,
+
       isLoading,
       isError: isUserError || isChannelError,
+
       refetchAuthState: () => {
         void refetchCurrentUser();
 

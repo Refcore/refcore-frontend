@@ -12,6 +12,7 @@ import EmailInput from '../../shared/forms/inputs/EmailInput';
 import PasswordInput from '../../shared/forms/inputs/PasswordInput';
 import FormButton from '../../shared/forms/FormButton';
 import { useCreateUser } from '@/hooks/auth/useCreateUser';
+import { AUTH_ROUTES } from '@/routes';
 
 const RegisterStep1 = () => {
   const { formData, updateForm, nextStep } = useRegister();
@@ -20,7 +21,7 @@ const RegisterStep1 = () => {
   const handleSubmit = async (values: RegisterAccountFormData) => {
     updateForm(values);
 
-    const response = await createUser(values);
+    const response = await createUser(values,AUTH_ROUTES.VERIFICATION_EMAIL_SENT);
 
     if (!response.success) {
       console.log(response.message);
