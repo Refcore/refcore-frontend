@@ -41,6 +41,8 @@ export const useCreateUser = () => {
           'Account created. Please check your email to verify your account.',
       );
 
+      sessionStorage.setItem('pending_verification_email', payload.email);
+
       if (redirectTo) {
         router.push(redirectTo);
       }
