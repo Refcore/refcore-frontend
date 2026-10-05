@@ -12,22 +12,14 @@ import RegisterStepsHeader from '@/components/auth/register/RegisterStepsHeader'
 import { useRegister } from '@/context/RegisterContext';
 import { useAuthContext } from '@/context/AuthContext';
 import { AUTH_ROUTES } from '@/routes';
-import Loadingscreen from '@/components/ui/Loadingscreen';
+import { Loader2Icon } from 'lucide-react';
 
 const RegisterPage = () => {
   const router = useRouter();
 
-  const {
-    step: currentStep,
-    setStep,
-    prevStep,
-  } = useRegister();
+  const { step: currentStep, setStep, prevStep } = useRegister();
 
-  const {
-    registrationStatus,
-    isLoading,
-    isAuthenticated,
-  } = useAuthContext();
+  const { registrationStatus, isLoading, isAuthenticated } = useAuthContext();
 
   useEffect(() => {
     if (isLoading) return;
@@ -53,12 +45,7 @@ const RegisterPage = () => {
         router.replace('/admin');
         break;
     }
-  }, [
-    isLoading,
-    registrationStatus,
-    setStep,
-    router,
-  ]);
+  }, [isLoading, registrationStatus, setStep, router]);
 
   const renderStep = () => {
     switch (currentStep) {
@@ -81,7 +68,7 @@ const RegisterPage = () => {
     registrationStatus === 'email_unverified' ||
     registrationStatus === 'complete'
   ) {
-    return <Loadingscreen />;
+    return <Loader2Icon className='animate-spin my-auto text-green-200 w-20 h-20' />;
   }
 
   return (
@@ -94,9 +81,7 @@ const RegisterPage = () => {
             showBack={isAuthenticated && currentStep > 1}
           />
 
-          <div className="mt-8 w-full md:mt-10">
-            {renderStep()}
-          </div>
+          <div className="mt-8 w-full md:mt-10">{renderStep()}</div>
         </div>
       </div>
 

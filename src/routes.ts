@@ -14,6 +14,7 @@ export const AUTH_ROUTES = {
   RESET_PASSWORD: (token: string) => `/reset-password/${token}`,
   VERIFY_EMAIL: (token: string) => `/verify-email/${token}`,
   VERIFICATION_EMAIL_SENT: '/email-sent',
+  EMAIL_CONFIRMED: '/email-verified',
 };
 
 // ADMIN ROUTES
