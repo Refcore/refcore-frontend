@@ -18,7 +18,7 @@ export const useResendVerificationEmail = () => {
         type: 'signup',
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/${AUTH_ROUTES.VERIFICATION_EMAIL_SENT}`,
+          emailRedirectTo: `${window.location.origin}/${AUTH_ROUTES.EMAIL_CONFIRMED}`,
         },
       });
 

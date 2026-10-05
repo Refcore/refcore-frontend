@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         data: {
           user_name: payload.user_name,
         },
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/login`,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/email-verified`,
       },
     });
 

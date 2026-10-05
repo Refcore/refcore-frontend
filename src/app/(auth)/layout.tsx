@@ -27,7 +27,7 @@ export default function AuthLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <section className="min-h-screen relative bg-background py-6 custom-scrollbar flex flex-col justify-center items-center">
+    <section className="relative bg-background py-6 custom-scrollbar flex flex-col justify-center items-center">
        <CompanyLogo width={150} height={40} className='overflow-hidden h-25'/>
       <main className="z-1">{children}</main>
 
