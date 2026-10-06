@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import ReactQueryProvider from '@/providers/ReactQueryProvider';
-import { Fredoka } from 'next/font/google';
+import { Fredoka, Audiowide, Anta} from 'next/font/google';
 import { AuthProvider } from '@/context/AuthContext';
 import ToastProvider from '@/providers/ToastProvider';
 
@@ -9,6 +9,18 @@ const fredoka = Fredoka({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-fredoka', // important
+});
+
+const audiowide = Audiowide({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-audiowide', // important
+});
+
+const anta = Anta({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-anta', // important
 });
 
 const siteOgImage = 'https://refcore-frontend.vercel.app/og/refcore-og.webp';
@@ -84,7 +96,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${fredoka.className} custom-scrollbar overflow-x-hidden`}
+        className={`${fredoka.className} ${audiowide.className} ${anta.className} custom-scrollbar overflow-x-hidden`}
       >
         <ReactQueryProvider>
           <AuthProvider>{children}</AuthProvider>
