@@ -1,16 +1,21 @@
 import React from 'react';
+import CompanyLogo from '../shared/CompanyLogo';
 
 const Loadingscreen = () => {
   return (
     <div className="w-screen h-screen flex items-center justify-center">
-      <div className="refcore-loader" aria-label="Loading">
-        <span className="refcore-piece p1"></span>
-        <span className="refcore-piece p2"></span>
-        <span className="refcore-piece p3"></span>
-        <span className="refcore-piece p4"></span>
-        <span className="refcore-piece p5"></span>
-        <span className="refcore-piece p6"></span>
-      </div>
+      <CompanyLogo
+        width={130}
+        height={40}
+        noText
+        className="hidden lg:block animate-pulse"
+      />
+      <CompanyLogo
+        width={80}
+        height={40}
+        noText
+        className="lg:hidden animate-pulse"
+      />
     </div>
   );
 };
